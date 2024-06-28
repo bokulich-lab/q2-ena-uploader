@@ -7,7 +7,7 @@ from ena_uploader.types._types_and_formats import (
     ENAMetadataStudyFormat, ENAMetadataStudyDirFmt, ENAMetadataStudy,
     ENASubmissionReceiptFormat,ENASubmissionReceiptDirFmt,ENASubmissionReceipt
 )
-from ena_uploader.uploader import uploadToEna
+from ena_uploader.uploader import uploadToEna, cancleENASubmission
 
 plugin = Plugin(
     name='ena_uploader',
@@ -61,7 +61,7 @@ plugin.methods.register_function(
             'samples': 'Artifact containing submission metadata of the samples.',
             },
     parameter_descriptions={
-        'submission_hold_date':"TBD",
+        'submission_hold_date':"The release date of the study, on which it will become public along with all submitted data.",
         'dev' : ('False by default, true in case of submission to ENA dev server.')
     },
     output_descriptions={
@@ -69,6 +69,29 @@ plugin.methods.register_function(
     },
     name='ENA Submission',
     description=("ENA Study and Samples Metadata submission upload."),
+    citations=[]
+)
+
+
+plugin.methods.register_function(
+    function=cancleENASubmission,
+    inputs = {},
+    parameters={
+            'accession_number' : Str,
+            'dev' : Bool
+            },
+    outputs=[('submission_receipt', ENASubmissionReceipt)],
+    
+    input_descriptions= {},
+    parameter_descriptions={
+        'accession_number': "ENA unique identifier of  the object that is being cancelled.",
+        'dev' : ('False by default, true in case of submission to ENA dev server.')
+    },
+    output_descriptions={
+        'submission_receipt': 'Artifact containing the submission summary.'
+    },
+    name='Cancle ENA Submission',
+    description=("Cancelation of the ENA submission."),
     citations=[]
 )
 
