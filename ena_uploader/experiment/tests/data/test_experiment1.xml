@@ -1,0 +1,46 @@
+<EXPERIMENT_SET>
+    <EXPERIMENT alias="alias12">
+        <TITLE>title12</TITLE>
+        <STUDY_REF accession_number="study_ref1"/>
+        <DESIGN>
+            <DESIGN_DESCRIPTION/>
+            <SAMPLE_DESCRIPTOR accession="sample_description1"/>
+        </DESIGN>
+        <PLATFORM>
+            <ILLUMINA>
+                <INSTRUMENT_MODEL>GENIUS</INSTRUMENT_MODEL>
+            </ILLUMINA>
+        </PLATFORM>
+        <LIBRARY_DESCRIPTOR>
+            <LIBRARY_STRATEGY>WGS</LIBRARY_STRATEGY>
+            <LIBRARY_SOURCE>GENOMIC</LIBRARY_SOURCE>
+            <LIBRARY_SELECTION>RANDOM</LIBRARY_SELECTION>
+            <LIBRARY_LAYOUT>
+                <SINGLE/>
+            </LIBRARY_LAYOUT>
+            <LIBRARY_CONSTRUCTION_PROTOCOL/>
+        </LIBRARY_DESCRIPTOR>
+    </EXPERIMENT>
+    <EXPERIMENT alias="alias13">
+        <TITLE>title13</TITLE>
+        <STUDY_REF accession_number="study_ref2"/>
+        <DESIGN>
+            <DESIGN_DESCRIPTION/>
+            <SAMPLE_DESCRIPTOR accession="sample_description2"/>
+        </DESIGN>
+        <PLATFORM>
+            <ILLUMINA>
+                <INSTRUMENT_MODEL>GENIUS</INSTRUMENT_MODEL>
+            </ILLUMINA>
+        </PLATFORM>
+        <LIBRARY_DESCRIPTOR>
+            <LIBRARY_STRATEGY>WGS</LIBRARY_STRATEGY>
+            <LIBRARY_SOURCE>GENOMIC</LIBRARY_SOURCE>
+            <LIBRARY_SELECTION>RANDOM</LIBRARY_SELECTION>
+            <LIBRARY_LAYOUT>
+                <SINGLE/>
+            </LIBRARY_LAYOUT>
+            <LIBRARY_CONSTRUCTION_PROTOCOL/>
+        </LIBRARY_DESCRIPTOR>
+    </EXPERIMENT>
+</EXPERIMENT_SET>

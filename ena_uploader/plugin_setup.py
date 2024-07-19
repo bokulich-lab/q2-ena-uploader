@@ -5,7 +5,9 @@ from q2_types.ordination import PCoAResults
 from ena_uploader.types._types_and_formats import (
     ENAMetadataSamplesFormat, ENAMetadataSamplesDirFmt,ENAMetadataSamples,
     ENAMetadataStudyFormat, ENAMetadataStudyDirFmt, ENAMetadataStudy,
-    ENASubmissionReceiptFormat,ENASubmissionReceiptDirFmt,ENASubmissionReceipt
+    ENASubmissionReceiptFormat,ENASubmissionReceiptDirFmt,ENASubmissionReceipt,
+    ENAMetadataExperimentFormat,ENAMetadataExperiment,ENAMetadataExperimentDirFmt
+
 )
 from ena_uploader.uploader import uploadToEna, cancleENASubmission
 
@@ -19,12 +21,14 @@ plugin = Plugin(
 )
 
 
-plugin.register_semantic_types(ENAMetadataStudy,ENAMetadataSamples,ENASubmissionReceipt)
+plugin.register_semantic_types(ENAMetadataStudy,ENAMetadataSamples,ENAMetadataExperiment,ENASubmissionReceipt)
 
 plugin.register_formats(
     ENAMetadataSamplesFormat,ENAMetadataStudyFormat,
     ENAMetadataSamplesDirFmt,ENAMetadataStudyDirFmt,
-    ENASubmissionReceiptFormat,ENASubmissionReceiptDirFmt)
+    ENASubmissionReceiptFormat,ENASubmissionReceiptDirFmt,
+    ENAMetadataExperimentFormat,ENAMetadataExperimentDirFmt
+)
 
 
 plugin.register_artifact_class(ENAMetadataStudy,
@@ -42,6 +46,11 @@ plugin.register_artifact_class(ENAMetadataSamples,
 plugin.register_artifact_class(ENASubmissionReceipt,
                                ENASubmissionReceiptDirFmt,
                                description = "ENA submission receipt xml file")
+
+plugin.register_artifact_class(ENAMetadataExperiment,
+                               ENAMetadataExperimentDirFmt,
+                               description = "Experiment submission tsv file."
+)
 
 plugin.methods.register_function(
     function=uploadToEna,

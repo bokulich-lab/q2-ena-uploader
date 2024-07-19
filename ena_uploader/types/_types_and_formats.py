@@ -1,6 +1,7 @@
 from xml.etree import ElementTree
 from qiime2.plugin import SemanticType, TextFileFormat, model, ValidationError
 from ena_uploader.sample import _sampleSetFromListOfDicts
+from ena_uploader.experiment import  _experimentFromRowDict
 from ena_uploader.study import _studyFromRawDict
 import xml.etree.ElementTree as ET
 import pandas as pd 
@@ -8,6 +9,7 @@ import csv
 
 ENAMetadataSamples = SemanticType('ENAMetadataSamples')
 ENAMetadataStudy = SemanticType('ENAMetadataStudy')
+ENAMetadataExperiment = SemanticType('ENAMetadataExperiment')
 ENASubmissionReceipt = SemanticType('ENASubmissionReceipt')
 
 
@@ -126,3 +128,51 @@ class ENASubmissionReceiptFormat(model.BinaryFileFormat):
 ENASubmissionReceiptDirFmt = model.SingleFileDirectoryFormat(
     'ENASubmissionReceiptDirFmt','ena_submission_receipt.xml',ENASubmissionReceiptFormat
 )
+
+
+class ENAMetadataExperimentFormat(model.TextFileFormat):
+    """
+    This format is utilized to store ENA Experiment submission metadata, 
+    including compulsary attributes such as alias, study and sample idsm, platform and library description,
+    along with various other optional attributes for the experiment submission.
+    """
+
+    REQUIRED_ATTRIBUTES = ['study_ref','sample_description',
+                           'platform','instrument_model',
+                           'library_strategy','library_source','library_selection',
+                           'library_layout']	
+    
+    def _validate(self):
+        df = pd.read_csv(str(self), sep='\t')
+        missing_cols = [ x for x in self.REQUIRED_ATTRIBUTES if x not in df.columns]
+        if missing_cols:
+            raise ValidationError(
+                'Some required experiment attributes are missing from the metadata upload file: '
+                f'{",".join(missing_cols)}.'
+                )
+        
+
+        nans = (df.isnull() | (df == '')).sum(axis=0)[self.REQUIRED_ATTRIBUTES]
+        missing_ids = nans.where(nans > 0).dropna().index.tolist()
+        if missing_ids:
+            raise ValidationError(
+                'Some experiments are missing values in the following fields: '
+                f'{",".join(missing_ids)}.'
+            )
+
+    def _validate_(self, level):
+        self._validate()
+
+    def toXml(self):
+        with open(str(self), 'r') as f:
+            dicts = [d for d in csv.DictReader(f, delimiter='\t')]
+            elementTree = _experimentFromRowDict(dicts).to_xml_element()
+            return ElementTree.tostring(elementTree.getroot(), encoding='utf8')
+
+
+ENAMetadataExperimentDirFmt = model.SingleFileDirectoryFormat(
+        'ENAMetadataExperimentDirFmt', 'ena_metadata_experiment.tsv', ENAMetadataExperimentFormat
+
+)
+
+

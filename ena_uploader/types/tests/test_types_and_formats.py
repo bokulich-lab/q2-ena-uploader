@@ -10,8 +10,12 @@ from qiime2.plugin.testing import TestPluginBase
 from ena_uploader.types import (
     ENAMetadataSamples, ENAMetadataSamplesFormat, ENAMetadataStudy,ENAMetadataStudyFormat,
     ENAMetadataSamplesDirFmt,ENAMetadataStudyDirFmt,
-    ENASubmissionReceipt,ENASubmissionReceiptDirFmt,ENASubmissionReceiptFormat
+    ENASubmissionReceipt,ENASubmissionReceiptDirFmt,ENASubmissionReceiptFormat,
+    ENAMetadataExperiment,ENAMetadataExperimentFormat,ENAMetadataExperimentDirFmt
 )
+
+
+
 
 class TestTypes(TestPluginBase):
     package = 'ena_uploader.types.tests'
@@ -22,6 +26,9 @@ class TestTypes(TestPluginBase):
     def test_ena_metadata_study_semantic_type_registration(self):
         self.assertRegisteredSemanticType(ENAMetadataStudy)
     
+    def test_ena_metadata_experiment_semantic_type_registration(self):
+        self.assertRegisteredSemanticType(ENAMetadataExperiment)
+
     def test_ena_metadata_samples_to_format_registration(self):
         self.assertSemanticTypeRegisteredToFormat(
             ENAMetadataSamples,ENAMetadataSamplesDirFmt
@@ -30,6 +37,10 @@ class TestTypes(TestPluginBase):
         self.assertSemanticTypeRegisteredToFormat(
             ENAMetadataStudy,ENAMetadataStudyDirFmt
         )
+    def test_ena_metadata_experiment_to_format_registration(self):
+        self.assertSemanticTypeRegisteredToFormat(
+            ENAMetadataExperiment,ENAMetadataExperimentDirFmt
+        )
     def test_ena_submission_receipt_semantic_type_registration(self):
         self.assertRegisteredSemanticType(ENASubmissionReceipt)
 
@@ -37,6 +48,8 @@ class TestTypes(TestPluginBase):
         self.assertSemanticTypeRegisteredToFormat(
             ENASubmissionReceipt,ENASubmissionReceiptDirFmt
         )
+    
+    
 class TestFormats(TestPluginBase):
     package = 'ena_uploader.types.tests'
 
@@ -107,7 +120,33 @@ class TestFormats(TestPluginBase):
             'receiptDate,submissionFile.'
         ):
             format.validate()
+    
+    def test_ena_metadata_experiment_fmt(self):
+        meta_path = self.get_data_path('ena_metadata_experiment.tsv')
+        format = ENAMetadataExperimentFormat(meta_path, mode='r')
+        format.validate()
 
+    def test_ena_experiment_missing_attributes(self):
+        meta_path = self.get_data_path('ena_missing_att_experiment.tsv')
+        format = ENAMetadataExperimentFormat(meta_path,mode='r')
+        with self.assertRaisesRegex(
+                ValidationError,
+                'Some required experiment attributes are missing from the metadata upload file: '
+                'study_ref,sample_description.'
+       ):
+          format.validate()
+  
+  
+    def test_ena_experiment_missing_values(self):
+        meta_path = self.get_data_path('ena_missing_values_experiment.tsv')
+        format = ENAMetadataExperimentFormat(meta_path,mode='r')
+        with self.assertRaisesRegex(
+            ValidationError,
+            'Some experiments are missing values in the following fields: '
+            'study_ref,sample_description,instrument_model,library_strategy,library_source.'
+
+        ):
+            format.validate()
 
 
 class  TestTransformers(TestPluginBase):
@@ -119,7 +158,9 @@ class  TestTransformers(TestPluginBase):
         self.xml_response = xml_path
         meta_path1 = self.get_data_path('ena_metadata_samples.tsv')
         meta_path2 = self.get_data_path('ena_metadata_study.tsv')
+        meta_path3 = self.get_data_path('ena_metadata_experiment.tsv')
         self.ena_meta_df = pd.read_csv(meta_path1, sep='\t')
+        self.ena_experiment_df = pd.read_csv(meta_path3, sep='\t')
         self.ena_meta_study_df = pd.read_csv(meta_path2, header= None, index_col=0, sep = '\t')
   
     def test_str_ena_receipt(self):
@@ -131,6 +172,11 @@ class  TestTransformers(TestPluginBase):
         _, obs = self.transform_format(ENAMetadataSamplesFormat,pd.DataFrame,'ena_metadata_samples.tsv')
         self.assertIsInstance(obs, pd.DataFrame)
         pd.testing.assert_frame_equal(obs,self.ena_meta_df)
+
+    def test_ena_experiment_metadata_to_df(self):
+        _, obs = self.transform_format(ENAMetadataExperimentFormat,pd.DataFrame,'ena_metadata_experiment.tsv')
+        self.assertIsInstance(obs, pd.DataFrame)
+        pd.testing.assert_frame_equal(obs,self.ena_experiment_df)
     
     def test_ena_study_metadata_to_dict(self):
         _, obs = self.transform_format(ENAMetadataStudyFormat,dict,'ena_metadata_study.tsv')
