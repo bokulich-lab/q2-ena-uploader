@@ -1,7 +1,7 @@
 from xml.etree import ElementTree
 from qiime2.plugin import SemanticType, TextFileFormat, model, ValidationError
 from ena_uploader.sample import _sampleSetFromListOfDicts
-from ena_uploader.experiment import  _experimentFromRowDict
+from ena_uploader.experiment import  _ExperimentSetFromListOfDicts
 from ena_uploader.study import _studyFromRawDict
 import xml.etree.ElementTree as ET
 import pandas as pd 
@@ -166,7 +166,7 @@ class ENAMetadataExperimentFormat(model.TextFileFormat):
     def toXml(self):
         with open(str(self), 'r') as f:
             dicts = [d for d in csv.DictReader(f, delimiter='\t')]
-            elementTree = _experimentFromRowDict(dicts).to_xml_element()
+            elementTree = _ExperimentSetFromListOfDicts(dicts).to_xml_element()
             return ElementTree.tostring(elementTree.getroot(), encoding='utf8')
 
 

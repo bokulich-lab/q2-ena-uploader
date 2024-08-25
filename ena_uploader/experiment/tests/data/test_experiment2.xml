@@ -1,6 +1,5 @@
 <EXPERIMENT_SET>
     <EXPERIMENT alias="exp_sample_description1">
-        <TITLE>title12</TITLE>
         <STUDY_REF refname="study_ref1"/>
         <DESIGN>
             <DESIGN_DESCRIPTION/>
@@ -22,7 +21,6 @@
         </PLATFORM>
     </EXPERIMENT>
     <EXPERIMENT alias="exp_sample_description2">
-        <TITLE>title13</TITLE>
         <STUDY_REF refname="study_ref2"/>
         <DESIGN>
             <DESIGN_DESCRIPTION/>

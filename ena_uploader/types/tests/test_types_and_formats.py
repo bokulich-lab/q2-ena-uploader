@@ -199,19 +199,15 @@ class  TestTransformers(TestPluginBase):
         ena_meta_study = ena_meta_study.T.rename(columns={'alias':'id'}).set_index('id')
         exp = qiime2.Metadata(ena_meta_study)
         self.assertEqual(obs, exp)
-
-
-
-
-
-
-
-
-        
-
-
-
-
+    
+    def test_ena_experiment_to_q2_meta(self):
+        _, obs = self.transform_format(
+            ENAMetadataExperimentFormat, qiime2.Metadata, 'ena_metadata_experiment.tsv'
+        )
+        ena_meta_experiment = self.ena_experiment_df
+        ena_meta_experiment = ena_meta_experiment.rename(columns={'alias':'id'}).set_index('id')
+        exp = qiime2.Metadata(ena_meta_experiment)
+        self.assertEqual(obs, exp)
 
 
 

@@ -3,7 +3,10 @@ import pandas as pd
 import os
 from parameterized import parameterized
 import xml.etree.ElementTree as ET
-from ena_uploader import  _parseExperimentSetFromTsv, _ExperimentSetFromListOfDicts
+from ena_uploader import _runFromDict
+
+def read_run_tsv_to_dict(filename):
+    return pd.read_csv(filename,header= None, index_col=0, delimiter='\t' ).squeeze("columns").to_dict() 
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -39,30 +42,38 @@ class CustomAssertions:
 
 class OptimizationContext_tests(unittest.TestCase,CustomAssertions):
 
-    INPUT1 = _parseExperimentSetFromTsv(fpath("data/test_experiment1.tsv"))
-    INPUT2 = _parseExperimentSetFromTsv(fpath("data/test_experiment2.tsv"))
+    dict1 =  {
+     'alias_1': {
+          'filename': ['file1_forward.fastq', 'file1_reverse.fastq'],
+          'checksum': ['abc123', 'def456']
+        },
+     'alias_2': {
+        'filename': ['file2_forward.fastq', 'file2_reverse.fastq'],
+        'checksum': ['ghi789', 'jkl012']
+         }
+        }
 
- 
+    dict2 =  {
+     'alias_1': {
+          'filename': ['file1.fastq'],
+          'checksum': ['abc123']
+        },
+     'alias_2': {
+        'filename': ['file2.fastq'],
+        'checksum': ['ghi789']
+         }
+        }
 
+    expected_res_0 = ET.parse(fpath('data/run_1.xml'))
+    expected_res_1 = ET.parse(fpath('data/run_2.xml'))
 
-    exp_res1 = ET.parse(fpath('data/test_experiment1.xml'))
-    exp_res2 = ET.parse(fpath('data/test_experiment2.xml'))
-
-
-
-    @parameterized.expand([ (INPUT1,exp_res1),
-                            (INPUT2,exp_res2)
+    @parameterized.expand([(dict1,expected_res_0),
                            ])
-    
     def test_xml_structure(self,data,expected_res):
-        experiment_xml =  _ExperimentSetFromListOfDicts(data).to_xml_element()
-        #print(ET.tostring(experiment_xml, encoding='utf-8'))
-        self.assertXmlEqual(experiment_xml,expected_res)
+        run =  _runFromDict(data)
+        self.assertXmlEqual(run,expected_res)
+    
 
 
 if __name__ == "__main__":
      unittest.main()
-
-
-
-

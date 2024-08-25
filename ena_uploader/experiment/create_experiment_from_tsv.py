@@ -56,7 +56,6 @@ class Library:
 
 class Experiment:
     def __init__(self,
-                 alias = None,
                  title = None,
                  study_ref = None,
                  sample_description = None,
@@ -64,7 +63,6 @@ class Experiment:
                  instrument_model = None,
                  library_attributes = [],
                  attributes = []):
-        self.alias = alias
         self.title = title
         self.study_ref = study_ref
         self.sample_description = sample_description
@@ -75,23 +73,23 @@ class Experiment:
     
     def to_xml_element(self):
         
-        if self.alias is None:
-            raise ValueError("Experiment alias must have a value for an experiment submission.")
+        if self.sample_description is None:
+            raise ValueError("Sample reference id must be present for an experiment submission.")
         else:
-            root = ET.Element("EXPERIMENT",{'alias': self.alias })
+            root = ET.Element("EXPERIMENT",{'alias': 'exp_'+ str(self.sample_description) })
+            
+        if self.title is not None:    
             ET.SubElement(root,'TITLE').text = str(self.title)
         
         if self.study_ref is None:
             raise ValueError("Study reference must be present for an experiment submission.")
         else:
-            study_element = ET.SubElement(root,'STUDY_REF',{'accession_number' : self.study_ref})
+            study_element = ET.SubElement(root,'STUDY_REF',{'refname' : self.study_ref})
         
         design_element = ET.SubElement(root,'DESIGN')
         design_description_element = ET.SubElement(design_element,'DESIGN_DESCRIPTION')
-        if self.sample_description is None:
-            raise ValueError("Sample reference must be present for an experiment submission.")
-        else:
-            sample_description = ET.SubElement(design_element, 'SAMPLE_DESCRIPTOR', {'accession' : self.sample_description})
+
+        sample_description = ET.SubElement(design_element, 'SAMPLE_DESCRIPTOR', {'refname' : self.sample_description})
         if len(self.platform) is None:
             raise ValueError("Platform record must be present for an experiment submission.")
         else:
@@ -106,7 +104,7 @@ class Experiment:
         else:
             library_tree = Library(**self.library_attributes)
             library_tree_element = library_tree.to_xm_element()
-            root.append(library_tree_element)
+            design_element.append(library_tree_element)
 
         if len(self.attributes) > 0 :
              attributes_element = ET.SubElement(root,"EXPERIMENT_ATTRIBUTES")
@@ -136,7 +134,7 @@ class ExperimentSet:
         #return experiment_set_element   
 
 def _experimentFromRowDict(rowDict):
-    specialAttributes = {"alias","title", "study_ref","sample_description", "platform", "instrument_model"}
+    specialAttributes = {"title", "study_ref","sample_description", "platform", "instrument_model"}
     kwArgs = {k.strip():v.strip() for k,v in rowDict.items() if k.strip() in specialAttributes}
     kwArgs['library_attributes'] = {k:v for k,v in rowDict.items() if k.startswith('library')}
     kwArgs['attributes'] = {k:v for k,v in rowDict.items() if k  not in specialAttributes and not k.startswith('library')}

@@ -53,6 +53,14 @@ def _6(ff: ENAMetadataExperimentFormat) -> (pd.DataFrame):
         df = pd.read_csv(fh, delimiter='\t' )
         return df   
 
-#@plugin.register_transformer
-#def _7(ff: ENAMetadataExperimentFormat) -> (qiime2.Metadata):
-#    return _samples_fmt_to_metadata(ff)
+
+
+def _experiment_fmt_to_metadata(ff):
+    with ff.open() as fh:
+        df = pd.read_csv(fh, sep='\t')
+        df = df.rename(columns={'alias':'id'}).set_index('id')
+        return qiime2.Metadata(df)
+
+@plugin.register_transformer
+def _7(ff: ENAMetadataExperimentFormat) -> (qiime2.Metadata):
+    return _experiment_fmt_to_metadata(ff)

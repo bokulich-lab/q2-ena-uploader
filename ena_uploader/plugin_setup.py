@@ -1,7 +1,6 @@
 import importlib
 from qiime2.plugin import Plugin
 from qiime2.plugin import Str, Bool
-from q2_types.ordination import PCoAResults
 from ena_uploader.types._types_and_formats import (
     ENAMetadataSamplesFormat, ENAMetadataSamplesDirFmt,ENAMetadataSamples,
     ENAMetadataStudyFormat, ENAMetadataStudyDirFmt, ENAMetadataStudy,
@@ -9,7 +8,11 @@ from ena_uploader.types._types_and_formats import (
     ENAMetadataExperimentFormat,ENAMetadataExperiment,ENAMetadataExperimentDirFmt
 
 )
+from q2_types.sample_data import SampleData
+from q2_types.per_sample_sequences import (
+    SequencesWithQuality, PairedEndSequencesWithQuality)
 from ena_uploader.uploader import uploadToEna, cancleENASubmission
+from ena_uploader.experiment_upload import uploadReadsToEna
 
 plugin = Plugin(
     name='ena_uploader',
@@ -103,5 +106,48 @@ plugin.methods.register_function(
     description=("Cancelation of the ENA submission."),
     citations=[]
 )
+
+#plugin.pipelines.register_function(
+#    function=transferDataToEna,
+#    inputs = data,
+#    
+
+#)
+
+plugin.methods.register_function(
+    function=uploadReadsToEna,
+    inputs={
+        'demux': SampleData[SequencesWithQuality |
+                                PairedEndSequencesWithQuality],
+        'experiment' : ENAMetadataExperiment
+
+    },
+    parameters={
+            'submission_hold_date': Str,
+            'action_type': Str,
+            'dev' : Bool
+    },
+    outputs=[('submission_receipt', ENASubmissionReceipt)],
+    
+    input_descriptions={
+            'demux': 'The demultiplexed sequence data to be quality filtered.',
+            'experiment': 'Artifact containing experiments submission parameters.'
+            },
+
+    parameter_descriptions={
+        'submission_hold_date':"The release date of the study, on which it will become public along with all submitted data.",
+        'dev' : ('False by default, true in case of submission to ENA dev server.')
+    },
+    output_descriptions={
+        'submission_receipt': 'Artifact containing the submission summary.'
+    },
+    name='ENA Raw Reads Submission',
+    description=("ENA Raw Reads Metadata submission upload."),
+    citations=[]
+
+
+)
+
+
 
 importlib.import_module('ena_uploader.types._transformer')
