@@ -1,13 +1,12 @@
 import importlib
 from qiime2.plugin import Plugin
 from qiime2.plugin import Str, Bool
-from q2_types.ordination import PCoAResults
 from ena_uploader.types._types_and_formats import (
     ENAMetadataSamplesFormat, ENAMetadataSamplesDirFmt,ENAMetadataSamples,
     ENAMetadataStudyFormat, ENAMetadataStudyDirFmt, ENAMetadataStudy,
     ENASubmissionReceiptFormat,ENASubmissionReceiptDirFmt,ENASubmissionReceipt
 )
-from ena_uploader.uploader import uploadToEna, cancleENASubmission
+from ena_uploader.uploader import upload_to_ena, cancel_ena_submission
 
 plugin = Plugin(
     name='ena_uploader',
@@ -44,7 +43,7 @@ plugin.register_artifact_class(ENASubmissionReceipt,
                                description = "ENA submission receipt xml file")
 
 plugin.methods.register_function(
-    function=uploadToEna,
+    function=upload_to_ena,
     inputs = {
             'study': ENAMetadataStudy,
             'samples': ENAMetadataSamples,
@@ -74,7 +73,7 @@ plugin.methods.register_function(
 
 
 plugin.methods.register_function(
-    function=cancleENASubmission,
+    function=cancel_ena_submission,
     inputs = {},
     parameters={
             'accession_number' : Str,
