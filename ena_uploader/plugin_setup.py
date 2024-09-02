@@ -1,5 +1,6 @@
 import importlib
-from qiime2.plugin import Plugin
+from qiime2.plugin import Plugin,  Metadata
+from q2_types.metadata import ImmutableMetadata
 from qiime2.plugin import Str, Bool
 from ena_uploader.types._types_and_formats import (
     ENAMetadataSamplesFormat, ENAMetadataSamplesDirFmt,ENAMetadataSamples,
@@ -13,6 +14,7 @@ from q2_types.per_sample_sequences import (
     SequencesWithQuality, PairedEndSequencesWithQuality)
 from ena_uploader.uploader import uploadToEna, cancleENASubmission
 from ena_uploader.experiment_upload import uploadReadsToEna
+from ena_uploader.ftp_file_upload import transfer_files_to_ena
 
 plugin = Plugin(
     name='ena_uploader',
@@ -107,12 +109,7 @@ plugin.methods.register_function(
     citations=[]
 )
 
-#plugin.pipelines.register_function(
-#    function=transferDataToEna,
-#    inputs = data,
-#    
 
-#)
 
 plugin.methods.register_function(
     function=uploadReadsToEna,
@@ -143,6 +140,36 @@ plugin.methods.register_function(
     },
     name='ENA Raw Reads Submission',
     description=("ENA Raw Reads Metadata submission upload."),
+    citations=[]
+
+
+)
+
+plugin.methods.register_function(
+    function=transfer_files_to_ena,
+    inputs={
+        'demux': SampleData[SequencesWithQuality |
+                                PairedEndSequencesWithQuality]
+        
+
+    },
+    parameters={
+            
+    },
+    outputs=[('metadata', ImmutableMetadata)],
+    
+    input_descriptions={
+            'demux': 'The demultiplexed sequence data to be quality filtered.'
+            },
+
+    parameter_descriptions={
+  
+    },
+    output_descriptions={
+        'metadata': 'metadata'},
+
+    name='ENA Raw Reads File Transfer',
+    description=("ENA Raw Reads File Transfer."),
     citations=[]
 
 
