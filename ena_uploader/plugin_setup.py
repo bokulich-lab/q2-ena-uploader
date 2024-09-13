@@ -154,6 +154,7 @@ plugin.methods.register_function(
 
     },
     parameters={
+        'action': Str
             
     },
     outputs=[('metadata', ImmutableMetadata)],
@@ -163,7 +164,9 @@ plugin.methods.register_function(
             },
 
     parameter_descriptions={
-  
+            'action': '''Specifies the action to take.
+                         Defaults to ADD for uploading files to the ENA FTP server.
+                         Use DELETE to remove files instead.'''
     },
     output_descriptions={
         'metadata': 'metadata'},
@@ -171,8 +174,6 @@ plugin.methods.register_function(
     name='ENA Raw Reads File Transfer',
     description=("ENA Raw Reads File Transfer."),
     citations=[]
-
-
 )
 
 

@@ -23,12 +23,11 @@ class ActionType(Enum):
     ADD = "ADD"
     MODIFY = "MODIFY"
 
-def strToActionType(s : str) -> ActionType:
-    if s == 'ADD':
-        return ActionType.ADD
-    elif s == 'MODIFY':
-        return ActionType.MODIFY
-    raise RuntimeError('Unknown action type {}'.format(s))
+def _str_to_action_type(action_type : str) -> ActionType:
+    try:
+        return ActionType(action_type)
+    except KeyError:
+        raise RuntimeError('Unknown action type {}'.format(s))
 
 def _create_submission_xml(action: ActionType, hold_date: str) -> str:
   
@@ -45,7 +44,7 @@ def _create_submission_xml(action: ActionType, hold_date: str) -> str:
     return tostring(submission, encoding='unicode', method='xml')
 
 
-def calculate_md5(file_path):
+def _calculate_md5(file_path):
     # Create an md5 hash object
     hash_md5 = hashlib.md5()
     
@@ -54,8 +53,30 @@ def calculate_md5(file_path):
         for chunk in iter(lambda: f.read(4096), b""):
             hash_md5.update(chunk)
     
-    # Return the hexadecimal digest of the hash
     return hash_md5.hexdigest()
+
+def _process_manifest(df: pd.DataFrame) -> dict:
+    parsed_data = {}
+    for row in df.itertuples(index=True, name='Pandas'):
+        alias = str(row.Index)
+        parsed_data[alias] = {
+            'filename': [],
+            'checksum': []
+        }
+
+        forward_file = str(row.forward).split('/')[-1]
+        forward_checksum = _calculate_md5(str(row.forward))
+        parsed_data[alias]['filename'].append(forward_file)
+        parsed_data[alias]['checksum'].append(forward_checksum)
+
+        if pd.notna(row.reverse):
+            reverse_file = str(row.reverse).split('/')[-1]
+            reverse_checksum = _calculate_md5(str(row.reverse))
+            parsed_data[alias]['filename'].append(reverse_file)
+            parsed_data[alias]['checksum'].append(reverse_checksum)
+
+    return parsed_data
+
 
 
 def uploadReadsToEna(demux: CasavaOneEightSingleLanePerSampleDirFmt,
@@ -86,69 +107,29 @@ def uploadReadsToEna(demux: CasavaOneEightSingleLanePerSampleDirFmt,
         submission_receipt : bytes
                 Qiime artifact containing an XML response of ENA server.
     '''
-    df = demux.manifest
-  
-    parsed_data = {}
-    for row in df.itertuples(index=True, name ='Pandas'):
-        sample_id = row.Index
-        alias = str(sample_id)
-        parsed_data[alias]={'filename' : [],
-                            'checksum' :[]
-        }
-
-        filename = str(row.forward).split('/')[-1]
-        checksum = calculate_md5(str(row.forward))
-        parsed_data[alias]['filename'].append(filename)
-        parsed_data[alias]['checksum'].append(checksum)
-
-        if not df['reverse'].isna().all():
-            filename = str(row.reverse).split('/')[-1]
-            checksum = calculate_md5(str(row.reverse))
-            parsed_data[alias]['filename'].append(filename)
-            parsed_data[alias]['checksum'].append(checksum)
-
-    data_for_df = []
-
-    for alias, values in parsed_data.items():
-        data_for_df.append({
-            'alias': alias,
-            'filename': values['filename'],
-            'checksum': values['checksum']
-    })      
-
-    run_xml = _runFromDict(parsed_data) 
-
-    username = os.getenv('ENA_USERNAME')
-    password = os.getenv('ENA_PASSWORD')
-
-    if username is None or password is None:
-        raise RuntimeError('Missing username or password, ' +
-                           'make sure ENA_USERNAME and ENA_PASSWORD env vars are set')
-
-    xml_content = _create_submission_xml(strToActionType(action_type), hold_date = submission_hold_date)
-    files = {'SUBMISSION': ('submission.xml',  xml_content, 'text/xml')}
-
+    
 
     if experiment is None:
-        raise RuntimeError("Please ensure that the Experiment file is included for the ENA submission.")
+        raise ValueError("Experiment file is required for ENA submission.")
 
-    if experiment is not None:
-        experiment_xml = experiment.toXml()
-        with open('experiment', 'w') as f1:
-            f1.write(str(experiment_xml))
-        files["EXPERIMENT"] = ('expetiment.xml', experiment_xml, 'text/xml')
-        with open('run','w') as f2:
-            f2.write(str(run_xml))
-        files['RUN'] = ('run.xml',run_xml,'text/xml')
-
-
-
+    df = demux.manifest
+    parsed_data = _process_manifest(df)
+    run_xml = _runFromDict(parsed_data)
+    username = os.getenv('ENA_USERNAME')
+    password = os.getenv('ENA_PASSWORD')
+    if not username or not password:
+        raise RuntimeError('Missing username or password. Set ENA_USERNAME and ENA_PASSWORD env vars.')
+    submission_xml = _create_submission_xml(_str_to_action_type(action_type), submission_hold_date)
+    files = {
+        'SUBMISSION': ('submission.xml', submission_xml, 'text/xml'),
+        'EXPERIMENT': ('experiment.xml', experiment.toXml(), 'text/xml'),
+        'RUN': ('run.xml', run_xml, 'text/xml')
+    }
     url = DEV_SERVER_URL if dev else PRODUCTION_SERVER_URL
     response = requests.post(url, auth=(username, password), files=files)
+    with open('response.xml', 'wb') as response_file:
+        response_file.write(response.content)
 
-    with open('response.xml', 'wb') as f:
-          f.write(response.content)
-        
     return response.content
 
 
@@ -159,7 +140,7 @@ def uploadReadsToEna(demux: CasavaOneEightSingleLanePerSampleDirFmt,
 
 
 
-    
+        
 
 
 
