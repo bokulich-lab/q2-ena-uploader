@@ -27,7 +27,9 @@ def _upload_files(ftp, filepath, sampleid, retries =3, delay = 5):
                     else:
                         return(sampleid, filename, False, str(e), 'ADD')
                   
-    return (sampleid, filename, True, None, 'ADD')
+        return (sampleid, filename, True, None, 'ADD')
+    return(sampleid, filename, False, 'Not a file', 'ADD')
+
 
 def _delete_files(ftp, filepath, sampleid, retries =3, delay = 5):
     """
@@ -37,16 +39,18 @@ def _delete_files(ftp, filepath, sampleid, retries =3, delay = 5):
     if os.path.isfile(filepath):
         filename = os.path.basename(filepath)
         attempt = 0
-        while attempt < retries:
+        while True:
             try:
                 ftp.delete(filename) 
+                return (sampleid, filename, True, None,'DELETE')
             except ftplib.all_errors as e:
                 attempt +=1
                 if attempt < retries:
                     time.sleep(delay)
                 else:
-                    return (sampleid, filename, False, str(e),'DELETE')             
-    return (sampleid, filename, True, None,'DELETE')
+                    return (sampleid, filename, False, str(e),'DELETE')
+
+                                 
 
 def _process_files(ftp, filepath, sampleid, action):
 
@@ -76,6 +80,10 @@ def transfer_files_to_ena(demux: CasavaOneEightSingleLanePerSampleDirFmt,
     ftp_host = 'webin2.ebi.ac.uk'
     username = os.getenv('ENA_USERNAME')
     password = os.getenv('ENA_PASSWORD')
+
+    if not username or not password:
+        raise RuntimeError("Missing ENA FTP credentials. Please set ENA_USERNAME " +
+                           "and ENA_PASSWORD environment variables.")
     
     df = demux.manifest
     metadata = []
@@ -105,7 +113,7 @@ def transfer_files_to_ena(demux: CasavaOneEightSingleLanePerSampleDirFmt,
                     metadata.append(file_metadata_reverse)
 
 
-        #ftp.retrlines('LIST')
+    #    ftp.retrlines('LIST')
     
     except ftplib.all_errors as e:
         raise RuntimeError(f"An error occurred during the FTP upload/delete procedure: {e}")

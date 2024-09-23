@@ -4,6 +4,8 @@ from .sample.create_samples_from_tsv import _sampleSetFromListOfDicts,_parseSamp
 from .experiment.create_experiment_from_tsv import _parseExperimentSetFromTsv, _ExperimentSetFromListOfDicts
 from .experiment.create_run_from_tsv import _runFromRawDict
 from .experiment.create_run_from_df import _runFromDict
+from .ftp_file_upload import transfer_files_to_ena,_upload_files, _delete_files
+from .experiment_upload import upload_reads_to_ena, _process_manifest
 from ._version import get_versions
 
 __version__ = get_versions()["version"]

@@ -1,3 +1,3 @@
 title	study_ref	sample_description	platform	instrument_model	library_strategy	library_source	library_selection	library_layout	library_nominal_length	library_nominal_sdev	library_construnction_protocol
-title12	study_12345	BAQ1552.1.1	ILLUMINA	GENIUS	WGS	GENOMIC	RANDOM	PAIRED  250 30			
-title13	study_12345	BAQ2420.1.1	ILLUMINA	GENIUS	WGS	GENOMIC	RANDOM	PAIRED  250 30			
+title12	study_12345	BAQ1552.1.1	ILLUMINA	GENIUS	WGS	GENOMIC	RANDOM	PAIRED  250 10			
+title13	study_12345	BAQ2420.1.1	ILLUMINA	GENIUS	WGS	GENOMIC	RANDOM	PAIRED  250 10			

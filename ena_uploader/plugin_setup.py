@@ -13,7 +13,7 @@ from q2_types.sample_data import SampleData
 from q2_types.per_sample_sequences import (
     SequencesWithQuality, PairedEndSequencesWithQuality)
 from ena_uploader.uploader import uploadToEna, cancleENASubmission
-from ena_uploader.experiment_upload import uploadReadsToEna
+from ena_uploader.experiment_upload import upload_reads_to_ena
 from ena_uploader.ftp_file_upload import transfer_files_to_ena
 
 plugin = Plugin(
@@ -112,7 +112,7 @@ plugin.methods.register_function(
 
 
 plugin.methods.register_function(
-    function=uploadReadsToEna,
+    function=upload_reads_to_ena,
     inputs={
         'demux': SampleData[SequencesWithQuality |
                                 PairedEndSequencesWithQuality],
@@ -127,19 +127,21 @@ plugin.methods.register_function(
     outputs=[('submission_receipt', ENASubmissionReceipt)],
     
     input_descriptions={
-            'demux': 'The demultiplexed sequence data to be quality filtered.',
-            'experiment': 'Artifact containing experiments submission parameters.'
+            'demux': 'The demultiplexed sequencing data, either single-end or paired-end reads.',
+            'experiment': 'Artifact containing experiment submission parameters for ENA.'
             },
 
     parameter_descriptions={
-        'submission_hold_date':"The release date of the study, on which it will become public along with all submitted data.",
-        'dev' : ('False by default, true in case of submission to ENA dev server.')
+        'submission_hold_date': "The release date of the study, on which it will become public along with all submitted data.",
+        'action_type': 'Type of action to perform, such as ADD (default) or MODIFY for updating submissions.',
+        'dev' : 'Boolean parameter (default: False). Set to True when submitting to the ENA development server.'
+    
     },
     output_descriptions={
-        'submission_receipt': 'Artifact containing the submission summary.'
+        'submission_receipt': 'An artifact containing the ENA submission receipt and assigned accession numbers.'
     },
     name='ENA Raw Reads Submission',
-    description=("ENA Raw Reads Metadata submission upload."),
+    description="Submit raw reads and associated metadata to the ENA.",
     citations=[]
 
 
@@ -160,19 +162,17 @@ plugin.methods.register_function(
     outputs=[('metadata', ImmutableMetadata)],
     
     input_descriptions={
-            'demux': 'The demultiplexed sequence data to be quality filtered.'
+            'demux': 'The demultiplexed sequencing data, either single-end or paired-end reads.'
             },
 
     parameter_descriptions={
-            'action': '''Specifies the action to take.
-                         Defaults to ADD for uploading files to the ENA FTP server.
-                         Use DELETE to remove files instead.'''
+            'action': 'Specifies the action to perform. Default is ADD for uploading files to the ENA FTP server. Use DELETE to remove files.'
     },
     output_descriptions={
-        'metadata': 'metadata'},
+        'metadata': 'An artifact containing the status of the file transfer or deletion operation.'},
 
     name='ENA Raw Reads File Transfer',
-    description=("ENA Raw Reads File Transfer."),
+    description="Transfer or delete raw reads files on the ENA FTP server.",
     citations=[]
 )
 

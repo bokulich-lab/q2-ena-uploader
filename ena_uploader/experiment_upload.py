@@ -3,16 +3,20 @@ import os
 import hashlib
 import requests 
 from enum import Enum
-from .experiment import _runFromDict
-from q2_types.per_sample_sequences import \
-    (CasavaOneEightSingleLanePerSampleDirFmt)
-
+from q2_types.per_sample_sequences import CasavaOneEightSingleLanePerSampleDirFmt
 from xml.etree.ElementTree import Element, SubElement, tostring
 from ena_uploader.types._types_and_formats import (
-    ENAMetadataExperimentFormat, ENAMetadataExperimentDirFmt,ENAMetadataExperiment,
-    ENASubmissionReceiptFormat,ENASubmissionReceiptDirFmt,ENASubmissionReceipt
+    ENAMetadataExperimentFormat,
+    ENAMetadataExperimentDirFmt,
+    ENAMetadataExperiment,
+    ENASubmissionReceiptFormat,
+    ENASubmissionReceiptDirFmt,
+    ENASubmissionReceipt
 
 )
+
+from .experiment import _runFromDict
+
 DEV_SERVER_URL =  'https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit'
 PRODUCTION_SERVER_URL = ' https://www.ebi.ac.uk/ena/submit/drop-box/submit'
 
@@ -25,9 +29,9 @@ class ActionType(Enum):
 
 def _str_to_action_type(action_type : str) -> ActionType:
     try:
-        return ActionType(action_type)
-    except KeyError:
-        raise RuntimeError('Unknown action type {}'.format(s))
+        return ActionType(action_type.upper())
+    except ValueError:
+        raise ValueError(f'Unknown action type: {action_type}')
 
 def _create_submission_xml(action: ActionType, hold_date: str) -> str:
   
@@ -45,10 +49,8 @@ def _create_submission_xml(action: ActionType, hold_date: str) -> str:
 
 
 def _calculate_md5(file_path):
-    # Create an md5 hash object
     hash_md5 = hashlib.md5()
     
-    # Open the file in binary mode and read it in chunks
     with open(file_path, "rb") as f:
         for chunk in iter(lambda: f.read(4096), b""):
             hash_md5.update(chunk)
@@ -79,7 +81,7 @@ def _process_manifest(df: pd.DataFrame) -> dict:
 
 
 
-def uploadReadsToEna(demux: CasavaOneEightSingleLanePerSampleDirFmt,
+def upload_reads_to_ena(demux: CasavaOneEightSingleLanePerSampleDirFmt,
                      experiment: ENAMetadataExperimentFormat = None,
                      submission_hold_date: str = '',
                      action_type: str = 'ADD',
@@ -115,10 +117,13 @@ def uploadReadsToEna(demux: CasavaOneEightSingleLanePerSampleDirFmt,
     df = demux.manifest
     parsed_data = _process_manifest(df)
     run_xml = _runFromDict(parsed_data)
+    
     username = os.getenv('ENA_USERNAME')
     password = os.getenv('ENA_PASSWORD')
+    
     if not username or not password:
         raise RuntimeError('Missing username or password. Set ENA_USERNAME and ENA_PASSWORD env vars.')
+    
     submission_xml = _create_submission_xml(_str_to_action_type(action_type), submission_hold_date)
     files = {
         'SUBMISSION': ('submission.xml', submission_xml, 'text/xml'),
