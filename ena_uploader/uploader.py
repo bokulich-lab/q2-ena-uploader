@@ -1,5 +1,9 @@
 import os
 import requests
+import pandas as pd
+import qiime2
+import xml.etree.ElementTree as ET
+
 from enum import Enum
 from xml.etree.ElementTree import Element, SubElement, tostring
 from ena_uploader.types._types_and_formats import (
@@ -144,3 +148,49 @@ def cancel_ena_submission(accession_number: str, dev: bool = True) -> bytes:
 def _write_xml_to_file(filename: str, content: bytes):
     with open(filename, 'wb') as f:
         f.write(content)
+
+
+def _parse_all_acccession(
+        xml_response: bytes
+):
+    root = ET.fromstring(xml_response)
+    samples_accessions = [sample.get('accession') for sample in root.findall('SAMPLE')]
+    project_accessions = [project.get('accession') for project in root.findall('PROJECT')]
+    combined_accessions = samples_accessions + project_accessions
+    
+    return combined_accessions
+
+def _get_submission_status(xml_content: bytes) -> str:
+    root = ET.fromstring(xml_content)
+    submission_status = root.get('success')
+    
+    return submission_status
+
+    
+
+def cancel_whole_ena_submission(
+        ctx,
+        submission_receipt,
+        dev = True
+):
+    '''
+    bla bla
+    Args:
+        submission_receipt: bytes
+               Qiime artifact containing an XML response from the ENA server.
+    '''
+    cancel_ena_submission = ctx.get_action('ena_uploader','cancel_ena_submission')
+
+    res = dict()
+    accessions_to_cancel = _parse_all_acccession(submission_receipt)
+    for AN in accessions_to_cancel:
+        response = cancel_ena_submission(AN,dev)
+        status   = _get_submission_status(response)
+        res[AN] = status
+    df = pd.DataFrame(list(res.items()), columns=['Accession', 'Status'])
+
+    return df
+
+
+
+    

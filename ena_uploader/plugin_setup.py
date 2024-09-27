@@ -6,7 +6,9 @@ from ena_uploader.types._types_and_formats import (
     ENAMetadataStudyFormat, ENAMetadataStudyDirFmt, ENAMetadataStudy,
     ENASubmissionReceiptFormat,ENASubmissionReceiptDirFmt,ENASubmissionReceipt
 )
-from ena_uploader.uploader import upload_to_ena, cancel_ena_submission
+from ena_uploader.uploader import upload_to_ena, cancel_ena_submission,cancel_whole_ena_submission
+from q2_types.metadata import ImmutableMetadata
+
 
 plugin = Plugin(
     name='ena_uploader',
@@ -93,5 +95,30 @@ plugin.methods.register_function(
     description=("Cancelation of the ENA submission."),
     citations=[]
 )
+
+
+plugin.pipelines.register_function(
+    function=cancel_whole_ena_submission,
+    inputs = {'submission_receipt': ENASubmissionReceipt
+              },
+    parameters={'dev' : Bool
+            },
+    outputs=[('metadata', ImmutableMetadata)],
+    input_descriptions= { 
+        'submission_receipt': 'Artifact containing the submission summary.'
+        },
+    parameter_descriptions={
+        'dev' : 'False by default, true in case of submission to ENA dev server.'
+    },
+    output_descriptions={
+        'metadata': 'An artifact containing the status of the file transfer or deletion operation.'},
+
+
+    name='Cancle whole ENA Submission',
+    description=("Cancelation of the ENA submission."),
+    citations=[]
+)
+
+
 
 importlib.import_module('ena_uploader.types._transformer')
