@@ -1,0 +1,20 @@
+<RUN_SET>
+    <RUN alias="run_alias_1">
+        <EXPERIMENT_REF refname="exp_alias_1"/>
+        <DATA_BLOCK>
+            <FILES>
+                <FILE filename="file1_forward.fastq" filetype="fastq" checksum_method="MD5" checksum="abc123"/>
+                <FILE filename="file1_reverse.fastq" filetype="fastq" checksum_method="MD5" checksum="def456"/>
+            </FILES>
+        </DATA_BLOCK>
+    </RUN>
+    <RUN alias="run_alias_2">
+        <EXPERIMENT_REF refname="exp_alias_2"/>
+        <DATA_BLOCK>
+            <FILES>
+                <FILE filename="file2_forward.fastq" filetype="fastq" checksum_method="MD5" checksum="ghi789"/>
+                <FILE filename="file2_reverse.fastq" filetype="fastq" checksum_method="MD5" checksum="jkl012"/>
+            </FILES>
+        </DATA_BLOCK>
+    </RUN>
+</RUN_SET>

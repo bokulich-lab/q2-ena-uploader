@@ -2,22 +2,6 @@ import pandas as pd
 import csv
 import xml.etree.ElementTree as ET
 
-class SampleAttribute:
-    def __init__(self,tag,value):
-        self.tag = tag
-        self.value = value
-    
-    def to_xml_element(self):
-        sample_element = ET.Element('SAMPLE_ATTRIBUTE')
-
-        tag_element = ET.SubElement(sample_element, "TAG")
-        tag_element.text = self.tag
-
-        value_element = ET.SubElement(sample_element,"VALUE")
-        value_element.text = self.value 
-
-        return sample_element
-
 class Sample:
     def __init__(self,
                  alias=None,

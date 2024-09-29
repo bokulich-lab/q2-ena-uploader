@@ -1,0 +1,16 @@
+<RUN_SET>
+    <RUN alias="run1">
+        <EXPERIMENT_REF>experiment_ref</EXPERIMENT_REF>
+        <DATA_BLOCK>
+            <FILES>
+                <FILE filename="filename1" filetype="filetype1" checksum_method="checksum_method1" checksum="checksum1">
+                    <READ_TYPE>feature_barcode</READ_TYPE>
+                </FILE>
+                <FILE filename="filename2" filetype="filetype2" checksum_method="checksum_method2" checksum="checksum2">
+                    <READ_TYPE>paired</READ_TYPE>
+                    <READ_TYPE>cell_barcode</READ_TYPE>
+                </FILE>
+            </FILES>
+        </DATA_BLOCK>
+    </RUN>
+</RUN_SET>
