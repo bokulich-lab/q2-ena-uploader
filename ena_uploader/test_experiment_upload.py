@@ -48,30 +48,24 @@ class TestUploadReadsToEna(unittest.TestCase):
             dev=True
         )
 
-        # Assert
-        # Check the POST request (auth and URL remain the same)
+
         mock_post.assert_called_once()
 
-        # Retrieve actual call details
-        actual_call_args = mock_post.call_args[1]  # This gives us the kwargs dictionary from the call
+        actual_call_args = mock_post.call_args[1]  
 
-        # Assert critical components in the 'files' dictionary
         self.assertIn('SUBMISSION', actual_call_args['files'])
         self.assertIn('EXPERIMENT', actual_call_args['files'])
         self.assertIn('RUN', actual_call_args['files'])
 
-        # Assert that file content exists and its structure looks correct
         submission_content = actual_call_args['files']['SUBMISSION'][1]
         self.assertIn('<SUBMISSION>', submission_content)
         self.assertIn('<ACTION><ADD /></ACTION>', submission_content)
 
-        # Since RUN is a byte string and can differ in format, we can still check key parts
         run_content = actual_call_args['files']['RUN'][1]
         self.assertIn(b'<RUN_SET>', run_content)
         self.assertIn(b'<FILE filename="forward.fastq"', run_content)
         self.assertIn(b'<FILE filename="reverse.fastq"', run_content)
 
-        # Check if response was successful
         self.assertEqual(result, b'<RECEIPT>Success</RECEIPT>')
         mock_open_file.assert_called_with('response.xml', 'wb')
         mock_open_file().write.assert_called_once_with(b'<RECEIPT>Success</RECEIPT>')
