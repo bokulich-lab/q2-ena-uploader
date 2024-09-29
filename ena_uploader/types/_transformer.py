@@ -40,6 +40,11 @@ def _3(data: bytes) ->  (ENASubmissionReceiptFormat):
     return ff
 
 @plugin.register_transformer
+def _3(ff: ENASubmissionReceiptFormat) ->  (bytes):
+    with ff.open() as fh:
+        return fh.read()
+
+@plugin.register_transformer
 def _4(ff: ENAMetadataSamplesFormat) -> (qiime2.Metadata):
     return _samples_fmt_to_metadata(ff)
 

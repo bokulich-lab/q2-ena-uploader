@@ -150,15 +150,15 @@ def _write_xml_to_file(filename: str, content: bytes):
         f.write(content)
 
 
-def _parse_all_acccession(
+def _parse_all_sample_acccession(
         xml_response: bytes
 ):
     root = ET.fromstring(xml_response)
-    samples_accessions = [sample.get('accession') for sample in root.findall('SAMPLE')]
-    project_accessions = [project.get('accession') for project in root.findall('PROJECT')]
-    combined_accessions = samples_accessions + project_accessions
+    samples_att = [(sample.get('alias'),sample.get('accession')) for sample in root.findall('SAMPLE')]
+    #project_accessions = [project.get('accession') for project in root.findall('PROJECT')]
+    #combined_accessions = samples_accessions + project_accessions
     
-    return combined_accessions
+    return samples_att
 
 def _get_submission_status(xml_content: bytes) -> str:
     root = ET.fromstring(xml_content)
@@ -179,17 +179,20 @@ def cancel_whole_ena_submission(
         submission_receipt: bytes
                Qiime artifact containing an XML response from the ENA server.
     '''
-    cancel_ena_submission = ctx.get_action('ena_uploader','cancel_ena_submission')
+    cancel_ena_submission = ctx.get_action('uploader','cancel_ena_submission')
 
     res = dict()
-    accessions_to_cancel = _parse_all_acccession(submission_receipt)
-    for AN in accessions_to_cancel:
+    receipt_bytes = submission_receipt.view(bytes)
+    accessions_to_cancel = _parse_all_sample_acccession(receipt_bytes)
+    for alias,AN in accessions_to_cancel:
         response = cancel_ena_submission(AN,dev)
-        status   = _get_submission_status(response)
-        res[AN] = status
-    df = pd.DataFrame(list(res.items()), columns=['Accession', 'Status'])
+        status   = _get_submission_status(response[0].view(bytes))
+        res[(alias,AN)] = status
+    data = [(alias, AN, status) for (alias, AN), status in res.items()]
 
-    return df
+    df = pd.DataFrame(data, columns=['feature-id', 'Accession Number', 'Status'])
+    df.set_index('feature-id', inplace=True)
+    return qiime2.Metadata(df)
 
 
 

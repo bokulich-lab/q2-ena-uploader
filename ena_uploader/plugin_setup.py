@@ -11,7 +11,7 @@ from q2_types.metadata import ImmutableMetadata
 
 
 plugin = Plugin(
-    name='ena_uploader',
+    name='uploader',
     version='1.0',
     website='https://github.com/TBD',
     package='ena_uploader',
@@ -91,7 +91,7 @@ plugin.methods.register_function(
     output_descriptions={
         'submission_receipt': 'Artifact containing the submission summary.'
     },
-    name='Cancle ENA Submission',
+    name='Cancel ENA Submission',
     description=("Cancelation of the ENA submission."),
     citations=[]
 )
@@ -114,7 +114,7 @@ plugin.pipelines.register_function(
         'metadata': 'An artifact containing the status of the file transfer or deletion operation.'},
 
 
-    name='Cancle whole ENA Submission',
+    name='Cancel whole ENA Submission',
     description=("Cancelation of the ENA submission."),
     citations=[]
 )
