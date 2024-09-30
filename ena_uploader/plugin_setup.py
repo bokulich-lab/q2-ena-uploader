@@ -9,12 +9,12 @@ from ena_uploader.types._types_and_formats import (
     ENAMetadataExperimentFormat,ENAMetadataExperiment,ENAMetadataExperimentDirFmt
 
 )
-from ena_uploader.uploader import upload_to_ena, cancel_ena_submission,cancel_whole_ena_submission
+from ena_uploader.uploader import register_metadata, cancel_object_submission, cancel_entire_submission
 from q2_types.metadata import ImmutableMetadata
 from q2_types.sample_data import SampleData
 from q2_types.per_sample_sequences import (
     SequencesWithQuality, PairedEndSequencesWithQuality)
-from ena_uploader.experiment_upload import upload_reads_to_ena
+from ena_uploader.experiment_upload import register_reads
 from ena_uploader.ftp_file_upload import transfer_files_to_ena
 
 plugin = Plugin(
@@ -59,37 +59,38 @@ plugin.register_artifact_class(ENAMetadataExperiment,
 )
 
 plugin.methods.register_function(
-    function=upload_to_ena,
-    inputs = {
-            'study': ENAMetadataStudy,
-            'samples': ENAMetadataSamples,
-            },
+    function=register_metadata,
+    inputs={
+        'study': ENAMetadataStudy,
+        'samples': ENAMetadataSamples,
+    },
     parameters={
-            'submission_hold_date': Str,
-            'dev' : Bool,
-            'action_type': Str
-            },
+        'submission_hold_date': Str,
+        'dev': Bool,
+        'action_type': Str
+    },
     outputs=[('submission_receipt', ENASubmissionReceipt)],
-    
+
     input_descriptions={
-            'study': 'Artifact containing study submission parameters.',
-            'samples': 'Artifact containing submission metadata of the samples.',
-            },
+        'study': 'Artifact containing study submission metadata.',
+        'samples': 'Artifact containing sample submission metadata.',
+    },
     parameter_descriptions={
-        'submission_hold_date':"The release date of the study, on which it will become public along with all submitted data.",
-        'dev' : ('False by default, true in case of submission to ENA dev server.')
+        'submission_hold_date': "The date when the submission will be released and made publicly available.",
+        'dev': 'Set to True for submission to the ENA development server (default: False).',
+        'action_type': "The type of action to perform. Use 'ADD' for a new submission (default) or 'MODIFY' to update an existing submission."
     },
     output_descriptions={
-        'submission_receipt': 'Artifact containing the submission summary.'
+        'submission_receipt': 'An artifact containing the ENA submission summary and accession numbers.'
     },
     name='ENA Submission',
-    description=("ENA Study and Samples Metadata submission upload."),
+    description="Upload study and sample metadata to ENA.",
     citations=[]
 )
 
 
 plugin.methods.register_function(
-    function=cancel_ena_submission,
+    function=cancel_object_submission,
     inputs = {},
     parameters={
             'accession_number' : Str,
@@ -111,7 +112,7 @@ plugin.methods.register_function(
 )
 
 plugin.methods.register_function(
-    function=upload_reads_to_ena,
+    function=register_reads,
     inputs={
         'demux': SampleData[SequencesWithQuality |
                                 PairedEndSequencesWithQuality],
@@ -175,7 +176,7 @@ plugin.methods.register_function(
 )
 
 plugin.pipelines.register_function(
-    function=cancel_whole_ena_submission,
+    function=cancel_entire_submission,
     inputs = {'submission_receipt': ENASubmissionReceipt
               },
     parameters={'dev' : Bool
@@ -186,8 +187,8 @@ plugin.pipelines.register_function(
         },
     parameter_descriptions={
         'dev' : 'False by default, true in case of submission to ENA dev server.'},
-    name='Cancel whole ENA Submission',
-    description=("Cancelation of the ENA submission."),
+    name='Cancel All Sample Submissions',
+    description=("Cancellation of all submitted samples."),
     citations=[]
 )
 

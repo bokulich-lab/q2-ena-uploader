@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import patch, mock_open, MagicMock
 import os
 import pandas as pd
-from ena_uploader import upload_reads_to_ena, _process_manifest
+from ena_uploader import register_reads, _process_manifest
 
 class TestUploadReadsToEna(unittest.TestCase):
 
@@ -40,7 +40,7 @@ class TestUploadReadsToEna(unittest.TestCase):
         mock_post.return_value = MagicMock(status_code=200, content=b'<RECEIPT>Success</RECEIPT>')
         
         # Act
-        result = upload_reads_to_ena(
+        result = register_reads(
             demux=demux,
             experiment=experiment,
             submission_hold_date='2023-01-01',

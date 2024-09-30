@@ -39,7 +39,7 @@ def _create_submission_xml(action: ActionType, hold_date: str) -> str:
 
     return tostring(submission, encoding='unicode', method='xml')
 
-def upload_to_ena(study: ENAMetadataStudyFormat = None, 
+def register_metadata(study: ENAMetadataStudyFormat = None, 
                   samples: ENAMetadataSamplesFormat = None,
                   submission_hold_date: str = '',
                   action_type: str = 'ADD',
@@ -107,7 +107,7 @@ def _create_cancellation_xml(target_accession: str) -> str:
     cancel.set('target', target_accession)
     return tostring(submission, encoding='unicode', method='xml')
 
-def cancel_ena_submission(accession_number: str, dev: bool = True) -> bytes:
+def cancel_object_submission(accession_number: str, dev: bool = True) -> bytes:
     '''
     Function to cancel a submission to the ENA server. Please note that the CANCEL
     action will be propagated from studies to all associated experiments and analyses,
@@ -155,9 +155,6 @@ def _parse_all_sample_acccession(
 ):
     root = ET.fromstring(xml_response)
     samples_att = [(sample.get('alias'),sample.get('accession')) for sample in root.findall('SAMPLE')]
-    #project_accessions = [project.get('accession') for project in root.findall('PROJECT')]
-    #combined_accessions = samples_accessions + project_accessions
-    
     return samples_att
 
 def _get_submission_status(xml_content: bytes) -> str:
@@ -168,31 +165,42 @@ def _get_submission_status(xml_content: bytes) -> str:
 
     
 
-def cancel_whole_ena_submission(
+def cancel_entire_submission(
         ctx,
         submission_receipt,
         dev = True
 ):
     '''
-    bla bla
+    Pipeline to cancel the submission of all previously submitted samples. 
+    It takes as input a QIIME artifact containing the XML response from the ENA server, 
+    and cancels the submission of all samples listed in the response. 
+    To cancel a study submission, use the `cancel_object_submission` action instead.
+
     Args:
         submission_receipt: bytes
-               Qiime artifact containing an XML response from the ENA server.
+            QIIME artifact containing the XML response from the ENA server regarding the sample submissions.
+
+    Returns:
+        metadata: ImmutableMetadata
+            QIIME artifact containing the status of the cancellation for all submitted samples.
+
     '''
-    cancel_ena_submission = ctx.get_action('uploader','cancel_ena_submission')
+    cancel_object_submission = ctx.get_action('uploader','cancel_object_submission')
 
     res = dict()
     receipt_bytes = submission_receipt.view(bytes)
     accessions_to_cancel = _parse_all_sample_acccession(receipt_bytes)
     for alias,AN in accessions_to_cancel:
-        response = cancel_ena_submission(AN,dev)
+        response = cancel_object_submission(AN,dev)
         status   = _get_submission_status(response[0].view(bytes))
         res[(alias,AN)] = status
     data = [(alias, AN, status) for (alias, AN), status in res.items()]
 
     df = pd.DataFrame(data, columns=['feature-id', 'Accession Number', 'Status'])
     df.set_index('feature-id', inplace=True)
-    return qiime2.Metadata(df)
+    res = ctx.make_artifact("ImmutableMetadata", qiime2.Metadata(df))
+    
+    return res
 
 
 

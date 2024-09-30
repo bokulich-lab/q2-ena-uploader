@@ -5,9 +5,9 @@ from .experiment.create_experiment_from_tsv import _parseExperimentSetFromTsv, _
 from .experiment.create_run_from_tsv import _runFromRawDict
 from .experiment.create_run_from_df import _runFromDict
 from .ftp_file_upload import transfer_files_to_ena,_upload_files, _delete_files
-from .experiment_upload import upload_reads_to_ena, _process_manifest
+from .experiment_upload import register_reads, _process_manifest
 from ._version import get_versions
-from .uploader import upload_to_ena,cancel_ena_submission, ActionType,_write_xml_to_file
+from .uploader import register_metadata,cancel_object_submission, ActionType,_write_xml_to_file
 
 __version__ = get_versions()["version"]
 del get_versions

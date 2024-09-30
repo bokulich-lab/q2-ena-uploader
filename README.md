@@ -14,10 +14,11 @@ To develop this plugin, we followed the <a href="https://ena-docs.readthedocs.io
 The ena-uploader offers several actions for adding, deleting, and modifying your submission. See the list below for details:
 | Action               | Description                                                       |
 |----------------------|-------------------------------------------------------------------|
-| `upload-to-ena`        | Metadata upload to the ENA repository.                            |
-| `cancel-ena-submission`| Cancel ENA metadata submission.                                   |
+| `register-metadata`        | Metadata submission to the ENA repository.                            |
+| `cancel-object-submission`| Cancel ENA metadata submission.                                   |
+| `cancel-entire-submission`| Cancel All Samples Submissions                             |  
 | `transfer-files-to-ena`|Raw files upload to the ENA ftp.                                   |
-| `upload-reads-to-ena`| Upload experiment and runs to ENA.                                   |
+| `register-reads`| Experiment and runs metadata submission to ENA.                                   |
 
 For a more detailed description of each action, refer to the sections below.
 
@@ -77,7 +78,7 @@ __Note__: Please ensure that your credentials are set at least 24 hours before y
 2) Use qiime action to upload Study and Samples to ENA:
 
 ```shell
-qiime ena-uploader upload-to-ena \
+qiime ena-uploader register-metadata \
               --i-study study_metadata.qza \
               --i-samples samples_metadata.qza \
               --p-action_type\
@@ -95,6 +96,8 @@ where:
 - `--output-path` This is an output artifact containing the assigned ENA accession numbers for the submitted objects.
 
 __Note__: You can submit a study and metadata either separately or together; only one of the corresponding artifacts is required for submission. However, please note that to submit raw reads later, both the study and samples must already exist on the ENA server.
+__Note__: The response from the ENA submission will be included within the output artifact. Please note that the ENA server may refer to a STUDY as a PROJECT.
+
 
 ### Upload Raw Reads
 
@@ -103,7 +106,7 @@ __Note__: You can submit a study and metadata either separately or together; onl
 2) Use the qiime action to transfer the fastq file to ENA FTP.
 
 ```shell
-qiime ena-uploader trasfer-files-to-ena \
+qiime ena-uploader transfer-files-to-ena \
                 --i-demux CasavaOneEightSingleLanePerSampleDirFmt\
                 --p-action  ADD\
                 --o-metadata metadata.qza 
@@ -120,7 +123,7 @@ where:
 3) Use qiime action to upload Experiment to ENA:
 
 ```shell
-qiime ena-uploader upload-reads-to-ena \
+qiime ena-uploader register reads \
               --i-demux CasavaOneEightSingleLanePerSampleDirFmt \
               --i-experiment experiment_metadata.qza \
               --p-submission-hold-date\

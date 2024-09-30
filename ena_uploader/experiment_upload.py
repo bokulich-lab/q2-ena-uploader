@@ -81,7 +81,7 @@ def _process_manifest(df: pd.DataFrame) -> dict:
 
 
 
-def upload_reads_to_ena(demux: CasavaOneEightSingleLanePerSampleDirFmt,
+def register_reads(demux: CasavaOneEightSingleLanePerSampleDirFmt,
                      experiment: ENAMetadataExperimentFormat = None,
                      submission_hold_date: str = '',
                      action_type: str = 'ADD',
