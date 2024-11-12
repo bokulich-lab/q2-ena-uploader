@@ -43,7 +43,7 @@ class Library:
                     raise ValueError("Paired library layout requires nominal_leght and nominal_sdev values present for an experiment submission.")
                 else:
                     library_layout_el = ET.SubElement(root,"LIBRARY_LAYOUT")
-                    ET.SubElement(library_layout_el,"PAIRED",{'NOMINAL_LENGTH': self.nominal_length},{"NOMINAL_SDEV": self.nominal_sdev})
+                    ET.SubElement(library_layout_el,"PAIRED",{'NOMINAL_LENGTH': self.nominal_length,"NOMINAL_SDEV": self.nominal_sdev})
             else:
                 library_layout_el = ET.SubElement(root,"LIBRARY_LAYOUT")
                 ET.SubElement(library_layout_el,"SINGLE")    
