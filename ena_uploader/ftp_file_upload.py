@@ -6,6 +6,7 @@ import pandas as pd
 from q2_types.per_sample_sequences import \
     (CasavaOneEightSingleLanePerSampleDirFmt)
 
+import urllib
 
 def _upload_files(ftp, filepath, sampleid, retries =3, delay = 5):
     """
@@ -80,12 +81,15 @@ def transfer_files_to_ena(demux: CasavaOneEightSingleLanePerSampleDirFmt,
     ftp_host = 'webin2.ebi.ac.uk'
     username = os.getenv('ENA_USERNAME')
     password = os.getenv('ENA_PASSWORD')
-    proxy = os.getenv('http_proxy')
-    _, proxy_host, proxy_port = proxy.rsplit(":")
-    proxy_host = proxy_host[2:]
-    proxy_port = int(proxy_port)
     
-    print("Proxy host: ", proxy_host, "proxy port", proxy_port)
+    urllib.request.install_opener(
+        urllib.request.build_opener(
+            urllib.request.ProxyHandler(
+                {'http' : os.environ.get('http_proxy'), 
+                'https': os.environ.get('https_proxy')}
+            )
+        )
+    )
 
     if not username or not password:
         raise RuntimeError("Missing ENA FTP credentials. Please set ENA_USERNAME " +
@@ -94,13 +98,12 @@ def transfer_files_to_ena(demux: CasavaOneEightSingleLanePerSampleDirFmt,
     df = demux.manifest
     metadata = []
     
+    print(f"Connecting to FTP server {ftp_host}")
+    
     try:
-        with ftplib.FTP() as ftp:
-            ftp.connect(host=proxy_host, port=proxy_port)
-            print(f"Connected to {proxy_host}")
-            ftp.login(user=f"{username}@{ftp_host}", passwd=password)
-            
-            print(f"Connected to {ftp_host}")
+        with ftplib.FTP(ftp_host) as ftp:
+            ftp.login(user=username, passwd=password)
+            print(f"Connected to FTP")
             
             for row in df.itertuples(index=True, name='Pandas'):
                 sampleid = row.Index
