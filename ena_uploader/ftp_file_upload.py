@@ -103,7 +103,7 @@ def transfer_files_to_ena(demux: CasavaOneEightSingleLanePerSampleDirFmt,
     try:
         with ftplib.FTP(ftp_host) as ftp:
             ftp.login(user=username, passwd=password)
-            print(f"Connected to FTP")
+            print("Connected to FTP")
             
             for row in df.itertuples(index=True, name='Pandas'):
                 sampleid = row.Index
