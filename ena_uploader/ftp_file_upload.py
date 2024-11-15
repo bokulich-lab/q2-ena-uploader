@@ -6,7 +6,7 @@ import pandas as pd
 from q2_types.per_sample_sequences import \
     (CasavaOneEightSingleLanePerSampleDirFmt)
 
-import urllib
+import urllib.request
 
 def _upload_files(ftp, filepath, sampleid, retries =3, delay = 5):
     """
@@ -81,15 +81,6 @@ def transfer_files_to_ena(demux: CasavaOneEightSingleLanePerSampleDirFmt,
     ftp_host = 'webin2.ebi.ac.uk'
     username = os.getenv('ENA_USERNAME')
     password = os.getenv('ENA_PASSWORD')
-    
-    urllib.request.install_opener(
-        urllib.request.build_opener(
-            urllib.request.ProxyHandler(
-                {'http' : os.environ.get('http_proxy'), 
-                'https': os.environ.get('https_proxy')}
-            )
-        )
-    )
 
     if not username or not password:
         raise RuntimeError("Missing ENA FTP credentials. Please set ENA_USERNAME " +
