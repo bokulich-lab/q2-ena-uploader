@@ -80,9 +80,11 @@ def transfer_files_to_ena(demux: CasavaOneEightSingleLanePerSampleDirFmt,
     ftp_host = 'webin2.ebi.ac.uk'
     username = os.getenv('ENA_USERNAME')
     password = os.getenv('ENA_PASSWORD')
-    proxy_host = os.getenv('http_proxy')
+    proxy = os.getenv('http_proxy')
+    proxy_host, proxy_port = proxy.rsplit(":", maxsplit=1)
+    proxy_port = int(proxy_port)
     
-    print("Proxy host: ", proxy_host)
+    print("Proxy host: ", proxy_host, "proxy_port": proxy_port)
 
     if not username or not password:
         raise RuntimeError("Missing ENA FTP credentials. Please set ENA_USERNAME " +
@@ -93,7 +95,7 @@ def transfer_files_to_ena(demux: CasavaOneEightSingleLanePerSampleDirFmt,
     
     try:
         with ftplib.FTP() as ftp:
-            ftp.connect(proxy_host)
+            ftp.connect(host=proxy_host, port=proxy_port)
             ftp.login(user=f"{username}@{ftp_host}", passwd=password)
             
             print(f"Connected to {ftp_host}")
