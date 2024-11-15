@@ -84,7 +84,7 @@ def transfer_files_to_ena(demux: CasavaOneEightSingleLanePerSampleDirFmt,
     proxy_host, proxy_port = proxy.rsplit(":", maxsplit=1)
     proxy_port = int(proxy_port)
     
-    print("Proxy host: ", proxy_host, "proxy_port": proxy_port)
+    print("Proxy host: ", proxy_host, "proxy_port", proxy_port)
 
     if not username or not password:
         raise RuntimeError("Missing ENA FTP credentials. Please set ENA_USERNAME " +
