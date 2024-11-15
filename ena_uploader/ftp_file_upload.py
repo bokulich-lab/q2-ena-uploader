@@ -80,6 +80,9 @@ def transfer_files_to_ena(demux: CasavaOneEightSingleLanePerSampleDirFmt,
     ftp_host = 'webin2.ebi.ac.uk'
     username = os.getenv('ENA_USERNAME')
     password = os.getenv('ENA_PASSWORD')
+    proxy_host = os.getenv('http_proxy')
+    
+    print("Proxy host: ", proxy_host)
 
     if not username or not password:
         raise RuntimeError("Missing ENA FTP credentials. Please set ENA_USERNAME " +
@@ -89,8 +92,11 @@ def transfer_files_to_ena(demux: CasavaOneEightSingleLanePerSampleDirFmt,
     metadata = []
     
     try:
-        with ftplib.FTP(ftp_host) as ftp:
-            ftp.login(user=username, passwd=password)
+        with ftplib.FTP() as ftp:
+            ftp.connect(proxy_host)
+            ftp.login(user=f"{username}@{ftp_host}", passwd=password)
+            
+            print(f"Connected to {ftp_host}")
             
             for row in df.itertuples(index=True, name='Pandas'):
                 sampleid = row.Index
