@@ -103,7 +103,7 @@ __Note__: You can submit a study and metadata either separately or together; onl
 2) Use the qiime action to transfer the fastq file to ENA FTP.
 
 ```shell
-qiime ena-uploader trasfer-files-to-ena \
+qiime ena-uploader transfer-files-to-ena \
                 --i-demux CasavaOneEightSingleLanePerSampleDirFmt\
                 --p-action  ADD\
                 --o-metadata metadata.qza 
