@@ -1,9 +1,17 @@
-import unittest
-import pandas as pd
+# ----------------------------------------------------------------------------
+# Copyright (c) 2025, Bokulich Lab.
+#
+# Distributed under the terms of the Modified BSD License.
+#
+# The full license is in the file LICENSE, distributed with this software.
+# ----------------------------------------------------------------------------
 import os
-from parameterized import parameterized
+import unittest
 import xml.etree.ElementTree as ET
-from q2_ena_uploader import _parseExperimentSetFromTsv, _ExperimentSetFromListOfDicts
+
+from parameterized import parameterized
+
+from q2_ena_uploader.experiment import _parseExperimentSetFromTsv, _ExperimentSetFromListOfDicts
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 

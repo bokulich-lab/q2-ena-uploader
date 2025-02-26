@@ -1,9 +1,11 @@
-import unittest
-import pandas as pd
 import os
-from parameterized import parameterized
+import unittest
 import xml.etree.ElementTree as ET
-from q2_ena_uploader import _runFromRawDict
+
+import pandas as pd
+from parameterized import parameterized
+
+from q2_ena_uploader.experiment import _runFromRawDict
 
 
 def read_run_tsv_to_dict(filename):

@@ -5,20 +5,16 @@
 #
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
+import ftplib
 import unittest
 from unittest.mock import patch, MagicMock, mock_open
-import ftplib
-import os
-import qiime2
-import pandas as pd
+
+from q2_ena_uploader.ftp_file_upload import _upload_files, _delete_files
 
 
 class MockCasavaOneEightSingleLanePerSampleDirFmt:
     def __init__(self, manifest):
         self.manifest = manifest
-
-
-from q2_ena_uploader import _upload_files, _delete_files
 
 
 class TestFTPFunctions(unittest.TestCase):

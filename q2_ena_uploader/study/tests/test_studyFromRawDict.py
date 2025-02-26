@@ -5,12 +5,14 @@
 #
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
-import unittest
-import pandas as pd
 import os
-from parameterized import parameterized
+import unittest
 import xml.etree.ElementTree as ET
-from q2_ena_uploader import _studyFromRawDict
+
+import pandas as pd
+from parameterized import parameterized
+
+from q2_ena_uploader.study import _studyFromRawDict
 
 
 def read_study_tsv_to_dict(filename):

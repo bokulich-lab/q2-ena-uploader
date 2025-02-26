@@ -12,8 +12,6 @@ import time
 import pandas as pd
 from q2_types.per_sample_sequences import CasavaOneEightSingleLanePerSampleDirFmt
 
-import urllib.request
-
 
 def _upload_files(ftp, filepath, sampleid, retries=3, delay=5):
     """

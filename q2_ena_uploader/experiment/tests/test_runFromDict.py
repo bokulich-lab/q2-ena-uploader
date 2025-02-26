@@ -1,9 +1,18 @@
-import unittest
-import pandas as pd
+# ----------------------------------------------------------------------------
+# Copyright (c) 2025, Bokulich Lab.
+#
+# Distributed under the terms of the Modified BSD License.
+#
+# The full license is in the file LICENSE, distributed with this software.
+# ----------------------------------------------------------------------------
 import os
-from parameterized import parameterized
+import unittest
 import xml.etree.ElementTree as ET
-from q2_ena_uploader import _runFromDict
+
+import pandas as pd
+from parameterized import parameterized
+
+from q2_ena_uploader.experiment import _runFromDict
 
 
 def read_run_tsv_to_dict(filename):
