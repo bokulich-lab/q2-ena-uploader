@@ -12,8 +12,11 @@ from .uploader import cancel_submission, submit_metadata_samples
 try:
     from ._version import __version__
 except ModuleNotFoundError:
-    __version__ = '0.0.0+notfound'
+    __version__ = "0.0.0+notfound"
 
 __all__ = [
-    'transfer_files_to_ena', 'submit_metadata_reads', 'cancel_submission', 'submit_metadata_samples'
+    "transfer_files_to_ena",
+    "submit_metadata_reads",
+    "cancel_submission",
+    "submit_metadata_samples",
 ]

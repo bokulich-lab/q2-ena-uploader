@@ -53,7 +53,11 @@ plugin.methods.register_function(
         "study": ENAMetadataStudy,
         "samples": ENAMetadataSamples,
     },
-    parameters={"submission_hold_date": Str, "dev": Bool, "action_type": Str % Choices(["ADD", "MODIFY"])},
+    parameters={
+        "submission_hold_date": Str,
+        "dev": Bool,
+        "action_type": Str % Choices(["ADD", "MODIFY"]),
+    },
     outputs=[("submission_receipt", ENASubmissionReceipt)],
     input_descriptions={
         "study": "Study submission parameters.",
@@ -63,9 +67,7 @@ plugin.methods.register_function(
         "submission_hold_date": "The release date of the study, on which it will become public along with all submitted data.",
         "dev": "Set to True in case of submission to ENA development server (for testing).",
     },
-    output_descriptions={
-        "submission_receipt": "Submission summary."
-    },
+    output_descriptions={"submission_receipt": "Submission summary."},
     name="Submit sample and/or study metadata to ENA.",
     description="ENA Study and Samples metadata submission.",
     citations=[],
@@ -82,9 +84,7 @@ plugin.methods.register_function(
         "accession_number": "ENA unique identifier of  the object that is being cancelled.",
         "dev": "Set to True in case of submission to ENA development server (for testing).",
     },
-    output_descriptions={
-        "submission_receipt": "Submission summary."
-    },
+    output_descriptions={"submission_receipt": "Submission summary."},
     name="Cancel ENA submission.",
     description="Cancellation of the ENA submission.",
     citations=[],
@@ -97,7 +97,11 @@ plugin.methods.register_function(
         "demux": SampleData[SequencesWithQuality | PairedEndSequencesWithQuality],
         "experiment": ENAMetadataExperiment,
     },
-    parameters={"submission_hold_date": Str, "action_type": Str % Choices(["ADD", "MODIFY"]), "dev": Bool},
+    parameters={
+        "submission_hold_date": Str,
+        "action_type": Str % Choices(["ADD", "MODIFY"]),
+        "dev": Bool,
+    },
     outputs=[("submission_receipt", ENASubmissionReceipt)],
     input_descriptions={
         "demux": "The demultiplexed sequencing data, either single-end or paired-end reads.",
