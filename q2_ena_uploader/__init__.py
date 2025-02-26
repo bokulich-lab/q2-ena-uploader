@@ -6,8 +6,8 @@
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
 from .ftp_file_upload import transfer_files_to_ena
-from .experiment_upload import submit_metadata_reads
-from .uploader import cancel_submission, submit_metadata_samples
+from .read_submission import submit_metadata_reads
+from .sample_submission import cancel_submission, submit_metadata_samples
 
 try:
     from ._version import __version__

@@ -32,8 +32,8 @@ from q2_types.per_sample_sequences import (
     SequencesWithQuality,
     PairedEndSequencesWithQuality,
 )
-from q2_ena_uploader.uploader import submit_metadata_samples, cancel_submission
-from q2_ena_uploader.experiment_upload import submit_metadata_reads
+from q2_ena_uploader.sample_submission import submit_metadata_samples, cancel_submission
+from q2_ena_uploader.read_submission import submit_metadata_reads
 from q2_ena_uploader.ftp_file_upload import transfer_files_to_ena
 
 plugin = Plugin(
