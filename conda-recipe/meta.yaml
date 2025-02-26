@@ -1,0 +1,33 @@
+package:
+  name: q2-ena-uploader
+  version: {{ PLUGIN_VERSION }}
+source:
+  path: ..
+build:
+  script: make install
+requirements:
+  host:
+  - python {{ python }}
+  - setuptools
+  - versioningit
+  - wheel
+  run:
+  - pandas
+  - qiime2 {{ qiime2_epoch }}.*
+  - q2-types {{ qiime2_epoch }}.*
+  build:
+  - python {{ python }}
+  - setuptools
+  - versioningit
+test:
+  requires:
+  - parameterized
+  imports:
+  - q2_ena_uploader
+  - qiime2.plugins.ena_uplaoder
+  commands:
+  - pytest --pyargs q2_ena_uploader
+about:
+  home: https://github.com/bokulich-lab/q2-ena-uplaoder
+  license: BSD-3-Clause
+  license_family: BSD
