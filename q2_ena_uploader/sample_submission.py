@@ -24,13 +24,13 @@ class ActionType(Enum):
     ADD = "ADD"
     MODIFY = "MODIFY"
 
-
-def strToActionType(s: str) -> ActionType:
-    if s == "ADD":
-        return ActionType.ADD
-    elif s == "MODIFY":
-        return ActionType.MODIFY
-    raise RuntimeError("Unknown action type {}".format(s))
+    @classmethod
+    def from_string(cls, action_type: str) -> "ActionType":
+        """Convert a string to an ActionType enum value."""
+        try:
+            return cls(action_type.upper())
+        except ValueError:
+            raise ValueError(f"Unknown action type: {action_type}")
 
 
 def _create_submission_xml(action: ActionType, hold_date: str) -> str:
@@ -90,7 +90,7 @@ def submit_metadata_samples(
         )
 
     xml_content = _create_submission_xml(
-        strToActionType(action_type), hold_date=submission_hold_date
+        ActionType.from_string(action_type), hold_date=submission_hold_date
     )
     files = {"SUBMISSION": ("submission.xml", xml_content, "text/xml")}
 
@@ -120,12 +120,12 @@ def submit_metadata_samples(
     return response.content
 
 
-def _create_cancalation_xml(target_accession: str) -> str:
+def _create_cancelation_xml(target_accession: str) -> str:
     submission = Element("SUBMISSION")
     actions = SubElement(submission, "ACTIONS")
     action_element = SubElement(actions, "ACTION")
-    cancle = SubElement(action_element, "CANCEL")
-    cancle.set("target", target_accession)
+    cancel = SubElement(action_element, "CANCEL")
+    cancel.set("target", target_accession)
     return tostring(submission, encoding="unicode", method="xml")
 
 
@@ -149,12 +149,15 @@ def cancel_submission(accession_number: str, dev: bool = True) -> bytes:
 
     if username is None or password is None:
         raise RuntimeError(
-            "Missing username or password, "
-            + "make sure ENA_USERNAME and ENA_PASSWORD env vars are set"
+            "Missing username or password, please make sure that "
+            "ENA_USERNAME and ENA_PASSWORD env vars are set"
         )
 
-    xml_content = _create_cancalation_xml(target_accession=accession_number)
-    files = {"SUBMISSION": ("submission.xml", xml_content, "text/xml")}
+    files = {
+        "SUBMISSION": (
+            "submission.xml", _create_cancelation_xml(target_accession=accession_number), "text/xml"
+        )
+    }
 
     url = DEV_SERVER_URL if dev else PRODUCTION_SERVER_URL
     response = requests.post(url, auth=(username, password), files=files)

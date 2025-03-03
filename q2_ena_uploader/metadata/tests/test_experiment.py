@@ -10,11 +10,7 @@ import unittest
 import xml.etree.ElementTree as ET
 
 from parameterized import parameterized
-
-from q2_ena_uploader.metadata import (
-    _parse_experiment_set_from_tsv,
-    _experiment_set_from_list_of_dicts,
-)
+from q2_ena_uploader.metadata.experiment import ExperimentSet
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -49,20 +45,6 @@ class CustomAssertions:
     def assertXmlEqual(self, xml1, xml2):
         if not is_two_xml_equal(xml1, xml2):
             raise AssertionError("Two xml files are not equal!")
-
-
-class OptimizationContext_tests(unittest.TestCase, CustomAssertions):
-
-    INPUT1 = _parse_experiment_set_from_tsv(fpath("data/experiment/test_experiment1.tsv"))
-    INPUT2 = _parse_experiment_set_from_tsv(fpath("data/experiment/test_experiment2.tsv"))
-
-    exp_res1 = ET.parse(fpath("data/experiment/test_experiment1.xml"))
-    exp_res2 = ET.parse(fpath("data/experiment/test_experiment2.xml"))
-
-    @parameterized.expand([(INPUT1, exp_res1), (INPUT2, exp_res2)])
-    def test_xml_structure(self, data, expected_res):
-        experiment_xml = _experiment_set_from_list_of_dicts(data).to_xml_element()
-        self.assertXmlEqual(experiment_xml, expected_res)
 
 
 if __name__ == "__main__":

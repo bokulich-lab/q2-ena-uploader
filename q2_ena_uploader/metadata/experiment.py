@@ -9,6 +9,8 @@ import csv
 from typing import List
 from xml.etree import ElementTree
 
+from typing_extensions import Self
+
 from q2_ena_uploader.metadata.library import Library
 
 
@@ -98,6 +100,31 @@ class Experiment:
                 ElementTree.SubElement(attribute_element, "VALUE").text = value
         return root
 
+    @classmethod
+    def from_dict(cls, row_dict: dict) -> Self:
+        special_attributes = {
+            "title",
+            "study_ref",
+            "sample_description",
+            "platform",
+            "instrument_model",
+        }
+        optional_attributes = {}
+        kwargs = {
+            k.strip(): v.strip()
+            for k, v in row_dict.items()
+            if k.strip() in special_attributes
+        }
+        kwargs["library_attributes"] = {
+            k: v for k, v in row_dict.items() if k.startswith("library")
+        }
+        kwargs["attributes"] = {
+            k: v
+            for k, v in row_dict.items()
+            if k not in special_attributes and not k.startswith("library")
+        }
+        return cls(**kwargs)
+
 
 class ExperimentSet:
     def __init__(self):
@@ -114,38 +141,9 @@ class ExperimentSet:
 
         return ElementTree.ElementTree(experiment_set_element)
 
-
-def _experiment_from_dict(row_dict: dict):
-    special_attributes = {
-        "title",
-        "study_ref",
-        "sample_description",
-        "platform",
-        "instrument_model",
-    }
-    kwargs = {
-        k.strip(): v.strip()
-        for k, v in row_dict.items()
-        if k.strip() in special_attributes
-    }
-    kwargs["library_attributes"] = {
-        k: v for k, v in row_dict.items() if k.startswith("library")
-    }
-    kwargs["attributes"] = {
-        k: v
-        for k, v in row_dict.items()
-        if k not in special_attributes and not k.startswith("library")
-    }
-    return Experiment(**kwargs)
-
-
-def _experiment_set_from_list_of_dicts(inputs: List[dict]):
-    experiment_set = ExperimentSet()
-    for row_dict in inputs:
-        experiment_set.add_experiment(_experiment_from_dict(row_dict))
-    return experiment_set
-
-
-def _parse_experiment_set_from_tsv(filename):
-    with open(filename) as csvfile:
-        return [d for d in csv.DictReader(csvfile, delimiter="\t")]
+    @classmethod
+    def from_list(cls, inputs: List[dict]) -> Self:
+        experiment_set = ExperimentSet()
+        for row_dict in inputs:
+            experiment_set.add_experiment(Experiment.from_dict(row_dict))
+        return experiment_set

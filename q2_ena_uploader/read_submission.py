@@ -27,16 +27,16 @@ class ActionType(Enum):
     ADD = "ADD"
     MODIFY = "MODIFY"
 
-
-def _str_to_action_type(action_type: str) -> ActionType:
-    try:
-        return ActionType(action_type.upper())
-    except ValueError:
-        raise ValueError(f"Unknown action type: {action_type}")
+    @classmethod
+    def from_string(cls, action_type: str) -> "ActionType":
+        """Convert a string to an ActionType enum value."""
+        try:
+            return cls(action_type.upper())
+        except ValueError:
+            raise ValueError(f"Unknown action type: {action_type}")
 
 
 def _create_submission_xml(action: ActionType, hold_date: str) -> str:
-
     submission = Element("SUBMISSION")
     actions = SubElement(submission, "ACTIONS")
     action_element = SubElement(actions, "ACTION")
@@ -124,7 +124,7 @@ def submit_metadata_reads(
         )
 
     submission_xml = _create_submission_xml(
-        _str_to_action_type(action_type), submission_hold_date
+        ActionType.from_string(action_type), submission_hold_date
     )
     files = {
         "SUBMISSION": ("submission.xml", submission_xml, "text/xml"),

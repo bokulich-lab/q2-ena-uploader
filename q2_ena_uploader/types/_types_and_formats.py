@@ -8,13 +8,14 @@
 from xml.etree import ElementTree
 from qiime2.plugin import SemanticType, model, ValidationError
 from q2_ena_uploader.metadata import (
-    _experiment_set_from_list_of_dicts,
     _sample_set_from_list_of_dicts,
     _study_from_dict,
 )
 import xml.etree.ElementTree as ET
 import pandas as pd
 import csv
+
+from q2_ena_uploader.metadata.experiment import ExperimentSet
 
 ENAMetadataSamples = SemanticType("ENAMetadataSamples")
 ENAMetadataStudy = SemanticType("ENAMetadataStudy")
@@ -157,7 +158,7 @@ ENASubmissionReceiptDirFmt = model.SingleFileDirectoryFormat(
 class ENAMetadataExperimentFormat(model.TextFileFormat):
     """
     This format is utilized to store ENA Experiment submission metadata,
-    including compulsary attributes such as alias, study and sample idsm, platform and library description,
+    including compulsory attributes such as alias, study and sample ids, platform and library description,
     along with various other optional attributes for the metadata submission.
     """
 
@@ -195,8 +196,8 @@ class ENAMetadataExperimentFormat(model.TextFileFormat):
     def to_xml(self):
         with open(str(self), "r") as f:
             dicts = [d for d in csv.DictReader(f, delimiter="\t")]
-            elementTree = _experiment_set_from_list_of_dicts(dicts).to_xml_element()
-            return ElementTree.tostring(elementTree.getroot(), encoding="utf8")
+            element = ExperimentSet.from_list(dicts).to_xml_element()
+            return ElementTree.tostring(element.getroot(), encoding="utf8")
 
 
 ENAMetadataExperimentDirFmt = model.SingleFileDirectoryFormat(
