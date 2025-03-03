@@ -5,12 +5,16 @@
 #
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
-import unittest
 import os
-from parameterized import parameterized
+import unittest
 import xml.etree.ElementTree as ET
 
-from q2_ena_uploader.sample.create_samples_from_tsv import _parseSampleSetFromTsv, _sampleSetFromListOfDicts
+from parameterized import parameterized
+
+from q2_ena_uploader.metadata import (
+    _parse_experiment_set_from_tsv,
+    _experiment_set_from_list_of_dicts,
+)
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -49,22 +53,16 @@ class CustomAssertions:
 
 class OptimizationContext_tests(unittest.TestCase, CustomAssertions):
 
-    INPUT1 = _parseSampleSetFromTsv(fpath("data/test_sample1.tsv"))
-    INPUT2 = _parseSampleSetFromTsv(fpath("data/test_sample2.tsv"))
-    INPUT3 = _parseSampleSetFromTsv(fpath("data/test_sample3.tsv"))
-    INPUT4 = _parseSampleSetFromTsv(fpath("data/test_sample4.tsv"))
+    INPUT1 = _parse_experiment_set_from_tsv(fpath("data/experiment/test_experiment1.tsv"))
+    INPUT2 = _parse_experiment_set_from_tsv(fpath("data/experiment/test_experiment2.tsv"))
 
-    exp_res1 = ET.parse(fpath("data/test_sample1.xml"))
-    exp_res2 = ET.parse(fpath("data/test_sample2.xml"))
-    exp_res3 = ET.parse(fpath("data/test_sample3.xml"))
-    exp_res4 = ET.parse(fpath("data/test_sample4.xml"))
+    exp_res1 = ET.parse(fpath("data/experiment/test_experiment1.xml"))
+    exp_res2 = ET.parse(fpath("data/experiment/test_experiment2.xml"))
 
-    @parameterized.expand(
-        [(INPUT1, exp_res1), (INPUT2, exp_res2), (INPUT3, exp_res3), (INPUT4, exp_res4)]
-    )
+    @parameterized.expand([(INPUT1, exp_res1), (INPUT2, exp_res2)])
     def test_xml_structure(self, data, expected_res):
-        sample_xml = _sampleSetFromListOfDicts(data).to_xml_element()
-        self.assertXmlEqual(sample_xml, expected_res)
+        experiment_xml = _experiment_set_from_list_of_dicts(data).to_xml_element()
+        self.assertXmlEqual(experiment_xml, expected_res)
 
 
 if __name__ == "__main__":

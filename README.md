@@ -65,8 +65,8 @@ qiime tools import \
 ```shell
 qiime tools import \
   --type ENAMetadataExperiment \
-  --input-path experiment.tsv \
-  --output-path experiment.qza
+  --input-path metadata.tsv \
+  --output-path metadata.qza
 ```
 
 **Note**: For experiment submission, ENA supports controlled vocabulary in the metadata fields, which can be accessed [here](https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html).
@@ -127,7 +127,7 @@ qiime tools import \
    ```shell
    qiime ena-uploader upload-reads-to-ena \
      --i-demux CasavaOneEightSingleLanePerSampleDirFmt \
-     --i-experiment experiment_metadata.qza \
+     --i-metadata experiment_metadata.qza \
      --p-submission-hold-date \
      --p-action-type server_type \
      --p-dev \

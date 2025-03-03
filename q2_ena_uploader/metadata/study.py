@@ -93,29 +93,28 @@ class Study:
         return tree
 
 
-def _parseAttributes(rowDict):
+def _parse_attributes(row_dict):
     attributes = []
-    for k, v in rowDict:
+    for k, v in row_dict:
         if not k.startswith("attribute"):
             continue
-
         attributes = tuple(v.split(","))
     return attributes
 
 
-def _studyFromRawDict(rowDict):
-    specialAttributes = {"alias", "title", "center_name", "name", "description"}
-    kwArgs = {
+def _study_from_dict(row_dict):
+    special_attributes = {"alias", "title", "center_name", "name", "description"}
+    kwargs = {
         k.strip(): v.strip()
-        for k, v in rowDict.items()
-        if k.strip() in specialAttributes
+        for k, v in row_dict.items()
+        if k.strip() in special_attributes
     }
-    kwArgs["collaborators"] = [
-        v for k, v in rowDict.items() if k.startswith("collaborator")
+    kwargs["collaborators"] = [
+        v for k, v in row_dict.items() if k.startswith("collaborator")
     ]
-    kwArgs["attributes"] = [
-        v for k, v in rowDict.items() if k.startswith("project_attribute")
+    kwargs["attributes"] = [
+        v for k, v in row_dict.items() if k.startswith("project_attribute")
     ]
-    kwArgs["url_links"] = [v for k, v in rowDict.items() if k.startswith("url_link")]
-    kwArgs["xref_links"] = [v for k, v in rowDict.items() if k.startswith("xref_link")]
-    return Study(**kwArgs)
+    kwargs["url_links"] = [v for k, v in row_dict.items() if k.startswith("url_link")]
+    kwargs["xref_links"] = [v for k, v in row_dict.items() if k.startswith("xref_link")]
+    return Study(**kwargs)

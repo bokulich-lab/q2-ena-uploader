@@ -9,9 +9,19 @@ import os
 import unittest
 import xml.etree.ElementTree as ET
 
+import pandas as pd
 from parameterized import parameterized
 
-from q2_ena_uploader.experiment import _parseExperimentSetFromTsv, _ExperimentSetFromListOfDicts
+from q2_ena_uploader.metadata import _study_from_dict
+
+
+def read_study_tsv_to_dict(filename):
+    return (
+        pd.read_csv(filename, header=None, index_col=0, delimiter="\t")
+        .squeeze("columns")
+        .to_dict()
+    )
+
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -50,17 +60,31 @@ class CustomAssertions:
 
 class OptimizationContext_tests(unittest.TestCase, CustomAssertions):
 
-    INPUT1 = _parseExperimentSetFromTsv(fpath("data/test_experiment1.tsv"))
-    INPUT2 = _parseExperimentSetFromTsv(fpath("data/test_experiment2.tsv"))
+    INPUT0 = read_study_tsv_to_dict(fpath("data/study/minimal_study_structure.tsv"))
+    INPUT1 = read_study_tsv_to_dict(fpath("data/study/study1.tsv"))
+    INPUT2 = read_study_tsv_to_dict(fpath("data/study/study2.tsv"))
+    INPUT3 = read_study_tsv_to_dict(fpath("data/study/study3.tsv"))
+    INPUT4 = read_study_tsv_to_dict(fpath("data/study/study4.tsv"))
 
-    exp_res1 = ET.parse(fpath("data/test_experiment1.xml"))
-    exp_res2 = ET.parse(fpath("data/test_experiment2.xml"))
+    expected_res_0 = ET.parse(fpath("data/study/minimal_study.xml"))
+    expected_res_1 = ET.parse(fpath("data/study/study1.xml"))
+    expected_res_2 = ET.parse(fpath("data/study/study2.xml"))
+    expected_res_3 = ET.parse(fpath("data/study/study3.xml"))
+    expected_res_4 = ET.parse(fpath("data/study/study4.xml"))
 
-    @parameterized.expand([(INPUT1, exp_res1), (INPUT2, exp_res2)])
+    @parameterized.expand(
+        [
+            (INPUT0, expected_res_0),
+            (INPUT1, expected_res_1),
+            (INPUT2, expected_res_2),
+            (INPUT3, expected_res_3),
+            (INPUT4, expected_res_4),
+        ]
+    )
     def test_xml_structure(self, data, expected_res):
-        experiment_xml = _ExperimentSetFromListOfDicts(data).to_xml_element()
-        # print(ET.tostring(experiment_xml, encoding='utf-8'))
-        self.assertXmlEqual(experiment_xml, expected_res)
+        study = _study_from_dict(data)
+        xml = study.to_xml_element()
+        self.assertXmlEqual(xml, expected_res)
 
 
 if __name__ == "__main__":

@@ -17,7 +17,7 @@ from q2_types.per_sample_sequences import CasavaOneEightSingleLanePerSampleDirFm
 from q2_ena_uploader.types._types_and_formats import (
     ENAMetadataExperimentFormat,
 )
-from .experiment import _runFromDict
+from .metadata import _run_set_from_dict
 
 DEV_SERVER_URL = "https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit"
 PRODUCTION_SERVER_URL = " https://www.ebi.ac.uk/ena/submit/drop-box/submit"
@@ -91,9 +91,8 @@ def submit_metadata_reads(
     Function to sumbmit metedata of the experiments to ENA.
     Args:
         experiment : Metadata
-                Qiime artifact containing a tsv file with the experiment atrributes.
-        demux:
-             'The demultiplexed sequence data to be quality filtered.'
+                Qiime artifact containing a tsv file with the metadata atrributes.
+        demux: The demultiplexed sequence data to be quality filtered.
 
         submission_hold_date: Str
                  The release date of the study, on which it will become public along with all submitted data.
@@ -114,7 +113,7 @@ def submit_metadata_reads(
 
     df = demux.manifest
     parsed_data = _process_manifest(df)
-    run_xml = _runFromDict(parsed_data)
+    run_xml = _run_set_from_dict(parsed_data)
 
     username = os.getenv("ENA_USERNAME")
     password = os.getenv("ENA_PASSWORD")
@@ -129,7 +128,7 @@ def submit_metadata_reads(
     )
     files = {
         "SUBMISSION": ("submission.xml", submission_xml, "text/xml"),
-        "EXPERIMENT": ("experiment.xml", experiment.toXml(), "text/xml"),
+        "EXPERIMENT": ("metadata.xml", experiment.to_xml(), "text/xml"),
         "RUN": ("run.xml", run_xml, "text/xml"),
     }
     url = DEV_SERVER_URL if dev else PRODUCTION_SERVER_URL

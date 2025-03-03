@@ -1,3 +1,10 @@
+# ----------------------------------------------------------------------------
+# Copyright (c) 2025, Bokulich Lab.
+#
+# Distributed under the terms of the Modified BSD License.
+#
+# The full license is in the file LICENSE, distributed with this software.
+# ----------------------------------------------------------------------------
 import os
 import unittest
 import xml.etree.ElementTree as ET
@@ -5,7 +12,7 @@ import xml.etree.ElementTree as ET
 import pandas as pd
 from parameterized import parameterized
 
-from q2_ena_uploader.experiment import _runFromRawDict
+from q2_ena_uploader.metadata import _run_set_from_dict
 
 
 def read_run_tsv_to_dict(filename):
@@ -53,21 +60,33 @@ class CustomAssertions:
 
 class OptimizationContext_tests(unittest.TestCase, CustomAssertions):
 
-    INPUT0 = read_run_tsv_to_dict(fpath("data/run1.tsv"))
-    INPUT1 = read_run_tsv_to_dict(fpath("data/run2.tsv"))
-    INPUT2 = read_run_tsv_to_dict(fpath("data/run3.tsv"))
+    dict1 = {
+        "alias_1": {
+            "filename": ["file1_forward.fastq", "file1_reverse.fastq"],
+            "checksum": ["abc123", "def456"],
+        },
+        "alias_2": {
+            "filename": ["file2_forward.fastq", "file2_reverse.fastq"],
+            "checksum": ["ghi789", "jkl012"],
+        },
+    }
 
-    expected_res_0 = ET.parse(fpath("data/run1.xml"))
-    expected_res_1 = ET.parse(fpath("data/run2.xml"))
-    expected_res_2 = ET.parse(fpath("data/run3.xml"))
+    dict2 = {
+        "alias_1": {"filename": ["file1.fastq"], "checksum": ["abc123"]},
+        "alias_2": {"filename": ["file2.fastq"], "checksum": ["ghi789"]},
+    }
+
+    expected_res_0 = ET.parse(fpath("data/run/run_1.xml"))
+    expected_res_1 = ET.parse(fpath("data/run/run_2.xml"))
 
     @parameterized.expand(
-        [(INPUT0, expected_res_0), (INPUT1, expected_res_1), (INPUT2, expected_res_2)]
+        [
+            (dict1, expected_res_0),
+        ]
     )
     def test_xml_structure(self, data, expected_res):
-        run = _runFromRawDict(data)
-        run_xml = run.to_xml_element()
-        self.assertXmlEqual(run_xml, expected_res)
+        run = _run_set_from_dict(data)
+        self.assertXmlEqual(run, expected_res)
 
 
 if __name__ == "__main__":

@@ -6,10 +6,12 @@
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
 from xml.etree import ElementTree
-from qiime2.plugin import SemanticType, TextFileFormat, model, ValidationError
-from q2_ena_uploader.sample import _sampleSetFromListOfDicts
-from q2_ena_uploader.experiment import _ExperimentSetFromListOfDicts
-from q2_ena_uploader.study import _studyFromRawDict
+from qiime2.plugin import SemanticType, model, ValidationError
+from q2_ena_uploader.metadata import (
+    _experiment_set_from_list_of_dicts,
+    _sample_set_from_list_of_dicts,
+    _study_from_dict,
+)
 import xml.etree.ElementTree as ET
 import pandas as pd
 import csv
@@ -52,7 +54,7 @@ class ENAMetadataSamplesFormat(model.TextFileFormat):
     def toXml(self):
         with open(str(self), "r") as f:
             dicts = [d for d in csv.DictReader(f, delimiter="\t")]
-            elementTree = _sampleSetFromListOfDicts(dicts).to_xml_element()
+            elementTree = _sample_set_from_list_of_dicts(dicts).to_xml_element()
             return ElementTree.tostring(elementTree.getroot(), encoding="utf8")
 
 
@@ -101,7 +103,7 @@ class ENAMetadataStudyFormat(model.TextFileFormat):
             .squeeze("columns")
             .to_dict()
         )
-        elementTree = _studyFromRawDict(df_dict).to_xml_element()
+        elementTree = _study_from_dict(df_dict).to_xml_element()
         return ElementTree.tostring(elementTree.getroot(), encoding="utf8")
 
     def _validate_(self, level):
@@ -156,7 +158,7 @@ class ENAMetadataExperimentFormat(model.TextFileFormat):
     """
     This format is utilized to store ENA Experiment submission metadata,
     including compulsary attributes such as alias, study and sample idsm, platform and library description,
-    along with various other optional attributes for the experiment submission.
+    along with various other optional attributes for the metadata submission.
     """
 
     REQUIRED_ATTRIBUTES = [
@@ -175,7 +177,7 @@ class ENAMetadataExperimentFormat(model.TextFileFormat):
         missing_cols = [x for x in self.REQUIRED_ATTRIBUTES if x not in df.columns]
         if missing_cols:
             raise ValidationError(
-                "Some required experiment attributes are missing from the metadata upload file: "
+                "Some required metadata attributes are missing from the metadata upload file: "
                 f'{",".join(missing_cols)}.'
             )
 
@@ -190,10 +192,10 @@ class ENAMetadataExperimentFormat(model.TextFileFormat):
     def _validate_(self, level):
         self._validate()
 
-    def toXml(self):
+    def to_xml(self):
         with open(str(self), "r") as f:
             dicts = [d for d in csv.DictReader(f, delimiter="\t")]
-            elementTree = _ExperimentSetFromListOfDicts(dicts).to_xml_element()
+            elementTree = _experiment_set_from_list_of_dicts(dicts).to_xml_element()
             return ElementTree.tostring(elementTree.getroot(), encoding="utf8")
 
 

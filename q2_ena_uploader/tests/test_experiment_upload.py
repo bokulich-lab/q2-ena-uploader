@@ -19,7 +19,7 @@ class TestUploadReadsToEna(unittest.TestCase):
     @patch("os.getenv")
     @patch("builtins.open", new_callable=mock_open, read_data=b"binary_data_for_md5")
     @patch("q2_ena_uploader.read_submission._process_manifest")
-    @patch("q2_ena_uploader.experiment.create_run_from_df._runFromDict")
+    @patch("q2_ena_uploader.metadata.run._run_set_from_dict")
     def test_upload_reads_to_ena(
         self,
         mock_run_from_dict,

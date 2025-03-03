@@ -5,23 +5,12 @@
 #
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
-import os
 import unittest
+import os
+from parameterized import parameterized
 import xml.etree.ElementTree as ET
 
-import pandas as pd
-from parameterized import parameterized
-
-from q2_ena_uploader.experiment import _runFromDict
-
-
-def read_run_tsv_to_dict(filename):
-    return (
-        pd.read_csv(filename, header=None, index_col=0, delimiter="\t")
-        .squeeze("columns")
-        .to_dict()
-    )
-
+from q2_ena_uploader.metadata import _sample_set_from_list_of_dicts, _parse_sample_set_from_tsv
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -60,33 +49,22 @@ class CustomAssertions:
 
 class OptimizationContext_tests(unittest.TestCase, CustomAssertions):
 
-    dict1 = {
-        "alias_1": {
-            "filename": ["file1_forward.fastq", "file1_reverse.fastq"],
-            "checksum": ["abc123", "def456"],
-        },
-        "alias_2": {
-            "filename": ["file2_forward.fastq", "file2_reverse.fastq"],
-            "checksum": ["ghi789", "jkl012"],
-        },
-    }
+    INPUT1 = _parse_sample_set_from_tsv(fpath("data/sample/test_sample1.tsv"))
+    INPUT2 = _parse_sample_set_from_tsv(fpath("data/sample/test_sample2.tsv"))
+    INPUT3 = _parse_sample_set_from_tsv(fpath("data/sample/test_sample3.tsv"))
+    INPUT4 = _parse_sample_set_from_tsv(fpath("data/sample/test_sample4.tsv"))
 
-    dict2 = {
-        "alias_1": {"filename": ["file1.fastq"], "checksum": ["abc123"]},
-        "alias_2": {"filename": ["file2.fastq"], "checksum": ["ghi789"]},
-    }
-
-    expected_res_0 = ET.parse(fpath("data/run_1.xml"))
-    expected_res_1 = ET.parse(fpath("data/run_2.xml"))
+    exp_res1 = ET.parse(fpath("data/sample/test_sample1.xml"))
+    exp_res2 = ET.parse(fpath("data/sample/test_sample2.xml"))
+    exp_res3 = ET.parse(fpath("data/sample/test_sample3.xml"))
+    exp_res4 = ET.parse(fpath("data/sample/test_sample4.xml"))
 
     @parameterized.expand(
-        [
-            (dict1, expected_res_0),
-        ]
+        [(INPUT1, exp_res1), (INPUT2, exp_res2), (INPUT3, exp_res3), (INPUT4, exp_res4)]
     )
     def test_xml_structure(self, data, expected_res):
-        run = _runFromDict(data)
-        self.assertXmlEqual(run, expected_res)
+        sample_xml = _sample_set_from_list_of_dicts(data).to_xml_element()
+        self.assertXmlEqual(sample_xml, expected_res)
 
 
 if __name__ == "__main__":

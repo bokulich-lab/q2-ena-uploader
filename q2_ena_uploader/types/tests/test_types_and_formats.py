@@ -136,7 +136,7 @@ class TestFormats(TestPluginBase):
         format = ENAMetadataExperimentFormat(meta_path, mode="r")
         with self.assertRaisesRegex(
             ValidationError,
-            "Some required experiment attributes are missing from the metadata upload file: "
+            "Some required metadata attributes are missing from the metadata upload file: "
             "study_ref,sample_description.",
         ):
             format.validate()

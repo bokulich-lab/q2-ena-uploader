@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------------
 import csv
 import xml.etree.ElementTree as ET
+from typing import List
 
 
 class Sample:
@@ -114,8 +115,8 @@ class SampleSet:
         return ET.ElementTree(sample_set_element)
 
 
-def _sampleFromRowDict(rowDict):
-    specialAttributes = {
+def _sample_from_dict(row_dict):
+    special_attributes = {
         "alias",
         "center_name",
         "title",
@@ -124,30 +125,30 @@ def _sampleFromRowDict(rowDict):
         "common_name",
         "description",
     }
-    kwArgs = {
+    kwargs = {
         k.strip(): v.strip()
-        for k, v in rowDict.items()
-        if k.strip() in specialAttributes
+        for k, v in row_dict.items()
+        if k.strip() in special_attributes
     }
-    kwArgs["url_links"] = [v for k, v in rowDict.items() if k.startswith("url_link")]
-    kwArgs["xref_links"] = [v for k, v in rowDict.items() if k.startswith("xref_link")]
-    kwArgs["attributes"] = {
+    kwargs["url_links"] = [v for k, v in row_dict.items() if k.startswith("url_link")]
+    kwargs["xref_links"] = [v for k, v in row_dict.items() if k.startswith("xref_link")]
+    kwargs["attributes"] = {
         k: v
-        for k, v in rowDict.items()
-        if k not in specialAttributes
+        for k, v in row_dict.items()
+        if k not in special_attributes
         and not k.startswith("url")
         and not k.startswith("xref")
     }
-    return Sample(**kwArgs)
+    return Sample(**kwargs)
 
 
-def _sampleSetFromListOfDicts(listOfDictionary):
-    sampleSet = SampleSet()
-    for rowDict in listOfDictionary:
-        sampleSet.add_sample(_sampleFromRowDict(rowDict))
-    return sampleSet
+def _sample_set_from_list_of_dicts(inputs: List[dict]):
+    sample_set = SampleSet()
+    for row_dict in inputs:
+        sample_set.add_sample(_sample_from_dict(row_dict))
+    return sample_set
 
 
-def _parseSampleSetFromTsv(filename):
+def _parse_sample_set_from_tsv(filename):
     with open(filename) as csvfile:
         return [d for d in csv.DictReader(csvfile, delimiter="\t")]
