@@ -10,7 +10,10 @@ import os
 from parameterized import parameterized
 import xml.etree.ElementTree as ET
 
-from q2_ena_uploader.metadata import _sample_set_from_list_of_dicts, _parse_sample_set_from_tsv
+from q2_ena_uploader.metadata import (
+    _sample_set_from_list_of_dicts,
+    _parse_sample_set_from_tsv,
+)
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 

@@ -155,7 +155,9 @@ def cancel_submission(accession_number: str, dev: bool = True) -> bytes:
 
     files = {
         "SUBMISSION": (
-            "submission.xml", _create_cancelation_xml(target_accession=accession_number), "text/xml"
+            "submission.xml",
+            _create_cancelation_xml(target_accession=accession_number),
+            "text/xml",
         )
     }
 
