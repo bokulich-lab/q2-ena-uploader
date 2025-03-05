@@ -12,8 +12,10 @@ import time
 import pandas as pd
 from q2_types.per_sample_sequences import CasavaOneEightSingleLanePerSampleDirFmt
 
+from q2_ena_uploader.utils import FTP_HOST
 
-def _upload_files(ftp, filepath, sampleid, retries=3, delay=5):
+
+def _upload_files(ftp, filepath, sample_id, retries=3, delay=5):
     """
     Helper function to upload single or paired files to the FTP server and return metadata.
     """
@@ -31,13 +33,13 @@ def _upload_files(ftp, filepath, sampleid, retries=3, delay=5):
                 if attempt < retries:
                     time.sleep(delay)
                 else:
-                    return (sampleid, filename, False, str(e), "ADD")
+                    return (sample_id, filename, False, str(e), "ADD")
 
-        return (sampleid, filename, True, None, "ADD")
-    return (sampleid, filename, False, "Not a file", "ADD")
+        return (sample_id, filename, True, None, "ADD")
+    return (sample_id, os.path.basename(filepath), False, "Not a file", "ADD")
 
 
-def _delete_files(ftp, filepath, sampleid, retries=3, delay=5):
+def _delete_files(ftp, filepath, sample_id, retries=3, delay=5):
     """
     Helper function to delete single or paired files to the FTP server and return metadata.
     """
@@ -48,21 +50,20 @@ def _delete_files(ftp, filepath, sampleid, retries=3, delay=5):
         while True:
             try:
                 ftp.delete(filename)
-                return (sampleid, filename, True, None, "DELETE")
+                return (sample_id, filename, True, None, "DELETE")
             except ftplib.all_errors as e:
                 attempt += 1
                 if attempt < retries:
                     time.sleep(delay)
                 else:
-                    return (sampleid, filename, False, str(e), "DELETE")
+                    return (sample_id, filename, False, str(e), "DELETE")
 
 
-def _process_files(ftp, filepath, sampleid, action):
-
+def _process_files(ftp, filepath, sample_id, action):
     if action == "ADD":
-        return _upload_files(ftp, filepath, sampleid)
+        return _upload_files(ftp, filepath, sample_id)
     elif action == "DELETE":
-        return _delete_files(ftp, filepath, sampleid)
+        return _delete_files(ftp, filepath, sample_id)
     return None
 
 
@@ -83,36 +84,35 @@ def transfer_files_to_ena(
         metadata: Qiime immutable metadata object.
     """
 
-    ftp_host = "webin2.ebi.ac.uk"
     username = os.getenv("ENA_USERNAME")
     password = os.getenv("ENA_PASSWORD")
 
     if not username or not password:
         raise RuntimeError(
             "Missing ENA FTP credentials. Please set ENA_USERNAME "
-            + "and ENA_PASSWORD environment variables."
+            "and ENA_PASSWORD environment variables."
         )
 
     df = demux.manifest
     metadata = []
 
-    print(f"Connecting to FTP server {ftp_host}")
+    print(f"Connecting to the FTP server {FTP_HOST}...")
 
     try:
-        with ftplib.FTP(ftp_host) as ftp:
+        with ftplib.FTP(FTP_HOST) as ftp:
             ftp.login(user=username, passwd=password)
-            print("Connected to FTP")
+            print("Connected to FTP.")
 
             for row in df.itertuples(index=True, name="Pandas"):
-                sampleid = row.Index
+                sample_id = row.Index
                 if not row.reverse:
                     filepath = row.forward
-                    file_metadata = _process_files(ftp, filepath, sampleid, action)
+                    file_metadata = _process_files(ftp, filepath, sample_id, action)
                     metadata.append(file_metadata)
                 else:
 
-                    sampleid_forward = f"{sampleid}_f"
-                    sampleid_reverse = f"{sampleid}_r"
+                    sampleid_forward = f"{sample_id}_f"
+                    sampleid_reverse = f"{sample_id}_r"
                     filepath_forward = row.forward
                     filepath_reverse = row.reverse
 
@@ -125,9 +125,6 @@ def transfer_files_to_ena(
                         ftp, filepath_reverse, sampleid_reverse, action
                     )
                     metadata.append(file_metadata_reverse)
-
-    #    ftp.retrlines('LIST')
-
     except ftplib.all_errors as e:
         raise RuntimeError(
             f"An error occurred during the FTP upload/delete procedure: {e}"

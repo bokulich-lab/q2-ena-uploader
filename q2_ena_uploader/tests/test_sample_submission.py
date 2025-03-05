@@ -17,10 +17,8 @@ from q2_ena_uploader.sample_submission import (
     submit_metadata_samples,
     _create_cancelation_xml,
     cancel_submission,
-    DEV_SERVER_URL,
-    PRODUCTION_SERVER_URL,
 )
-from q2_ena_uploader.utils import ActionType
+from q2_ena_uploader.utils import ActionType, DEV_SERVER_URL, PRODUCTION_SERVER_URL
 
 
 class TestActionType(unittest.TestCase):

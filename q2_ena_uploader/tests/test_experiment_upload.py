@@ -98,8 +98,6 @@ class TestUploadReadsToEna(unittest.TestCase):
 
         # Check if response was successful
         self.assertEqual(result, b"<RECEIPT>Success</RECEIPT>")
-        mock_open_file.assert_called_with("response.xml", "wb")
-        mock_open_file().write.assert_called_once_with(b"<RECEIPT>Success</RECEIPT>")
 
 
 if __name__ == "__main__":

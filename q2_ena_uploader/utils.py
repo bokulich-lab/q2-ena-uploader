@@ -8,6 +8,11 @@
 from enum import Enum
 
 
+DEV_SERVER_URL = "https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit"
+PRODUCTION_SERVER_URL = "https://www.ebi.ac.uk/ena/submit/drop-box/submit"
+FTP_HOST = "webin2.ebi.ac.uk"
+
+
 class ActionType(Enum):
     ADD = "ADD"
     MODIFY = "MODIFY"

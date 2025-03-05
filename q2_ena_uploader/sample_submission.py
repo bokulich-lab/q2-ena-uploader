@@ -14,10 +14,7 @@ from q2_ena_uploader.types._types_and_formats import (
     ENAMetadataSamplesFormat,
     ENAMetadataStudyFormat,
 )
-from q2_ena_uploader.utils import ActionType
-
-DEV_SERVER_URL = "https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit"
-PRODUCTION_SERVER_URL = "https://www.ebi.ac.uk/ena/submit/drop-box/submit"
+from q2_ena_uploader.utils import ActionType, DEV_SERVER_URL, PRODUCTION_SERVER_URL
 
 
 def _create_submission_xml(action: ActionType, hold_date: str) -> str:

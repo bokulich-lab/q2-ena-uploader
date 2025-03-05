@@ -7,7 +7,6 @@
 # ----------------------------------------------------------------------------
 import hashlib
 import os
-from enum import Enum
 from xml.etree.ElementTree import Element, SubElement, tostring
 
 import pandas as pd
@@ -18,10 +17,7 @@ from q2_ena_uploader.types._types_and_formats import (
     ENAMetadataExperimentFormat,
 )
 from .metadata import _run_set_from_dict
-from .utils import ActionType
-
-DEV_SERVER_URL = "https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit"
-PRODUCTION_SERVER_URL = " https://www.ebi.ac.uk/ena/submit/drop-box/submit"
+from .utils import ActionType, DEV_SERVER_URL, PRODUCTION_SERVER_URL
 
 
 def _create_submission_xml(action: ActionType, hold_date: str) -> str:
@@ -122,7 +118,4 @@ def submit_metadata_reads(
     }
     url = DEV_SERVER_URL if dev else PRODUCTION_SERVER_URL
     response = requests.post(url, auth=(username, password), files=files)
-    with open("response.xml", "wb") as response_file:
-        response_file.write(response.content)
-
     return response.content
