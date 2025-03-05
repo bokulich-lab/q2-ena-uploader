@@ -9,7 +9,7 @@ from xml.etree import ElementTree
 
 
 class Run:
-    def __init__(self, alias=None, refname=None, files=None):
+    def __init__(self, alias, refname, files=None):
         self.alias = alias
         self.refname = refname
         self.files = files if files is not None else {}
