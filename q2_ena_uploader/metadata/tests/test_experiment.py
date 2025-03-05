@@ -22,7 +22,9 @@ class TestExperiment(TestPluginBase, CustomAssertions):
 
     def setUp(self):
         super().setUp()
-        self.experiment_data_path = self.get_data_path("experiment/test_experiment1.tsv")
+        self.experiment_data_path = self.get_data_path(
+            "experiment/test_experiment1.tsv"
+        )
         self.expected_xml_path = self.get_data_path("experiment/test_experiment1.xml")
         self.tsv_data = []
         with open(self.experiment_data_path, "r") as tsv_file:
@@ -226,12 +228,19 @@ class TestExperiment(TestPluginBase, CustomAssertions):
         """Test that ValueError is raised when required library attributes are missing."""
         # Create a dictionary with missing library attributes
         invalid_data = self.tsv_data[0].copy()
-        for field in ["library_strategy", "library_source", "library_selection", "library_layout"]:
+        for field in [
+            "library_strategy",
+            "library_source",
+            "library_selection",
+            "library_layout",
+        ]:
             invalid_data[field] = ""
 
         experiment = Experiment.from_dict(invalid_data)
 
-        with self.assertRaisesRegex(ValueError, "Some of the library descriptors are empty"):
+        with self.assertRaisesRegex(
+            ValueError, "Some of the library descriptors are empty"
+        ):
             experiment.to_xml_element()
 
     def test_experiment_missing_platform(self):
@@ -255,7 +264,9 @@ class TestExperiment(TestPluginBase, CustomAssertions):
         experiment = Experiment.from_dict(invalid_data)
 
         # The XML generation should complain about missing instrument_model
-        with self.assertRaisesRegex(ValueError, "Instrument model record must be present"):
+        with self.assertRaisesRegex(
+            ValueError, "Instrument model record must be present"
+        ):
             experiment.to_xml_element()
 
     def test_experiment_with_tsv_attributes(self):
