@@ -6,7 +6,6 @@
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
 import os
-from enum import Enum
 from xml.etree.ElementTree import Element, SubElement, tostring
 
 import requests
@@ -15,26 +14,13 @@ from q2_ena_uploader.types._types_and_formats import (
     ENAMetadataSamplesFormat,
     ENAMetadataStudyFormat,
 )
+from q2_ena_uploader.utils import ActionType
 
 DEV_SERVER_URL = "https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit"
-PRODUCTION_SERVER_URL = " https://www.ebi.ac.uk/ena/submit/drop-box/submit"
-
-
-class ActionType(Enum):
-    ADD = "ADD"
-    MODIFY = "MODIFY"
-
-    @classmethod
-    def from_string(cls, action_type: str) -> "ActionType":
-        """Convert a string to an ActionType enum value."""
-        try:
-            return cls(action_type.upper())
-        except ValueError:
-            raise ValueError(f"Unknown action type: {action_type}")
+PRODUCTION_SERVER_URL = "https://www.ebi.ac.uk/ena/submit/drop-box/submit"
 
 
 def _create_submission_xml(action: ActionType, hold_date: str) -> str:
-
     submission = Element("SUBMISSION")
     actions = SubElement(submission, "ACTIONS")
     action_element = SubElement(actions, "ACTION")
@@ -85,8 +71,8 @@ def submit_metadata_samples(
 
     if username is None or password is None:
         raise RuntimeError(
-            "Missing username or password, "
-            + "make sure ENA_USERNAME and ENA_PASSWORD env vars are set"
+            "Missing username or password. Please make sure "
+            "ENA_USERNAME and ENA_PASSWORD env vars are set."
         )
 
     xml_content = _create_submission_xml(
@@ -113,10 +99,6 @@ def submit_metadata_samples(
 
     url = DEV_SERVER_URL if dev else PRODUCTION_SERVER_URL
     response = requests.post(url, auth=(username, password), files=files)
-
-    with open("response.xml", "wb") as f:
-        f.write(response.content)
-
     return response.content
 
 
@@ -149,8 +131,8 @@ def cancel_submission(accession_number: str, dev: bool = True) -> bytes:
 
     if username is None or password is None:
         raise RuntimeError(
-            "Missing username or password, please make sure that "
-            "ENA_USERNAME and ENA_PASSWORD env vars are set"
+            "Missing username or password. Please make sure "
+            "ENA_USERNAME and ENA_PASSWORD env vars are set."
         )
 
     files = {
@@ -163,8 +145,4 @@ def cancel_submission(accession_number: str, dev: bool = True) -> bytes:
 
     url = DEV_SERVER_URL if dev else PRODUCTION_SERVER_URL
     response = requests.post(url, auth=(username, password), files=files)
-
-    with open("response.xml", "wb") as f:
-        f.write(response.content)
-
     return response.content

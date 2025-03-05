@@ -18,22 +18,10 @@ from q2_ena_uploader.types._types_and_formats import (
     ENAMetadataExperimentFormat,
 )
 from .metadata import _run_set_from_dict
+from .utils import ActionType
 
 DEV_SERVER_URL = "https://wwwdev.ebi.ac.uk/ena/submit/drop-box/submit"
 PRODUCTION_SERVER_URL = " https://www.ebi.ac.uk/ena/submit/drop-box/submit"
-
-
-class ActionType(Enum):
-    ADD = "ADD"
-    MODIFY = "MODIFY"
-
-    @classmethod
-    def from_string(cls, action_type: str) -> "ActionType":
-        """Convert a string to an ActionType enum value."""
-        try:
-            return cls(action_type.upper())
-        except ValueError:
-            raise ValueError(f"Unknown action type: {action_type}")
 
 
 def _create_submission_xml(action: ActionType, hold_date: str) -> str:
@@ -120,7 +108,8 @@ def submit_metadata_reads(
 
     if not username or not password:
         raise RuntimeError(
-            "Missing username or password. Set ENA_USERNAME and ENA_PASSWORD env vars."
+            "Missing username or password. Please make sure "
+            "ENA_USERNAME and ENA_PASSWORD env vars are set."
         )
 
     submission_xml = _create_submission_xml(
