@@ -122,7 +122,7 @@ class TestRun(TestPluginBase, CustomAssertions):
         expected_xml = ET.parse(self.run1_xml_path)
 
         # Compare the XML structures
-        self.assert_xml_equal(xml_tree, expected_xml, context="Run set from dict")
+        self.assert_xml_equal(xml_tree, expected_xml)
 
 
 if __name__ == "__main__":

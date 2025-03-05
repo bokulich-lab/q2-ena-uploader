@@ -5,9 +5,10 @@
 #
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
-import csv
 import xml.etree.ElementTree as ET
 from typing import List
+
+from typing_extensions import Self
 
 
 class Sample:
@@ -98,6 +99,33 @@ class Sample:
 
         return sample_element
 
+    @classmethod
+    def from_dict(cls, row_dict: dict) -> Self:
+        special_attributes = {
+            "alias",
+            "center_name",
+            "title",
+            "taxon_id",
+            "scientific_name",
+            "common_name",
+            "description",
+        }
+        kwargs = {
+            k.strip(): v.strip()
+            for k, v in row_dict.items()
+            if k.strip() in special_attributes
+        }
+        kwargs["url_links"] = [v for k, v in row_dict.items() if k.startswith("url_link")]
+        kwargs["xref_links"] = [v for k, v in row_dict.items() if k.startswith("xref_link")]
+        kwargs["attributes"] = {
+            k: v
+            for k, v in row_dict.items()
+            if k not in special_attributes
+               and not k.startswith("url")
+               and not k.startswith("xref")
+        }
+        return cls(**kwargs)
+
 
 class SampleSet:
     def __init__(self):
@@ -114,41 +142,9 @@ class SampleSet:
 
         return ET.ElementTree(sample_set_element)
 
-
-def _sample_from_dict(row_dict):
-    special_attributes = {
-        "alias",
-        "center_name",
-        "title",
-        "taxon_id",
-        "scientific_name",
-        "common_name",
-        "description",
-    }
-    kwargs = {
-        k.strip(): v.strip()
-        for k, v in row_dict.items()
-        if k.strip() in special_attributes
-    }
-    kwargs["url_links"] = [v for k, v in row_dict.items() if k.startswith("url_link")]
-    kwargs["xref_links"] = [v for k, v in row_dict.items() if k.startswith("xref_link")]
-    kwargs["attributes"] = {
-        k: v
-        for k, v in row_dict.items()
-        if k not in special_attributes
-        and not k.startswith("url")
-        and not k.startswith("xref")
-    }
-    return Sample(**kwargs)
-
-
-def _sample_set_from_list_of_dicts(inputs: List[dict]):
-    sample_set = SampleSet()
-    for row_dict in inputs:
-        sample_set.add_sample(_sample_from_dict(row_dict))
-    return sample_set
-
-
-def _parse_sample_set_from_tsv(filename):
-    with open(filename) as csvfile:
-        return [d for d in csv.DictReader(csvfile, delimiter="\t")]
+    @classmethod
+    def from_list(cls, inputs: List[dict]) -> Self:
+        sample_set = SampleSet()
+        for row_dict in inputs:
+            sample_set.add_sample(Sample.from_dict(row_dict))
+        return sample_set

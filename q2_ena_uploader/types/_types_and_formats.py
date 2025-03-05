@@ -8,7 +8,6 @@
 from xml.etree import ElementTree
 from qiime2.plugin import SemanticType, model, ValidationError
 from q2_ena_uploader.metadata import (
-    _sample_set_from_list_of_dicts,
     _study_from_dict,
 )
 import xml.etree.ElementTree as ET
@@ -16,6 +15,7 @@ import pandas as pd
 import csv
 
 from q2_ena_uploader.metadata.experiment import ExperimentSet
+from q2_ena_uploader.metadata.sample import SampleSet
 
 ENAMetadataSamples = SemanticType("ENAMetadataSamples")
 ENAMetadataStudy = SemanticType("ENAMetadataStudy")
@@ -52,10 +52,10 @@ class ENAMetadataSamplesFormat(model.TextFileFormat):
     def _validate_(self, level):
         self._validate()
 
-    def toXml(self):
+    def to_xml(self):
         with open(str(self), "r") as f:
             dicts = [d for d in csv.DictReader(f, delimiter="\t")]
-            elementTree = _sample_set_from_list_of_dicts(dicts).to_xml_element()
+            elementTree = SampleSet.from_list(dicts).to_xml_element()
             return ElementTree.tostring(elementTree.getroot(), encoding="utf8")
 
 
@@ -98,7 +98,7 @@ class ENAMetadataStudyFormat(model.TextFileFormat):
                 f'{",".join(missing_values)}.'
             )
 
-    def toXml(self):
+    def to_xml(self):
         df_dict = (
             pd.read_csv(str(self), header=None, index_col=0, sep="\t")
             .squeeze("columns")
@@ -125,14 +125,14 @@ class ENASubmissionReceiptFormat(model.BinaryFileFormat):
     """
 
     @staticmethod
-    def readETfromfile(filename):
+    def read_ET_from_file(filename):
         with open(filename, "r") as file:
             contents = file.read()
             return ET.fromstring(contents)
 
     def _validate(self):
         try:
-            et = self.readETfromfile(str(self))
+            et = self.read_ET_from_file(str(self))
         except ET.ParseError:
             raise ValidationError("ENA receipt is not a valid xml form.")
         receipt_element = et

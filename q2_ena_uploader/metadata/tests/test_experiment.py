@@ -310,7 +310,7 @@ class TestExperiment(TestPluginBase, CustomAssertions):
         experiment_set = ExperimentSet.from_list(tsv_attr_data)
         xml_tree = experiment_set.to_xml_element()
         self.assert_xml_equal(
-            xml_tree, expected_xml_attr, context="Testing TSV attribute handling"
+            xml_tree, expected_xml_attr
         )
 
     def test_experiment_attribute_conversion_fix(self):

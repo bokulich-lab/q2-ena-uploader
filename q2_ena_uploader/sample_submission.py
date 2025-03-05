@@ -100,13 +100,13 @@ def submit_metadata_samples(
         )
 
     if study is not None:
-        study_xml = study.toXml()
+        study_xml = study.to_xml()
         with open("study.xml", "w") as f:
             f.write(str(study_xml))
             files["PROJECT"] = ("project.xml", study_xml, "text/xml")
 
     if samples is not None:
-        samples_xml = samples.toXml()
+        samples_xml = samples.to_xml()
         with open("samples.xml", "w") as f:
             f.write(str(samples_xml))
         files["SAMPLE"] = ("samples.xml", samples_xml, "text/xml")

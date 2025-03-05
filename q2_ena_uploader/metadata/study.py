@@ -93,15 +93,6 @@ class Study:
         return tree
 
 
-def _parse_attributes(row_dict):
-    attributes = []
-    for k, v in row_dict:
-        if not k.startswith("attribute"):
-            continue
-        attributes = tuple(v.split(","))
-    return attributes
-
-
 def _study_from_dict(row_dict):
     special_attributes = {"alias", "title", "center_name", "name", "description"}
     kwargs = {
