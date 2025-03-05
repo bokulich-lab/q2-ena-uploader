@@ -5,7 +5,6 @@
 #
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
-import csv
 from typing import List
 from xml.etree import ElementTree
 
@@ -30,29 +29,29 @@ class Experiment:
         self.sample_description = sample_description
         self.platform = platform
         self.instrument_model = instrument_model
-        self.library_attributes = library_attributes if library_attributes else []
+        self.library_attributes = library_attributes if library_attributes else {}
         self.attributes = attributes if attributes else []
 
     def to_xml_element(self):
-        if self.sample_description is None:
-            raise ValueError(
-                "Sample reference id must be present for an metadata submission."
-            )
-        else:
+        if self.sample_description:
             root = ElementTree.Element(
                 "EXPERIMENT", {"alias": "exp_" + str(self.sample_description)}
             )
+        else:
+            raise ValueError(
+                "Sample reference id must be present for an metadata submission."
+            )
 
-        if self.title is not None:
+        if self.title:
             ElementTree.SubElement(root, "TITLE").text = str(self.title)
 
-        if self.study_ref is None:
-            raise ValueError(
-                "Study reference must be present for an metadata submission."
-            )
-        else:
+        if self.study_ref:
             study_element = ElementTree.SubElement(
                 root, "STUDY_REF", {"refname": self.study_ref}
+            )
+        else:
+            raise ValueError(
+                "Study reference must be present for an metadata submission."
             )
 
         design_element = ElementTree.SubElement(root, "DESIGN")
@@ -63,12 +62,9 @@ class Experiment:
         sample_description = ElementTree.SubElement(
             design_element, "SAMPLE_DESCRIPTOR", {"refname": self.sample_description}
         )
-        if len(self.platform) is None:
-            raise ValueError(
-                "Platform record must be present for an metadata submission."
-            )
-        else:
-            if self.instrument_model is None:
+
+        if self.platform:
+            if not self.instrument_model:
                 raise ValueError(
                     "Instrument model record must be present for an metadata submission."
                 )
@@ -80,9 +76,18 @@ class Experiment:
                 ElementTree.SubElement(platform_model, "INSTRUMENT_MODEL").text = (
                     self.instrument_model
                 )
+        else:
+            raise ValueError(
+                "Platform record must be present for an metadata submission."
+            )
+
         if len(self.library_attributes) == 0:
             raise ValueError(
                 "Library descriptors must be present for an metadata submission."
+            )
+        elif all([not v for k, v in self.library_attributes.items()]):
+            raise ValueError(
+                "Some of the library descriptors are empty. Please provide values for all library descriptors."
             )
         else:
             library_tree = Library(**self.library_attributes)
@@ -98,6 +103,7 @@ class Experiment:
                 )
                 ElementTree.SubElement(attribute_element, "TAG").text = tag
                 ElementTree.SubElement(attribute_element, "VALUE").text = value
+
         return root
 
     @classmethod
@@ -109,7 +115,6 @@ class Experiment:
             "platform",
             "instrument_model",
         }
-        optional_attributes = {}
         kwargs = {
             k.strip(): v.strip()
             for k, v in row_dict.items()
@@ -118,11 +123,11 @@ class Experiment:
         kwargs["library_attributes"] = {
             k: v for k, v in row_dict.items() if k.startswith("library")
         }
-        kwargs["attributes"] = {
-            k: v
+        kwargs["attributes"] = [
+            v
             for k, v in row_dict.items()
-            if k not in special_attributes and not k.startswith("library")
-        }
+            if k not in special_attributes and k.startswith("exp_attribute")
+        ]
         return cls(**kwargs)
 
 
