@@ -27,7 +27,7 @@ class Library:
         self.nominal_sdev = library_nominal_sdev
         self.library_construnction_protocol = library_construnction_protocol
 
-    def to_xm_element(self):
+    def to_xml_element(self):
         if self.library_strategy is None:
             raise ValueError(
                 "Library strategy must be present for an metadata submission."

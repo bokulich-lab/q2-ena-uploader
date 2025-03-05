@@ -91,7 +91,7 @@ class Experiment:
             )
         else:
             library_tree = Library(**self.library_attributes)
-            library_tree_element = library_tree.to_xm_element()
+            library_tree_element = library_tree.to_xml_element()
             design_element.append(library_tree_element)
 
         if len(self.attributes) > 0:
