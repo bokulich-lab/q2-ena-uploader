@@ -7,6 +7,8 @@
 # ----------------------------------------------------------------------------
 import xml.etree.ElementTree as ET
 
+from typing_extensions import Self
+
 
 class Study:
     def __init__(
@@ -92,20 +94,20 @@ class Study:
         tree = ET.ElementTree(root)
         return tree
 
-
-def _study_from_dict(row_dict):
-    special_attributes = {"alias", "title", "center_name", "name", "description"}
-    kwargs = {
-        k.strip(): v.strip()
-        for k, v in row_dict.items()
-        if k.strip() in special_attributes
-    }
-    kwargs["collaborators"] = [
-        v for k, v in row_dict.items() if k.startswith("collaborator")
-    ]
-    kwargs["attributes"] = [
-        v for k, v in row_dict.items() if k.startswith("project_attribute")
-    ]
-    kwargs["url_links"] = [v for k, v in row_dict.items() if k.startswith("url_link")]
-    kwargs["xref_links"] = [v for k, v in row_dict.items() if k.startswith("xref_link")]
-    return Study(**kwargs)
+    @classmethod
+    def from_dict(cls, row_dict: dict) -> Self:
+        special_attributes = {"alias", "title", "center_name", "name", "description"}
+        kwargs = {
+            k.strip(): v.strip()
+            for k, v in row_dict.items()
+            if k.strip() in special_attributes
+        }
+        kwargs["collaborators"] = [
+            v for k, v in row_dict.items() if k.startswith("collaborator")
+        ]
+        kwargs["attributes"] = [
+            v for k, v in row_dict.items() if k.startswith("project_attribute")
+        ]
+        kwargs["url_links"] = [v for k, v in row_dict.items() if k.startswith("url_link")]
+        kwargs["xref_links"] = [v for k, v in row_dict.items() if k.startswith("xref_link")]
+        return Study(**kwargs)

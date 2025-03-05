@@ -113,7 +113,7 @@ class TestExperiment(TestPluginBase, CustomAssertions):
         self.assertEqual(exp2.study_ref, "study_ref2")
 
     def test_experiment_set_to_xml_element(self):
-        """Test converting an ExperimentSet to an XML tree and compare with expected XML."""
+        """Test converting ExperimentSet to XML tree and compare with expected."""
         experiment_set = ExperimentSet.from_list(self.tsv_data)
         xml_tree = experiment_set.to_xml_element()
 
@@ -225,7 +225,7 @@ class TestExperiment(TestPluginBase, CustomAssertions):
         self.assertIsNotNone(single)
 
     def test_experiment_missing_library_attributes(self):
-        """Test that ValueError is raised when required library attributes are missing."""
+        """Test ValueError when required library attributes are missing."""
         # Create a dictionary with missing library attributes
         invalid_data = self.tsv_data[0].copy()
         for field in [
@@ -270,7 +270,7 @@ class TestExperiment(TestPluginBase, CustomAssertions):
             experiment.to_xml_element()
 
     def test_experiment_with_tsv_attributes(self):
-        """Test handling of experiment attributes from a TSV file with attribute columns."""
+        """Test handling of experiment attributes from TSV file with attributes."""
         # Load test data with attributes
         experiment_attr_data_path = self.get_data_path(
             "experiment/test_experiment_with_attributes.tsv"
@@ -309,16 +309,11 @@ class TestExperiment(TestPluginBase, CustomAssertions):
         # Test full ExperimentSet with attributes
         experiment_set = ExperimentSet.from_list(tsv_attr_data)
         xml_tree = experiment_set.to_xml_element()
-        self.assert_xml_equal(
-            xml_tree, expected_xml_attr
-        )
+        self.assert_xml_equal(xml_tree, expected_xml_attr)
 
     def test_experiment_attribute_conversion_fix(self):
         """Test a recommended fix for the attribute format inconsistency."""
-        # Load test data and expected XML
-        experiment_attr_data_path = self.get_data_path(
-            "experiment/test_experiment_with_attributes.tsv"
-        )
+        # Load expected XML
         expected_xml_attr_path = self.get_data_path(
             "experiment/test_experiment_with_attributes.xml"
         )

@@ -11,8 +11,10 @@ import xml.etree.ElementTree as ET
 
 import pandas as pd
 from parameterized import parameterized
+from qiime2.plugin.testing import TestPluginBase
 
-from q2_ena_uploader.metadata import _study_from_dict
+from q2_ena_uploader.metadata.study import Study
+from q2_ena_uploader.metadata.tests.test_utils import CustomAssertions
 
 
 def read_study_tsv_to_dict(filename):
@@ -22,69 +24,52 @@ def read_study_tsv_to_dict(filename):
         .to_dict()
     )
 
-
-THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-
-
-def fpath(fname):
-    return os.path.join(THIS_DIR, fname)
-
-
-def elements_equal(e1, e2):
-    if e1.tag != e2.tag:
-        return False
-    if e1.text != e2.text:
-        if e1.text != None and e2.text != None:
-            return False
-    if e1.tail != e2.tail:
-        if e1.tail != None and e2.tail != None:
-            return False
-    if e1.attrib != e2.attrib:
-        return False
-    if len(e1) != len(e2):
-        return False
-    return all(elements_equal(c1, c2) for c1, c2 in zip(e1, e2))
+def get_test_cases():
+    """Define the test cases for parameterized testing."""
+    return [
+        ("case0", 0),
+        ("case1", 1),
+        ("case2", 2),
+        ("case3", 3),
+        ("case4", 4),
+    ]
 
 
-def is_two_xml_equal(tree1, tree2):
-    root1 = tree1.getroot()
-    root2 = tree2.getroot()
-    return elements_equal(root1, root2)
+class TestStudy(TestPluginBase, CustomAssertions):
+    """Test the Study class and related functions."""
+    package = "q2_ena_uploader.metadata.tests"
 
+    def setUp(self):
+        super().setUp()
+        self.INPUT0 = read_study_tsv_to_dict(
+            self.get_data_path("study/minimal_study_structure.tsv")
+        )
+        self.INPUT1 = read_study_tsv_to_dict(self.get_data_path("study/study1.tsv"))
+        self.INPUT2 = read_study_tsv_to_dict(self.get_data_path("study/study2.tsv"))
+        self.INPUT3 = read_study_tsv_to_dict(self.get_data_path("study/study3.tsv"))
+        self.INPUT4 = read_study_tsv_to_dict(self.get_data_path("study/study4.tsv"))
 
-class CustomAssertions:
-    def assertXmlEqual(self, xml1, xml2):
-        if not is_two_xml_equal(xml1, xml2):
-            raise AssertionError("Two xml files are not equal!")
+        self.expected_xml_0 = ET.parse(self.get_data_path("study/minimal_study.xml"))
+        self.expected_xml_1 = ET.parse(self.get_data_path("study/study1.xml"))
+        self.expected_xml_2 = ET.parse(self.get_data_path("study/study2.xml"))
+        self.expected_xml_3 = ET.parse(self.get_data_path("study/study3.xml"))
+        self.expected_xml_4 = ET.parse(self.get_data_path("study/study4.xml"))
 
-
-class OptimizationContext_tests(unittest.TestCase, CustomAssertions):
-
-    INPUT0 = read_study_tsv_to_dict(fpath("data/study/minimal_study_structure.tsv"))
-    INPUT1 = read_study_tsv_to_dict(fpath("data/study/study1.tsv"))
-    INPUT2 = read_study_tsv_to_dict(fpath("data/study/study2.tsv"))
-    INPUT3 = read_study_tsv_to_dict(fpath("data/study/study3.tsv"))
-    INPUT4 = read_study_tsv_to_dict(fpath("data/study/study4.tsv"))
-
-    expected_res_0 = ET.parse(fpath("data/study/minimal_study.xml"))
-    expected_res_1 = ET.parse(fpath("data/study/study1.xml"))
-    expected_res_2 = ET.parse(fpath("data/study/study2.xml"))
-    expected_res_3 = ET.parse(fpath("data/study/study3.xml"))
-    expected_res_4 = ET.parse(fpath("data/study/study4.xml"))
-
-    @parameterized.expand(
-        [
-            (INPUT0, expected_res_0),
-            (INPUT1, expected_res_1),
-            (INPUT2, expected_res_2),
-            (INPUT3, expected_res_3),
-            (INPUT4, expected_res_4),
+    @parameterized.expand(get_test_cases())
+    def test_xml_structure(self, name, index):
+        """Test XML structure with parameterized test cases."""
+        inputs = [self.INPUT0, self.INPUT1, self.INPUT2, self.INPUT3, self.INPUT4]
+        expected_xmls = [
+            self.expected_xml_0,
+            self.expected_xml_1,
+            self.expected_xml_2,
+            self.expected_xml_3,
+            self.expected_xml_4,
         ]
-    )
-    def test_xml_structure(self, data, expected_res):
-        study = _study_from_dict(data)
+
+        study = Study.from_dict(inputs[index])
         xml = study.to_xml_element()
-        self.assertXmlEqual(xml, expected_res)
+        self.assert_xml_equal(xml, expected_xmls[index])
 
 
 if __name__ == "__main__":

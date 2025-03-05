@@ -7,15 +7,13 @@
 # ----------------------------------------------------------------------------
 from xml.etree import ElementTree
 from qiime2.plugin import SemanticType, model, ValidationError
-from q2_ena_uploader.metadata import (
-    _study_from_dict,
-)
 import xml.etree.ElementTree as ET
 import pandas as pd
 import csv
 
 from q2_ena_uploader.metadata.experiment import ExperimentSet
 from q2_ena_uploader.metadata.sample import SampleSet
+from q2_ena_uploader.metadata.study import Study
 
 ENAMetadataSamples = SemanticType("ENAMetadataSamples")
 ENAMetadataStudy = SemanticType("ENAMetadataStudy")
@@ -104,7 +102,7 @@ class ENAMetadataStudyFormat(model.TextFileFormat):
             .squeeze("columns")
             .to_dict()
         )
-        elementTree = _study_from_dict(df_dict).to_xml_element()
+        elementTree = Study.from_dict(df_dict).to_xml_element()
         return ElementTree.tostring(elementTree.getroot(), encoding="utf8")
 
     def _validate_(self, level):
