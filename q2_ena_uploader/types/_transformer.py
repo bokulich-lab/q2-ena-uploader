@@ -16,14 +16,14 @@ from ..plugin_setup import plugin
 import qiime2
 
 
-def _samples_fmt_to_metadata(ff):
+def _samples_fmt_to_metadata(ff: ENAMetadataSamplesFormat) -> qiime2.Metadata:
     with ff.open() as fh:
         df = pd.read_csv(fh, sep="\t")
         df = df.rename(columns={"alias": "id"}).set_index("id")
         return qiime2.Metadata(df)
 
 
-def study_fmt_to_metadata(ff):
+def study_fmt_to_metadata(ff: ENAMetadataStudyFormat) -> qiime2.Metadata:
     with ff.open() as fh:
         df = pd.read_csv(fh, header=None, index_col=0, delimiter="\t")
         df = df.T.rename(columns={"alias": "id"}).set_index("id")
@@ -73,7 +73,7 @@ def _6(ff: ENAMetadataExperimentFormat) -> pd.DataFrame:
         return df
 
 
-def _experiment_fmt_to_metadata(ff):
+def _experiment_fmt_to_metadata(ff: ENAMetadataExperimentFormat) -> qiime2.Metadata:
     with ff.open() as fh:
         df = pd.read_csv(fh, sep="\t")
         df = df.rename(columns={"alias": "id"}).set_index("id")

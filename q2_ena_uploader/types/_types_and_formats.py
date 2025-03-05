@@ -50,7 +50,7 @@ class ENAMetadataSamplesFormat(model.TextFileFormat):
     def _validate_(self, level):
         self._validate()
 
-    def to_xml(self):
+    def to_xml(self) -> bytes:
         with open(str(self), "r") as f:
             dicts = [d for d in csv.DictReader(f, delimiter="\t")]
             elementTree = SampleSet.from_list(dicts).to_xml_element()
@@ -62,7 +62,7 @@ ENAMetadataSamplesDirFmt = model.SingleFileDirectoryFormat(
 )
 
 
-def is_valid_value(x):
+def is_valid_value(x: object) -> bool:
     return not pd.isnull(x) and len(str(x).strip()) > 0
 
 
@@ -96,7 +96,7 @@ class ENAMetadataStudyFormat(model.TextFileFormat):
                 f'{",".join(missing_values)}.'
             )
 
-    def to_xml(self):
+    def to_xml(self) -> bytes:
         df_dict = (
             pd.read_csv(str(self), header=None, index_col=0, sep="\t")
             .squeeze("columns")
@@ -123,7 +123,7 @@ class ENASubmissionReceiptFormat(model.BinaryFileFormat):
     """
 
     @staticmethod
-    def read_ET_from_file(filename):
+    def read_ET_from_file(filename: str) -> ET.Element:
         with open(filename, "r") as file:
             contents = file.read()
             return ET.fromstring(contents)
@@ -191,7 +191,7 @@ class ENAMetadataExperimentFormat(model.TextFileFormat):
     def _validate_(self, level):
         self._validate()
 
-    def to_xml(self):
+    def to_xml(self) -> bytes:
         with open(str(self), "r") as f:
             dicts = [d for d in csv.DictReader(f, delimiter="\t")]
             element = ExperimentSet.from_list(dicts).to_xml_element()

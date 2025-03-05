@@ -10,14 +10,40 @@ import qiime2
 import os
 import time
 import pandas as pd
+from typing import Tuple, Optional, Union
 from q2_types.per_sample_sequences import CasavaOneEightSingleLanePerSampleDirFmt
 
 from q2_ena_uploader.utils import FTP_HOST
 
 
-def _upload_files(ftp, filepath, sample_id, retries=3, delay=5):
+def _upload_files(
+    ftp: ftplib.FTP, filepath: str, sample_id: str, retries: int = 3, delay: int = 5
+) -> Tuple[str, str, bool, Optional[str], str]:
     """
-    Helper function to upload single or paired files to the FTP server and return metadata.
+    Upload a single file to the ENA FTP server.
+
+    Parameters
+    ----------
+    ftp : ftplib.FTP
+        An active FTP connection to the ENA server
+    filepath : str
+        Path to the file to upload
+    sample_id : str
+        Sample ID associated with the file
+    retries : int, optional
+        Number of upload attempts before giving up, by default 3
+    delay : int, optional
+        Seconds to wait between retry attempts, by default 5
+
+    Returns
+    -------
+    tuple
+        A 5-tuple containing:
+        - sample_id (str): The sample ID
+        - filename (str): The base filename that was uploaded
+        - status (bool): Whether the upload was successful
+        - error (str or None): Error message if status is False, None otherwise
+        - action (str): Always "ADD" for uploads
     """
 
     if os.path.isfile(filepath):
@@ -39,9 +65,34 @@ def _upload_files(ftp, filepath, sample_id, retries=3, delay=5):
     return (sample_id, os.path.basename(filepath), False, "Not a file", "ADD")
 
 
-def _delete_files(ftp, filepath, sample_id, retries=3, delay=5):
+def _delete_files(
+    ftp: ftplib.FTP, filepath: str, sample_id: str, retries: int = 3, delay: int = 5
+) -> Tuple[str, str, bool, Optional[str], str]:
     """
-    Helper function to delete single or paired files to the FTP server and return metadata.
+    Delete a single file from the ENA FTP server.
+
+    Parameters
+    ----------
+    ftp : ftplib.FTP
+        An active FTP connection to the ENA server
+    filepath : str
+        Path to the local file whose basename will be deleted from the server
+    sample_id : str
+        Sample ID associated with the file
+    retries : int, optional
+        Number of delete attempts before giving up, by default 3
+    delay : int, optional
+        Seconds to wait between retry attempts, by default 5
+
+    Returns
+    -------
+    tuple
+        A 5-tuple containing:
+        - sample_id (str): The sample ID
+        - filename (str): The base filename that was deleted
+        - status (bool): Whether the deletion was successful
+        - error (str or None): Error message if status is False, None otherwise
+        - action (str): Always "DELETE" for deletions
     """
 
     if os.path.isfile(filepath):
@@ -59,7 +110,29 @@ def _delete_files(ftp, filepath, sample_id, retries=3, delay=5):
                     return (sample_id, filename, False, str(e), "DELETE")
 
 
-def _process_files(ftp, filepath, sample_id, action):
+def _process_files(
+    ftp: ftplib.FTP, filepath: str, sample_id: str, action: str
+) -> Optional[Tuple[str, str, bool, Optional[str], str]]:
+    """
+    Process a file on the ENA FTP server based on the specified action.
+
+    Parameters
+    ----------
+    ftp : ftplib.FTP
+        An active FTP connection to the ENA server
+    filepath : str
+        Path to the file to process
+    sample_id : str
+        Sample ID associated with the file
+    action : str
+        Action to perform, either "ADD" for upload or "DELETE" for deletion
+
+    Returns
+    -------
+    tuple or None
+        A 5-tuple containing processing results, or None if the action is invalid.
+        See _upload_files or _delete_files for details on the return tuple.
+    """
     if action == "ADD":
         return _upload_files(ftp, filepath, sample_id)
     elif action == "DELETE":
@@ -71,17 +144,37 @@ def transfer_files_to_ena(
     demux: CasavaOneEightSingleLanePerSampleDirFmt, action: str = "ADD"
 ) -> qiime2.Metadata:
     """
-    Transfers or deletes FASTQ files on the ENA FTP server.
+    Transfer FASTQ files to or delete them from the ENA FTP server.
 
-    Args:
-        demux:
-             'The demultiplexed sequence data to be quality filtered.'
+    This function connects to the ENA FTP server using credentials from
+    environment variables, then uploads or deletes files specified in the
+    demultiplexed sequence data manifest. For paired-end reads, both forward
+    and reverse reads are processed.
 
-        action: Str
-             '2 action types are supported : ADD as a default and DELETE.'
+    Parameters
+    ----------
+    demux : CasavaOneEightSingleLanePerSampleDirFmt
+        The demultiplexed sequence data with a manifest containing file paths
+    action : str, optional
+        Action to perform on the files, by default "ADD".
+        Supported values:
+        - "ADD": Upload files to the ENA server
+        - "DELETE": Delete files from the ENA server
 
-    Returns:
-        metadata: Qiime immutable metadata object.
+    Returns
+    -------
+    qiime2.Metadata
+        A QIIME 2 Metadata object containing details of the FTP operations:
+        - Sample IDs (index)
+        - Filenames uploaded/deleted
+        - Status of each operation (1=success, 0=failure)
+        - Error messages if any operations failed
+        - Action performed on each file
+
+    Raises
+    ------
+    RuntimeError
+        If FTP credentials are missing or if any FTP error occurs
     """
 
     username = os.getenv("ENA_USERNAME")

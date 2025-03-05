@@ -7,6 +7,7 @@
 # ----------------------------------------------------------------------------
 import os
 from xml.etree.ElementTree import Element, SubElement, tostring
+from typing import Optional
 
 import requests
 
@@ -18,6 +19,22 @@ from q2_ena_uploader.utils import ActionType, DEV_SERVER_URL, PRODUCTION_SERVER_
 
 
 def _create_submission_xml(action: ActionType, hold_date: str) -> str:
+    """
+    Create an XML submission document for ENA.
+
+    Parameters
+    ----------
+    action : ActionType
+        The type of action to perform (ADD or MODIFY)
+    hold_date : str
+        Optional date to hold the data private until.
+        Format should be YYYY-MM-DD.
+
+    Returns
+    -------
+    str
+        The submission XML as a string
+    """
     submission = Element("SUBMISSION")
     actions = SubElement(submission, "ACTIONS")
     action_element = SubElement(actions, "ACTION")
@@ -32,35 +49,50 @@ def _create_submission_xml(action: ActionType, hold_date: str) -> str:
 
 
 def submit_metadata_samples(
-    study: ENAMetadataStudyFormat = None,
-    samples: ENAMetadataSamplesFormat = None,
+    study: Optional[ENAMetadataStudyFormat] = None,
+    samples: Optional[ENAMetadataSamplesFormat] = None,
     submission_hold_date: str = "",
     action_type: str = "ADD",
     dev: bool = True,
 ) -> bytes:
     """
-    Function to sumbmit metedata of the study and samples to ENA.
-    Args:
-        study : Metadata
-                Qiime artifact containing a tsv file with the study atrributes.
-        samples : Metadata
-                Qiime artifact containing a tsv file with the samples metadata attributes.
-        username : Str
-                 ENA Webin login username
-        password : Str
-                 ENA Webin login password
-        submission_hold_date: Str
-                 The release date of the study, on which it will become public along with all submitted data.
-                 By default, this date is set to two months after the date of submission. User can
-                 specify any date within two years of the current date.
-        action_type : Str
-                  2 action types are supported : ADD as a default and MODIFY
-        dev : Bool
-            True by default. Indicates whether the data submission goes to the development server. If False, the submission
-                goes to the production server.
-    Returns:
-        submission_receipt : bytes
-                Qiime artifact containing an XML response of  ENA server.
+    Submit study and/or sample metadata to the ENA server.
+
+    This function creates the necessary XML documents for study and/or sample
+    metadata and submits them to the ENA submission service. At least one of
+    study or samples must be provided.
+
+    Parameters
+    ----------
+    study : ENAMetadataStudyFormat, optional
+        Study metadata in ENA format, by default None
+    samples : ENAMetadataSamplesFormat, optional
+        Sample metadata in ENA format, by default None
+    submission_hold_date : str, optional
+        Date until which the submission should be kept private, by default ""
+        Format should be YYYY-MM-DD.
+        If not provided, default is two months after submission date.
+        Must be within two years of the current date.
+    action_type : str, optional
+        Type of submission action, by default "ADD"
+        Supported values:
+        - "ADD": Add new data
+        - "MODIFY": Modify existing data
+    dev : bool, optional
+        Whether to use the development server, by default True
+        - True: Submit to the development server for testing
+        - False: Submit to the production server for real submissions
+
+    Returns
+    -------
+    bytes
+        The raw response content from the ENA server
+
+    Raises
+    ------
+    RuntimeError
+        If both study and samples are None
+        If ENA username or password environment variables are not set
     """
 
     username = os.getenv("ENA_USERNAME")
@@ -100,6 +132,19 @@ def submit_metadata_samples(
 
 
 def _create_cancelation_xml(target_accession: str) -> str:
+    """
+    Create an XML document for canceling a submission in ENA.
+
+    Parameters
+    ----------
+    target_accession : str
+        The accession number of the submission to cancel
+
+    Returns
+    -------
+    str
+        The cancellation XML as a string
+    """
     submission = Element("SUBMISSION")
     actions = SubElement(submission, "ACTIONS")
     action_element = SubElement(actions, "ACTION")
@@ -110,17 +155,31 @@ def _create_cancelation_xml(target_accession: str) -> str:
 
 def cancel_submission(accession_number: str, dev: bool = True) -> bytes:
     """
-    Function to cancel a submission to the ENA server. Please note that the CANCEL
-    action will be propagated from studies to all associated experiments and analyses,
-    and from experiments to all associated runs.
+    Cancel a submission to the ENA server.
 
-    Args:
-        accession_number: Str
-                         Points to the object that is being cancelled.
-    Dev : Bool
-          Indicates whether the data cancellation should be sent to the development server.
-          Set to True by default. If False, the cancellation will be sent to the production server.
+    This function creates a cancellation request and submits it to the ENA server.
+    Note that the cancellation will be propagated from studies to all associated
+    experiments and analyses, and from experiments to all associated runs.
 
+    Parameters
+    ----------
+    accession_number : str
+        Accession number of the submission to cancel.
+        This identifies the specific object being cancelled.
+    dev : bool, optional
+        Whether to use the development server, by default True
+        - True: Submit to the development server for testing
+        - False: Submit to the production server for real cancellations
+
+    Returns
+    -------
+    bytes
+        The raw response content from the ENA server
+
+    Raises
+    ------
+    RuntimeError
+        If ENA username or password environment variables are not set
     """
 
     username = os.getenv("ENA_USERNAME")
