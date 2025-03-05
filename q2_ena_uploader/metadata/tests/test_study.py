@@ -5,7 +5,6 @@
 #
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
-import os
 import unittest
 import xml.etree.ElementTree as ET
 
@@ -24,6 +23,7 @@ def read_study_tsv_to_dict(filename):
         .to_dict()
     )
 
+
 def get_test_cases():
     """Define the test cases for parameterized testing."""
     return [
@@ -37,6 +37,7 @@ def get_test_cases():
 
 class TestStudy(TestPluginBase, CustomAssertions):
     """Test the Study class and related functions."""
+
     package = "q2_ena_uploader.metadata.tests"
 
     def setUp(self):

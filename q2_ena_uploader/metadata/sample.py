@@ -115,14 +115,18 @@ class Sample:
             for k, v in row_dict.items()
             if k.strip() in special_attributes
         }
-        kwargs["url_links"] = [v for k, v in row_dict.items() if k.startswith("url_link")]
-        kwargs["xref_links"] = [v for k, v in row_dict.items() if k.startswith("xref_link")]
+        kwargs["url_links"] = [
+            v for k, v in row_dict.items() if k.startswith("url_link")
+        ]
+        kwargs["xref_links"] = [
+            v for k, v in row_dict.items() if k.startswith("xref_link")
+        ]
         kwargs["attributes"] = {
             k: v
             for k, v in row_dict.items()
             if k not in special_attributes
-               and not k.startswith("url")
-               and not k.startswith("xref")
+            and not k.startswith("url")
+            and not k.startswith("xref")
         }
         return cls(**kwargs)
 

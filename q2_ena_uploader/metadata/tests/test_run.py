@@ -18,6 +18,7 @@ from q2_ena_uploader.metadata.tests.test_utils import (
 
 class TestRun(TestPluginBase, CustomAssertions):
     """Test the Run class."""
+
     package = "q2_ena_uploader.metadata.tests"
 
     def setUp(self):
@@ -68,7 +69,7 @@ class TestRun(TestPluginBase, CustomAssertions):
             files={
                 "filename": ["filename1", "filename2"],
                 "checksum": ["checksum1", "checksum2"],
-            }
+            },
         )
 
         # Convert to XML element

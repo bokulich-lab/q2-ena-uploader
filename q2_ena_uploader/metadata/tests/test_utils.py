@@ -30,8 +30,8 @@ class CustomAssertions:
             If the XML trees are not equal, with detailed diagnostics
         """
         # Convert ElementTree objects to strings
-        xml_string1 = ET.tostring(xml1.getroot(), encoding='utf-8')
-        xml_string2 = ET.tostring(xml2.getroot(), encoding='utf-8')
+        xml_string1 = ET.tostring(xml1.getroot(), encoding="utf-8")
+        xml_string2 = ET.tostring(xml2.getroot(), encoding="utf-8")
 
         # Parse strings with lxml to create lxml Elements
         lxml_element1 = etree.fromstring(xml_string1)

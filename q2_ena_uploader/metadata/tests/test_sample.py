@@ -11,10 +11,7 @@ import xml.etree.ElementTree as ET
 
 from qiime2.plugin.testing import TestPluginBase
 
-from q2_ena_uploader.metadata.sample import (
-    Sample,
-    SampleSet
-)
+from q2_ena_uploader.metadata.sample import Sample, SampleSet
 from q2_ena_uploader.metadata.tests.test_utils import (
     CustomAssertions,
 )
@@ -22,6 +19,7 @@ from q2_ena_uploader.metadata.tests.test_utils import (
 
 class TestSample(TestPluginBase, CustomAssertions):
     """Test the Sample class and related functions."""
+
     package = "q2_ena_uploader.metadata.tests"
 
     def setUp(self):
@@ -172,9 +170,7 @@ class TestSample(TestPluginBase, CustomAssertions):
         xml_tree = sample_set.to_xml_element()
 
         # Compare with expected XML
-        self.assert_xml_equal(
-            xml_tree, self.sample1_xml
-        )
+        self.assert_xml_equal(xml_tree, self.sample1_xml)
 
 
 if __name__ == "__main__":

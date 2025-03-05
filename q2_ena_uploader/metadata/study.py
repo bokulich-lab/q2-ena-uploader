@@ -108,6 +108,10 @@ class Study:
         kwargs["attributes"] = [
             v for k, v in row_dict.items() if k.startswith("project_attribute")
         ]
-        kwargs["url_links"] = [v for k, v in row_dict.items() if k.startswith("url_link")]
-        kwargs["xref_links"] = [v for k, v in row_dict.items() if k.startswith("xref_link")]
+        kwargs["url_links"] = [
+            v for k, v in row_dict.items() if k.startswith("url_link")
+        ]
+        kwargs["xref_links"] = [
+            v for k, v in row_dict.items() if k.startswith("xref_link")
+        ]
         return Study(**kwargs)

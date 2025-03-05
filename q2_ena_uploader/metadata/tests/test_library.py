@@ -15,6 +15,7 @@ from q2_ena_uploader.metadata.tests.test_utils import CustomAssertions
 
 class TestLibrary(TestPluginBase, CustomAssertions):
     """Test the Library class."""
+
     package = "q2_ena_uploader.metadata.tests"
 
     def test_library_single_layout(self):
