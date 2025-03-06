@@ -206,7 +206,7 @@ class TestSubmitMetadataSamples(TestPluginBase):
             study=mock_study,
             samples=mock_samples,
             submission_hold_date="2023-12-31",
-            action_type="MODIFY",
+            action="MODIFY",
             dev=False,
         )
 

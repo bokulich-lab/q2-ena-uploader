@@ -76,7 +76,7 @@ class TestUploadReadsToEna(unittest.TestCase):
             samples_submission_receipt=submission_receipt_samples,
             file_transfer_metadata=file_transfer_metadata,
             submission_hold_date="2023-01-01",
-            action_type="ADD",
+            action="ADD",
             dev=True,
         )
 

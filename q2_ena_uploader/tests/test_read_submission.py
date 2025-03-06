@@ -242,7 +242,7 @@ class TestSubmitMetadataReads(TestPluginBase):
             samples_submission_receipt=mock_receipt_samples,
             file_transfer_metadata=mock_transfer_metadata,
             submission_hold_date="2023-12-31",
-            action_type="MODIFY",
+            action="MODIFY",
             dev=False,
         )
 

@@ -13,6 +13,7 @@ from q2_types.metadata import ImmutableMetadata
 from qiime2.plugin import Str, Bool
 
 import q2_ena_uploader
+from q2_ena_uploader import submit_all
 from q2_ena_uploader.types._types_and_formats import (
     ENAMetadataSamplesFormat,
     ENAMetadataSamplesDirFmt,
@@ -57,7 +58,7 @@ plugin.methods.register_function(
     parameters={
         "submission_hold_date": Str,
         "dev": Bool,
-        "action_type": Str % Choices(["ADD", "MODIFY"]),
+        "action": Str % Choices(["ADD", "MODIFY"]),
     },
     outputs=[("submission_receipt", ENASubmissionReceipt)],
     input_descriptions={
@@ -68,7 +69,7 @@ plugin.methods.register_function(
         "submission_hold_date": "Release date when the study and associated data "
         "will become publicly available (format: YYYY-MM-DD).",
         "dev": "Set to True to submit to the ENA development server for testing.",
-        "action_type": "Submission action type (ADD for new data, MODIFY for updating existing data).",
+        "action": "Submission action type (ADD for new data, MODIFY for updating existing data).",
     },
     output_descriptions={
         "submission_receipt": "Receipt containing submission details and accession numbers."
@@ -108,7 +109,7 @@ plugin.methods.register_function(
     },
     parameters={
         "submission_hold_date": Str,
-        "action_type": Str % Choices(["ADD", "MODIFY"]),
+        "action": Str % Choices(["ADD", "MODIFY"]),
         "dev": Bool,
     },
     outputs=[("submission_receipt", ENASubmissionReceipt)],
@@ -121,7 +122,7 @@ plugin.methods.register_function(
     parameter_descriptions={
         "submission_hold_date": "Release date when the data will become publicly available "
         "(format: YYYY-MM-DD).",
-        "action_type": "Submission action type (ADD for new data, MODIFY for updating existing data).",
+        "action": "Submission action type (ADD for new data, MODIFY for updating existing data).",
         "dev": "Set to True to use the ENA development server for testing.",
     },
     output_descriptions={
@@ -149,6 +150,46 @@ plugin.methods.register_function(
     },
     name="Transfer raw reads files to the ENA FTP server.",
     description="Upload sequence files to or delete sequence files from the ENA FTP server.",
+    citations=[],
+)
+
+plugin.pipelines.register_function(
+    function=submit_all,
+    inputs={
+        "demux": SampleData[SequencesWithQuality | PairedEndSequencesWithQuality],
+        "study": ENAMetadataStudy,
+        "samples": ENAMetadataSamples,
+        "experiment": ENAMetadataExperiment,
+    },
+    parameters={
+        "submission_hold_date": Str,
+        "dev": Bool,
+        "action": Str % Choices(["ADD", "MODIFY"]),
+    },
+    outputs=[
+        ("sample_submission_receipt", ENASubmissionReceipt),
+        ("read_submission_receipt", ENASubmissionReceipt),
+        ("file_upload_metadata", ImmutableMetadata),
+    ],
+    input_descriptions={
+        "demux": "Demultiplexed sequence data (single-end or paired-end reads).",
+        "study": "Study metadata in ENA-compatible format.",
+        "samples": "Sample metadata in ENA-compatible format.",
+        "experiment": "Experiment metadata in ENA-compatible format.",
+    },
+    parameter_descriptions={
+        "submission_hold_date": "Release date when the study and associated data "
+        "will become publicly available (format: YYYY-MM-DD).",
+        "dev": "Set to True to submit to the ENA development server for testing.",
+        "action": "Submission action type (ADD for new data, MODIFY for updating existing data).",
+    },
+    output_descriptions={
+        "sample_submission_receipt": "Receipt containing sample/study submission details and assigned ENA accession numbers.",
+        "read_submission_receipt": "Receipt containing read metadata submission details and accession numbers.",
+        "file_upload_metadata": "Status report of the file transfer operation.",
+    },
+    name="Submit sample/study metadata and raw reads to ENA.",
+    description="Submit study and sample metadata together with raw reads to the European Nucleotide Archive.",
     citations=[],
 )
 

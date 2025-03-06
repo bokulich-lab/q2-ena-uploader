@@ -8,6 +8,7 @@
 from .ftp_file_upload import transfer_files_to_ena
 from .read_submission import submit_metadata_reads
 from .sample_submission import cancel_submission, submit_metadata_samples
+from .all import submit_all
 
 try:
     from ._version import __version__
@@ -19,4 +20,5 @@ __all__ = [
     "submit_metadata_reads",
     "cancel_submission",
     "submit_metadata_samples",
+    "submit_all",
 ]

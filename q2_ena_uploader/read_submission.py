@@ -231,7 +231,7 @@ def submit_metadata_reads(
     samples_submission_receipt: ENASubmissionReceiptFormat,
     file_transfer_metadata: qiime2.Metadata,
     submission_hold_date: str = "",
-    action_type: str = "ADD",
+    action: str = "ADD",
     dev: bool = True,
 ) -> bytes:
     """
@@ -256,7 +256,7 @@ def submit_metadata_reads(
         Format should be YYYY-MM-DD.
         If not provided, default is two months after submission date.
         Must be within two years of the current date.
-    action_type : str, optional
+    action : str, optional
         Type of submission action, by default "ADD".
         Supported values:
         - "ADD": Add new data
@@ -301,7 +301,7 @@ def submit_metadata_reads(
 
     run_xml = _run_set_from_dict(parsed_data)
     submission_xml = _create_submission_xml(
-        ActionType.from_string(action_type), submission_hold_date
+        ActionType.from_string(action), submission_hold_date
     )
     files = {
         "SUBMISSION": ("submission.xml", submission_xml, "text/xml"),

@@ -52,7 +52,7 @@ def submit_metadata_samples(
     study: Optional[ENAMetadataStudyFormat] = None,
     samples: Optional[ENAMetadataSamplesFormat] = None,
     submission_hold_date: str = "",
-    action_type: str = "ADD",
+    action: str = "ADD",
     dev: bool = True,
 ) -> bytes:
     """
@@ -73,7 +73,7 @@ def submit_metadata_samples(
         Format should be YYYY-MM-DD.
         If not provided, default is two months after submission date.
         Must be within two years of the current date.
-    action_type : str, optional
+    action : str, optional
         Type of submission action, by default "ADD"
         Supported values:
         - "ADD": Add new data
@@ -105,7 +105,7 @@ def submit_metadata_samples(
         )
 
     xml_content = _create_submission_xml(
-        ActionType.from_string(action_type), hold_date=submission_hold_date
+        ActionType.from_string(action), hold_date=submission_hold_date
     )
     files = {"SUBMISSION": ("submission.xml", xml_content, "text/xml")}
 
