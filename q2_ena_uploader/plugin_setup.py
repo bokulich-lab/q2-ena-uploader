@@ -42,7 +42,8 @@ plugin = Plugin(
     website="https://github.com/bokulich-lab/q2-ena-uploader",
     package="q2_ena_uploader",
     description=(
-        "This is a QIIME2 plugin supporting upload of the metadata and raw data files to ENA."
+        "QIIME2 plugin for submitting metadata and raw data files to the "
+        "European Nucleotide Archive (ENA)."
     ),
     short_description="Plugin for data upload to ENA.",
 )
@@ -60,16 +61,20 @@ plugin.methods.register_function(
     },
     outputs=[("submission_receipt", ENASubmissionReceipt)],
     input_descriptions={
-        "study": "Study submission parameters.",
-        "samples": "Submission metadata of the samples.",
+        "study": "Study metadata in ENA-compatible format.",
+        "samples": "Sample metadata in ENA-compatible format.",
     },
     parameter_descriptions={
-        "submission_hold_date": "The release date of the study, on which it will become public along with all submitted data.",
-        "dev": "Set to True in case of submission to ENA development server (for testing).",
+        "submission_hold_date": "Release date when the study and associated data "
+        "will become publicly available (format: YYYY-MM-DD).",
+        "dev": "Set to True to submit to the ENA development server for testing.",
+        "action_type": "Submission action type (ADD for new data, MODIFY for updating existing data).",
     },
-    output_descriptions={"submission_receipt": "Submission summary."},
+    output_descriptions={
+        "submission_receipt": "Receipt containing submission details and accession numbers."
+    },
     name="Submit sample and/or study metadata to ENA.",
-    description="ENA Study and Samples metadata submission.",
+    description="Submit study and sample metadata to the European Nucleotide Archive.",
     citations=[],
 )
 
@@ -81,12 +86,14 @@ plugin.methods.register_function(
     outputs=[("submission_receipt", ENASubmissionReceipt)],
     input_descriptions={},
     parameter_descriptions={
-        "accession_number": "ENA unique identifier of  the object that is being cancelled.",
-        "dev": "Set to True in case of submission to ENA development server (for testing).",
+        "accession_number": "ENA accession number of the submission to cancel.",
+        "dev": "Set to True to use the ENA development server for testing.",
     },
-    output_descriptions={"submission_receipt": "Submission summary."},
+    output_descriptions={
+        "submission_receipt": "Receipt containing details of the cancellation."
+    },
     name="Cancel ENA submission.",
-    description="Cancellation of the ENA submission.",
+    description="Cancel an existing submission to the European Nucleotide Archive.",
     citations=[],
 )
 
@@ -104,19 +111,20 @@ plugin.methods.register_function(
     },
     outputs=[("submission_receipt", ENASubmissionReceipt)],
     input_descriptions={
-        "demux": "The demultiplexed sequencing data, either single-end or paired-end reads.",
-        "experiment": "Experiment submission parameters.",
+        "demux": "Demultiplexed sequence data (single-end or paired-end reads).",
+        "experiment": "Experiment metadata in ENA-compatible format.",
     },
     parameter_descriptions={
-        "submission_hold_date": "The release date of the study, on which it will become public along with all submitted data.",
-        "action_type": "Type of action to perform.",
-        "dev": "Set to True when submitting to the ENA development server (for testing).",
+        "submission_hold_date": "Release date when the data will become publicly available "
+        "(format: YYYY-MM-DD).",
+        "action_type": "Submission action type (ADD for new data, MODIFY for updating existing data).",
+        "dev": "Set to True to use the ENA development server for testing.",
     },
     output_descriptions={
-        "submission_receipt": "An artifact containing the ENA submission receipt and assigned accession numbers."
+        "submission_receipt": "Receipt containing submission details and assigned ENA accession numbers."
     },
     name="Submit raw reads metadata to ENA.",
-    description="Submit raw reads and associated metadata to the ENA.",
+    description="Submit experiment metadata and raw reads information to the European Nucleotide Archive.",
     citations=[],
 )
 
@@ -126,16 +134,17 @@ plugin.methods.register_function(
     parameters={"action": Str % Choices(["ADD", "DELETE"])},
     outputs=[("metadata", ImmutableMetadata)],
     input_descriptions={
-        "demux": "The demultiplexed sequencing data, either single-end or paired-end reads."
+        "demux": "Demultiplexed sequence data (single-end or paired-end reads)."
     },
     parameter_descriptions={
-        "action": "Type of action to perform. Use ADD for uploading files to the ENA FTP server. Use DELETE to remove files."
+        "action": "Action type: ADD to upload files to the ENA FTP server, "
+        "DELETE to remove previously uploaded files."
     },
     output_descriptions={
-        "metadata": "Status of the file transfer or deletion operation."
+        "metadata": "Status report of the file transfer or deletion operation."
     },
     name="Transfer raw reads files to the ENA FTP server.",
-    description="Transfer or delete raw reads files to/from the ENA FTP server.",
+    description="Upload sequence files to or delete sequence files from the ENA FTP server.",
     citations=[],
 )
 
