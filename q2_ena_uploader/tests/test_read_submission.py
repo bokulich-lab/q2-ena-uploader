@@ -11,17 +11,21 @@ import os
 import pandas as pd
 import io
 from xml.etree.ElementTree import fromstring
+import xml.etree.ElementTree as ET
 
 from qiime2.plugin.testing import TestPluginBase
+import qiime2
 
 from q2_ena_uploader.read_submission import (
     _create_submission_xml,
     _calculate_md5,
     _process_manifest,
     submit_metadata_reads,
+    _validate_sample_ids_match,
     DEV_SERVER_URL,
     PRODUCTION_SERVER_URL,
 )
+from q2_ena_uploader.types import ENASubmissionReceiptFormat
 from q2_ena_uploader.utils import ActionType
 
 
@@ -194,12 +198,13 @@ class TestSubmitMetadataReads(TestPluginBase):
     package = "q2_ena_uploader.tests"
 
     @patch.dict(os.environ, {"ENA_USERNAME": "test_user", "ENA_PASSWORD": "test_pass"})
+    @patch("q2_ena_uploader.read_submission._validate_sample_ids_match")
     @patch("q2_ena_uploader.read_submission._create_submission_xml")
     @patch("q2_ena_uploader.read_submission._process_manifest")
     @patch("q2_ena_uploader.read_submission._run_set_from_dict")
     @patch("q2_ena_uploader.read_submission.requests.post")
     def test_submit_metadata_reads(
-        self, mock_post, mock_run_set, mock_process, mock_create_xml
+        self, mock_post, mock_run_set, mock_process, mock_create_xml, mock_validate
     ):
         """Test submitting metadata reads with all necessary parameters."""
         # Create mock response
@@ -220,13 +225,22 @@ class TestSubmitMetadataReads(TestPluginBase):
             "<EXPERIMENT_SET>test-experiment</EXPERIMENT_SET>"
         )
 
+        # Create mock receipt and transfer metadata
+        mock_receipt_samples = MagicMock()
+        mock_transfer_metadata = MagicMock(spec=qiime2.Metadata)
+
+        # Create mock demux with test data
         mock_demux = MagicMock()
-        mock_demux.manifest = pd.DataFrame()
+        mock_demux.manifest = pd.DataFrame(
+            {"forward": ["/path/to/file1.fastq"], "reverse": [None]}, index=["sample1"]
+        )
 
         # Call the function
         result = submit_metadata_reads(
             demux=mock_demux,
             experiment=mock_experiment,
+            samples_submission_receipt=mock_receipt_samples,
+            file_transfer_metadata=mock_transfer_metadata,
             submission_hold_date="2023-12-31",
             action_type="MODIFY",
             dev=False,
@@ -236,6 +250,12 @@ class TestSubmitMetadataReads(TestPluginBase):
         self.assertEqual(result, b"<xml>Success</xml>")
 
         # Verify all mocks were called with the correct arguments
+        mock_validate.assert_called_once_with(
+            mock_demux.manifest,
+            mock_transfer_metadata,
+            mock_receipt_samples,
+            mock_experiment,
+        )
         mock_process.assert_called_once_with(mock_demux.manifest)
         mock_run_set.assert_called_once_with(
             {"sample1": {"filename": ["file1.fastq"], "checksum": ["md5"]}}
@@ -267,16 +287,138 @@ class TestSubmitMetadataReads(TestPluginBase):
         """Test that error is raised when credentials are missing."""
         mock_experiment = MagicMock()
         mock_demux = MagicMock()
+        mock_receipt_samples = MagicMock()
+        mock_transfer_metadata = MagicMock(spec=qiime2.Metadata)
 
         with self.assertRaisesRegex(RuntimeError, "Missing username or password"):
-            submit_metadata_reads(mock_demux, mock_experiment)
+            submit_metadata_reads(
+                mock_demux,
+                mock_experiment,
+                mock_receipt_samples,
+                mock_transfer_metadata,
+            )
 
-    def test_missing_experiment(self):
-        """Test that error is raised when experiment is None."""
-        mock_demux = MagicMock()
 
-        with self.assertRaisesRegex(ValueError, "Experiment file is required"):
-            submit_metadata_reads(mock_demux, None)
+class TestValidateSampleIDsMatch(TestPluginBase):
+    """Tests for the _validate_sample_ids_match function."""
+
+    package = "q2_ena_uploader.tests"
+
+    def setUp(self):
+        super().setUp()
+        # Create mock data for demux_df
+        self.demux_df = pd.DataFrame(
+            {
+                "forward": ["/path/to/sample1_R1.fastq", "/path/to/sample2_R1.fastq"],
+                "reverse": ["/path/to/sample1_R2.fastq", "/path/to/sample2_R2.fastq"],
+            },
+            index=pd.Index(["sample1", "sample2"], name="id"),
+        )
+
+        # Create mock data for file_transfer_metadata
+        self.file_transfer_metadata = qiime2.Metadata(
+            pd.DataFrame(index=pd.Index(["sample1", "sample2"], name="id"))
+        )
+
+        # Create mock data for experiment
+        self.experiment = MagicMock()
+        self.experiment.view.return_value = pd.DataFrame(
+            index=pd.Index(["sample1", "sample2"], name="id")
+        )
+
+        # Set up paths to XML files
+        self.sample_xml = self.get_data_path("sample_receipt.xml")
+        self.sample_xml_mismatch = self.get_data_path("sample_receipt_mismatch.xml")
+        self.submission_receipt_samples = ENASubmissionReceiptFormat(
+            self.sample_xml, "r"
+        )
+        self.submission_receipt_samples_mismatch = ENASubmissionReceiptFormat(
+            self.sample_xml_mismatch, "r"
+        )
+
+    def test_all_sample_ids_match(self):
+        """Test that no error is raised when all sample IDs match."""
+
+        _validate_sample_ids_match(
+            self.demux_df,
+            self.file_transfer_metadata,
+            self.submission_receipt_samples,
+            self.experiment,
+        )
+
+    def test_mismatch_in_file_transfer_metadata(self):
+        """Test mismatch between demux and file transfer metadata."""
+
+        # Modify file_transfer_metadata to introduce a mismatch
+        self.file_transfer_metadata = qiime2.Metadata(
+            pd.DataFrame(index=pd.Index(["sample1", "sample3"], name="id"))
+        )
+
+        with self.assertRaisesRegex(ValueError, "missing in file_transfer_metadata"):
+            _validate_sample_ids_match(
+                self.demux_df,
+                self.file_transfer_metadata,
+                self.submission_receipt_samples,
+                self.experiment,
+            )
+
+    def test_mismatch_in_submission_receipt_samples(self):
+        """Test mismatch between demux and submission receipt samples."""
+
+        with self.assertRaisesRegex(
+            ValueError, "missing in submission_receipt_samples"
+        ):
+            _validate_sample_ids_match(
+                self.demux_df,
+                self.file_transfer_metadata,
+                self.submission_receipt_samples_mismatch,
+                self.experiment,
+            )
+
+    def test_mismatch_in_experiment_metadata(self):
+        """Test mismatch between demux and experiment metadata."""
+        # Modify experiment to introduce a mismatch
+        self.experiment.view.return_value = pd.DataFrame(
+            index=pd.Index(["sample1", "sample3"], name="id")
+        )
+
+        with self.assertRaisesRegex(ValueError, "missing in experiment metadata"):
+            _validate_sample_ids_match(
+                self.demux_df,
+                self.file_transfer_metadata,
+                self.submission_receipt_samples,
+                self.experiment,
+            )
+
+    def test_multiple_mismatches(self):
+        """Test multiple mismatches across different sources."""
+        # Modify all sources to introduce multiple mismatches
+        self.file_transfer_metadata = qiime2.Metadata(
+            pd.DataFrame(index=pd.Index(["sample1", "sample3"], name="id"))
+        )
+        self.submission_receipt_samples.read_ET_from_file.return_value = ET.Element(
+            "RECEIPT",
+            attrib={"success": "true"},
+            children=[
+                ET.Element("SAMPLE", attrib={"alias": "sample1"}),
+                ET.Element("SAMPLE", attrib={"alias": "sample3"}),
+            ],
+        )
+        self.experiment.view.return_value = pd.DataFrame(
+            index=pd.Index(["sample1", "sample3"], name="id")
+        )
+
+        with self.assertRaises(ValueError) as context:
+            _validate_sample_ids_match(
+                self.demux_df,
+                self.file_transfer_metadata,
+                self.submission_receipt_samples_mismatch,
+                self.experiment,
+            )
+
+        self.assertIn("missing in file_transfer_metadata", str(context.exception))
+        self.assertIn("missing in submission_receipt_samples", str(context.exception))
+        self.assertIn("missing in experiment metadata", str(context.exception))
 
 
 if __name__ == "__main__":

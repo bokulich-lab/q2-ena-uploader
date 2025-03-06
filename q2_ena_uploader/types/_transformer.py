@@ -70,13 +70,14 @@ def _5(ff: ENAMetadataStudyFormat) -> qiime2.Metadata:
 def _6(ff: ENAMetadataExperimentFormat) -> pd.DataFrame:
     with ff.open() as fh:
         df = pd.read_csv(fh, delimiter="\t")
+        df = df.rename(columns={"sample_description": "id"}).set_index("id")
         return df
 
 
 def _experiment_fmt_to_metadata(ff: ENAMetadataExperimentFormat) -> qiime2.Metadata:
     with ff.open() as fh:
         df = pd.read_csv(fh, sep="\t")
-        df = df.rename(columns={"alias": "id"}).set_index("id")
+        df = df.rename(columns={"sample_description": "id"}).set_index("id")
         return qiime2.Metadata(df)
 
 

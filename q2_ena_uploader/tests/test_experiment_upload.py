@@ -9,12 +9,14 @@ import unittest
 from unittest.mock import patch, mock_open, MagicMock
 
 import pandas as pd
+import qiime2
 
 from q2_ena_uploader import submit_metadata_reads
 
 
 class TestUploadReadsToEna(unittest.TestCase):
 
+    @patch("q2_ena_uploader.read_submission._validate_sample_ids_match")
     @patch("requests.post")
     @patch("os.getenv")
     @patch("builtins.open", new_callable=mock_open, read_data=b"binary_data_for_md5")
@@ -27,15 +29,20 @@ class TestUploadReadsToEna(unittest.TestCase):
         mock_open_file,
         mock_getenv,
         mock_post,
+        mock_validate,
     ):
         # Arrange
         demux = MagicMock()
         experiment = MagicMock()
+        submission_receipt_samples = MagicMock()
+        file_transfer_metadata = MagicMock(spec=qiime2.Metadata)
+
         df = pd.DataFrame(
             {
                 "forward": ["/path/to/forward.fastq"],
                 "reverse": ["/path/to/reverse.fastq"],
-            }
+            },
+            index=["sample1"],
         )
         demux.manifest = df
 
@@ -66,12 +73,19 @@ class TestUploadReadsToEna(unittest.TestCase):
         result = submit_metadata_reads(
             demux=demux,
             experiment=experiment,
+            samples_submission_receipt=submission_receipt_samples,
+            file_transfer_metadata=file_transfer_metadata,
             submission_hold_date="2023-01-01",
             action_type="ADD",
             dev=True,
         )
 
         # Assert
+        # Verify validation was called with correct parameters
+        mock_validate.assert_called_once_with(
+            df, file_transfer_metadata, submission_receipt_samples, experiment
+        )
+
         # Check the POST request (auth and URL remain the same)
         mock_post.assert_called_once()
 

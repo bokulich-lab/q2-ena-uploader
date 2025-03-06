@@ -103,6 +103,8 @@ plugin.methods.register_function(
     inputs={
         "demux": SampleData[SequencesWithQuality | PairedEndSequencesWithQuality],
         "experiment": ENAMetadataExperiment,
+        "samples_submission_receipt": ENASubmissionReceipt,
+        "file_transfer_metadata": ImmutableMetadata,
     },
     parameters={
         "submission_hold_date": Str,
@@ -113,6 +115,8 @@ plugin.methods.register_function(
     input_descriptions={
         "demux": "Demultiplexed sequence data (single-end or paired-end reads).",
         "experiment": "Experiment metadata in ENA-compatible format.",
+        "samples_submission_receipt": "Receipt from the sample/study submission.",
+        "file_transfer_metadata": "Metadata from the file transfer operation.",
     },
     parameter_descriptions={
         "submission_hold_date": "Release date when the data will become publicly available "

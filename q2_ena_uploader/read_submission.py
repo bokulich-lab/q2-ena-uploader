@@ -11,14 +11,16 @@ from xml.etree.ElementTree import Element, SubElement, tostring
 from typing import Dict, List, Any, Optional
 
 import pandas as pd
+import qiime2
 import requests
 from q2_types.per_sample_sequences import CasavaOneEightSingleLanePerSampleDirFmt
 
 from q2_ena_uploader.types._types_and_formats import (
     ENAMetadataExperimentFormat,
+    ENASubmissionReceiptFormat,
 )
 from .metadata import _run_set_from_dict
-from .utils import ActionType, DEV_SERVER_URL, PRODUCTION_SERVER_URL
+from q2_ena_uploader.utils import ActionType, DEV_SERVER_URL, PRODUCTION_SERVER_URL
 
 
 def _create_submission_xml(action: ActionType, hold_date: str) -> str:
@@ -111,9 +113,123 @@ def _process_manifest(df: pd.DataFrame) -> Dict[str, Dict[str, List[str]]]:
     return parsed_data
 
 
+def _validate_sample_ids_match(
+    demux_df: pd.DataFrame,
+    file_transfer_metadata: qiime2.Metadata,
+    submission_receipt_samples: ENASubmissionReceiptFormat,
+    experiment: ENAMetadataExperimentFormat,
+) -> None:
+    """
+    Validate that sample IDs match exactly across all four sources.
+
+    Parameters
+    ----------
+    demux_df : pd.DataFrame
+        The demultiplexed sequence manifest with sample IDs as index.
+    file_transfer_metadata : qiime2.Metadata
+        Metadata from the file transfer operation with sample IDs as index.
+    submission_receipt_samples : ENASubmissionReceiptFormat
+        Receipt from the sample/study submission containing sample aliases.
+    experiment : ENAMetadataExperimentFormat
+        Experiment metadata in ENA format.
+
+    Raises
+    ------
+    ValueError
+        If sample IDs don't match across the sources, with details about
+        mismatches.
+    """
+    # 1. Get sample IDs from demux manifest
+    demux_sample_ids = set(demux_df.index)
+
+    # 2. Get sample IDs from file_transfer_metadata
+    file_transfer_sample_ids = set(file_transfer_metadata.to_dataframe().index)
+
+    # 3. Get sample aliases from submission_receipt_samples XML
+    receipt_sample_ids = set()
+    receipt_xml = ENASubmissionReceiptFormat.read_ET_from_file(
+        str(submission_receipt_samples)
+    )
+    for sample_elem in receipt_xml.findall(".//SAMPLE"):
+        if "alias" in sample_elem.attrib:
+            receipt_sample_ids.add(sample_elem.attrib["alias"])
+
+    # 4. Get sample IDs from experiment DataFrame
+    experiment_df = experiment.view(pd.DataFrame)
+    experiment_sample_ids = set(experiment_df.index)
+
+    # Check if all sets are equal
+    mismatch = False
+    mismatches = {}
+
+    if demux_sample_ids != file_transfer_sample_ids:
+        mismatch = True
+        mismatches["file_transfer"] = {
+            "missing": demux_sample_ids - file_transfer_sample_ids,
+            "extra": file_transfer_sample_ids - demux_sample_ids,
+        }
+
+    if demux_sample_ids != receipt_sample_ids:
+        mismatch = True
+        mismatches["receipt"] = {
+            "missing": demux_sample_ids - receipt_sample_ids,
+            "extra": receipt_sample_ids - demux_sample_ids,
+        }
+
+    if demux_sample_ids != experiment_sample_ids:
+        mismatch = True
+        mismatches["experiment"] = {
+            "missing": demux_sample_ids - experiment_sample_ids,
+            "extra": experiment_sample_ids - demux_sample_ids,
+        }
+
+    if mismatch:
+        error_msg = "Sample IDs don't match across the different sources:\n"
+
+        if "file_transfer" in mismatches:
+            if mismatches["file_transfer"]["missing"]:
+                error_msg += (
+                    f"- Samples in demux artifact but missing in file_transfer_metadata: "
+                    f"{', '.join(mismatches['file_transfer']['missing'])}\n"
+                )
+            if mismatches["file_transfer"]["extra"]:
+                error_msg += (
+                    f"- Extra samples in file_transfer_metadata not in demux artifact: "
+                    f"{', '.join(mismatches['file_transfer']['extra'])}\n"
+                )
+
+        if "receipt" in mismatches:
+            if mismatches["receipt"]["missing"]:
+                error_msg += (
+                    f"- Samples in demux artifact but missing in submission_receipt_samples: "
+                    f"{', '.join(mismatches['receipt']['missing'])}\n"
+                )
+            if mismatches["receipt"]["extra"]:
+                error_msg += (
+                    f"- Extra samples in submission_receipt_samples not in demux artifact: "
+                    f"{', '.join(mismatches['receipt']['extra'])}\n"
+                )
+
+        if "experiment" in mismatches:
+            if mismatches["experiment"]["missing"]:
+                error_msg += (
+                    f"- Samples in demux artifact but missing in experiment metadata: "
+                    f"{', '.join(mismatches['experiment']['missing'])}\n"
+                )
+            if mismatches["experiment"]["extra"]:
+                error_msg += (
+                    f"- Extra samples in experiment metadata not in demux artifact: "
+                    f"{', '.join(mismatches['experiment']['extra'])}\n"
+                )
+
+        raise ValueError(error_msg)
+
+
 def submit_metadata_reads(
     demux: CasavaOneEightSingleLanePerSampleDirFmt,
-    experiment: Optional[ENAMetadataExperimentFormat] = None,
+    experiment: ENAMetadataExperimentFormat,
+    samples_submission_receipt: ENASubmissionReceiptFormat,
+    file_transfer_metadata: qiime2.Metadata,
     submission_hold_date: str = "",
     action_type: str = "ADD",
     dev: bool = True,
@@ -128,10 +244,13 @@ def submit_metadata_reads(
     Parameters
     ----------
     demux : CasavaOneEightSingleLanePerSampleDirFmt
-        The demultiplexed sequence data containing the manifest with file paths
-    experiment : ENAMetadataExperimentFormat, optional
-        Experiment metadata in ENA format, by default None.
-        This parameter is required for submission.
+        The demultiplexed sequence data containing the manifest with file paths.
+    experiment : ENAMetadataExperimentFormat
+        Experiment metadata in ENA format.
+    samples_submission_receipt : ENASubmissionReceiptFormat
+        Receipt from the sample/study submission.
+    file_transfer_metadata : qiime2.Metadata
+        Metadata from the file transfer operation.
     submission_hold_date : str, optional
         Date until which the submission should be kept private, by default "".
         Format should be YYYY-MM-DD.
@@ -158,15 +277,9 @@ def submit_metadata_reads(
         If the experiment file is not provided
     RuntimeError
         If ENA username or password environment variables are not set
+    ValueError
+        If sample IDs don't match across the required sources
     """
-
-    if experiment is None:
-        raise ValueError("Experiment file is required for ENA submission.")
-
-    df = demux.manifest
-    parsed_data = _process_manifest(df)
-    run_xml = _run_set_from_dict(parsed_data)
-
     username = os.getenv("ENA_USERNAME")
     password = os.getenv("ENA_PASSWORD")
 
@@ -176,6 +289,17 @@ def submit_metadata_reads(
             "ENA_USERNAME and ENA_PASSWORD env vars are set."
         )
 
+    # Get the manifest DataFrame
+    df = demux.manifest
+
+    # Validate that sample IDs match across all sources
+    _validate_sample_ids_match(
+        df, file_transfer_metadata, samples_submission_receipt, experiment
+    )
+
+    parsed_data = _process_manifest(df)
+
+    run_xml = _run_set_from_dict(parsed_data)
     submission_xml = _create_submission_xml(
         ActionType.from_string(action_type), submission_hold_date
     )

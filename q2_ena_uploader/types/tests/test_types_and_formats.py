@@ -184,6 +184,10 @@ class TestTransformers(TestPluginBase):
         _, obs = self.transform_format(
             ENAMetadataExperimentFormat, pd.DataFrame, "ena_metadata_experiment.tsv"
         )
+
+        self.ena_experiment_df = self.ena_experiment_df.rename(
+            columns={"sample_description": "id"}
+        ).set_index("id")
         self.assertIsInstance(obs, pd.DataFrame)
         pd.testing.assert_frame_equal(obs, self.ena_experiment_df)
 
@@ -221,7 +225,7 @@ class TestTransformers(TestPluginBase):
         )
         ena_meta_experiment = self.ena_experiment_df
         ena_meta_experiment = ena_meta_experiment.rename(
-            columns={"alias": "id"}
+            columns={"sample_description": "id"}
         ).set_index("id")
         exp = qiime2.Metadata(ena_meta_experiment)
         self.assertEqual(obs, exp)
