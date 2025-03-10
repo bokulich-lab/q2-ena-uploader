@@ -31,6 +31,7 @@ For a more detailed description of each action, refer to the sections below.
 ### Submission workflow
 
 The submission process using q2-ena-iploader consists of several steps:
+
 0. Create [ENA account](https://www.ebi.ac.uk/ena/submit/webin/login) and obtain credentials - this should be done 24h before the actual submission.
 1. Import metadata into QIIME artifacts.
 2. Upload sample and study metadata to ENA.
@@ -121,7 +122,7 @@ qiime tools import \
 >
 > When constructing a valid experiment metadata TSV file, consider consulting one of the provided examples:
 > - [minimal](./templates/experiment-minimal.tsv)
-> - [extended](./templates/exmperiment-extended.tsv)
+> - [extended](./templates/experiment-extended.tsv)
 
 #### Step 2: Upload sample/study metadata
 1. Before uploading to ENA, you need to set two environmental variables containing your ENA credentials:
@@ -154,12 +155,12 @@ qiime tools import \
    - `--o-submission-receipt`: The output artifact containing the assigned ENA accession numbers for the submitted objects.
 
 
-   > [!NOTE]
-   > You can submit a study and metadata either separately or together; only one of the corresponding artifacts is required for submission. However, please note that to submit raw reads later, both the study and samples must already exist on the ENA server.
-   
-   > [!IMPORTANT]
-   > To perform a test submission, set the `--p-dev` parameter to `True` (this is also the default). This will submit the data to the ENA _dev_ server 
-   > (this data will be removed automatically after 24h). To submit the data to the production server, set the parameter to `False` or use the `--p-no-dev` flag.
+> [!NOTE]
+> You can submit a study and metadata either separately or together; only one of the corresponding artifacts is required for submission. However, please note that to submit raw reads later, both the study and samples must already exist on the ENA server.
+
+> [!IMPORTANT]
+> To perform a test submission, set the `--p-dev` parameter to `True` (this is also the default). This will submit the data to the ENA _dev_ server 
+> (this data will be removed automatically after 24h). To submit the data to the production server, set the parameter to `False` or use the `--p-no-dev` flag.
 
 #### Step 3: Upload raw reads
 
