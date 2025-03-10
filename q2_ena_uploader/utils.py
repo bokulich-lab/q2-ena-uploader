@@ -80,7 +80,7 @@ def assert_success(response: requests.Response) -> None:
         receipt = fromstring(response.content)
         success = receipt.get("success", "").lower()
         if success == "false":
-            error_msg = receipt.find('.//ERROR').text
+            error_msg = receipt.find(".//ERROR").text
             if error_msg:
                 warnings.warn(
                     "The response from the ENA server contained an error: '%s' - "
