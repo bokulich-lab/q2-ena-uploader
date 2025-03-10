@@ -154,16 +154,16 @@ qiime tools import \
    - `--o-submission-receipt`: The output artifact containing the assigned ENA accession numbers for the submitted objects.
 
 
-> [!INFO]
-> You can submit a study and metadata either separately or together; only one of the corresponding artifacts is required for submission. However, please note that to submit raw reads later, both the study and samples must already exist on the ENA server.
-
-> [!IMPORTANT]
-> To perform a test submission, set the `--p-dev` parameter to `True` (this is also the default). This will submit the data to the ENA _dev_ server 
-> (this data will be removed automatically after 24h). To submit the data to the production server, set the parameter to `False` or use the `--p-no-dev` flag.
+   > [!NOTE]
+   > You can submit a study and metadata either separately or together; only one of the corresponding artifacts is required for submission. However, please note that to submit raw reads later, both the study and samples must already exist on the ENA server.
+   
+   > [!IMPORTANT]
+   > To perform a test submission, set the `--p-dev` parameter to `True` (this is also the default). This will submit the data to the ENA _dev_ server 
+   > (this data will be removed automatically after 24h). To submit the data to the production server, set the parameter to `False` or use the `--p-no-dev` flag.
 
 #### Step 3: Upload raw reads
 
-> [!INFO]
+> [!NOTE]
 > Before submitting the experiment, you must first transfer your files to the ENA FTP server. 
 > Ensure again that your environment variables ENA_USERNAME and ENA_PASSWORD are properly set.
 
