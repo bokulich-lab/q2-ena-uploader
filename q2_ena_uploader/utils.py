@@ -81,16 +81,10 @@ def assert_success(response: requests.Response) -> None:
         success = receipt.get("success", "").lower()
         if success == "false":
             error_msg = receipt.find(".//ERROR").text
-            if error_msg:
-                warnings.warn(
-                    "The response from the ENA server contained an error: '%s' - "
-                    "please inspect the output artifact to learn more." % error_msg
-                )
-            else:
-                warnings.warn(
-                    "The response from the ENA server contained an error. "
-                    "Please inspect the output artifact to learn more."
-                )
+            warnings.warn(
+                "The response from the ENA server contained an error: '%s' - "
+                "please inspect the output artifact to learn more." % error_msg
+            )
     except Exception:
         # If parsing fails, we don't want to interrupt the normal flow
         warnings.warn(
