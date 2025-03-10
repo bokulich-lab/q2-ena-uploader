@@ -12,9 +12,7 @@ To develop this plugin, we followed the [ENA documentation](https://ena-docs.rea
 
 <!-- Add installation instructions here -->
 
-## Usage
-
-### Available Actions
+## Available Actions
 
 The ena-uploader offers several actions for adding, deleting, and modifying your submission. See the list below for details:
 
@@ -28,7 +26,7 @@ The ena-uploader offers several actions for adding, deleting, and modifying your
 
 For a more detailed description of each action, refer to the sections below.
 
-### Submission workflow
+## Submission workflow
 
 The submission process using q2-ena-iploader consists of several steps:
 
@@ -41,9 +39,9 @@ The submission process using q2-ena-iploader consists of several steps:
 Steps 2-4 should be performed in the specified order. Alternatively, the `submit-all` action can be used to 
 submit metadata and raw reads in a single step.
 
-#### Step 1: Import metadata
+### Step 1: Import metadata
 
-##### Study
+#### Study
 To import the metadata of a study into the corresponding QIIME artifacts, run:
 
 ```shell
@@ -62,7 +60,7 @@ qiime tools import \
 > - [minimal](./templates/study-minimal.tsv)
 > - [extended](./templates/study-extended.tsv)
 
-##### Samples
+#### Samples
 To import the sample metadata into the corresponding QIIME artifacts, run:
 
 ```shell
@@ -91,7 +89,7 @@ qiime tools import \
 > - [minimal](./templates/sample-minimal.tsv)
 > - [extended](./templates/sample-extended.tsv)
 
-##### Experiments
+#### Experiments
 To import the experiment metadata into the corresponding QIIME artifacts, run:
 
 ```shell
@@ -124,7 +122,7 @@ qiime tools import \
 > - [minimal](./templates/experiment-minimal.tsv)
 > - [extended](./templates/experiment-extended.tsv)
 
-#### Step 2: Upload sample/study metadata
+### Step 2: Upload sample/study metadata
 1. Before uploading to ENA, you need to set two environmental variables containing your ENA credentials:
 
    ```shell
@@ -162,7 +160,7 @@ qiime tools import \
 > To perform a test submission, set the `--p-dev` parameter to `True` (this is also the default). This will submit the data to the ENA _dev_ server 
 > (this data will be removed automatically after 24h). To submit the data to the production server, set the parameter to `False` or use the `--p-no-dev` flag.
 
-#### Step 3: Upload raw reads
+### Step 3: Upload raw reads
 
 > [!NOTE]
 > Before submitting the experiment, you must first transfer your files to the ENA FTP server. 
@@ -181,7 +179,7 @@ qiime ena-uploader transfer-files-to-ena \
 - `--p-action`: Specifies the action to take. The default is ADD, but you can use DELETE to remove files from the ENA FTP server.
 - `--o-metadata`: This is the output artifact containing information about the transfer or deletion status of files on the ENA FTP server.
 
-#### Step 4: Upload experiment/run metadata
+### Step 4: Upload experiment/run metadata
 > [!IMPORTANT]
 > Make sure that your credentials are configured through the environment variables `ENA_USERNAME` and `ENA_PASSWORD`.
 
