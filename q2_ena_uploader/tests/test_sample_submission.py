@@ -306,7 +306,7 @@ class TestCancelSubmission(TestPluginBase):
         self.assertEqual(result, b"<xml>Canceled</xml>")
 
         # Verify calls with specific arguments
-        mock_create_xml.assert_called_once_with(target_accession="ERP123456")
+        mock_create_xml.assert_called_once_with("ERP123456")
         mock_post.assert_called_once_with(
             DEV_SERVER_URL,
             auth=("test_user", "test_pass"),

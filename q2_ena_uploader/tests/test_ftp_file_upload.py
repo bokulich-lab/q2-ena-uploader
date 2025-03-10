@@ -345,7 +345,7 @@ class TestTransferFilesToENA(unittest.TestCase):
         mock_demux = MockCasavaOneEightSingleLanePerSampleDirFmt(manifest)
 
         # Should raise RuntimeError for missing credentials
-        with self.assertRaisesRegex(RuntimeError, "Missing ENA FTP credentials"):
+        with self.assertRaisesRegex(RuntimeError, "Missing username or password"):
             transfer_files_to_ena(mock_demux)
 
     @patch.dict(

@@ -13,7 +13,7 @@ import pandas as pd
 from typing import Tuple, Optional, Union
 from q2_types.per_sample_sequences import CasavaOneEightSingleLanePerSampleDirFmt
 
-from q2_ena_uploader.utils import FTP_HOST
+from q2_ena_uploader.utils import FTP_HOST, assert_credentials
 
 
 def _upload_files(
@@ -177,14 +177,7 @@ def transfer_files_to_ena(
         If FTP credentials are missing or if any FTP error occurs
     """
 
-    username = os.getenv("ENA_USERNAME")
-    password = os.getenv("ENA_PASSWORD")
-
-    if not username or not password:
-        raise RuntimeError(
-            "Missing ENA FTP credentials. Please set ENA_USERNAME "
-            "and ENA_PASSWORD environment variables."
-        )
+    username, password = assert_credentials()
 
     df = demux.manifest
     metadata = []

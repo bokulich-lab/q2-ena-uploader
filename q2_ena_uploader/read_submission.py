@@ -7,8 +7,9 @@
 # ----------------------------------------------------------------------------
 import hashlib
 import os
-from xml.etree.ElementTree import Element, SubElement, tostring
+from xml.etree.ElementTree import Element, SubElement, tostring, fromstring
 from typing import Dict, List, Any, Optional
+import warnings
 
 import pandas as pd
 import qiime2
@@ -20,7 +21,13 @@ from q2_ena_uploader.types._types_and_formats import (
     ENASubmissionReceiptFormat,
 )
 from .metadata import _run_set_from_dict
-from q2_ena_uploader.utils import ActionType, DEV_SERVER_URL, PRODUCTION_SERVER_URL
+from q2_ena_uploader.utils import (
+    ActionType,
+    DEV_SERVER_URL,
+    PRODUCTION_SERVER_URL,
+    assert_success,
+    assert_credentials,
+)
 
 
 def _create_submission_xml(action: ActionType, hold_date: str) -> str:
@@ -280,14 +287,7 @@ def submit_metadata_reads(
     ValueError
         If sample IDs don't match across the required sources
     """
-    username = os.getenv("ENA_USERNAME")
-    password = os.getenv("ENA_PASSWORD")
-
-    if not username or not password:
-        raise RuntimeError(
-            "Missing username or password. Please make sure "
-            "ENA_USERNAME and ENA_PASSWORD env vars are set."
-        )
+    username, password = assert_credentials()
 
     # Get the manifest DataFrame
     df = demux.manifest
@@ -310,4 +310,7 @@ def submit_metadata_reads(
     }
     url = DEV_SERVER_URL if dev else PRODUCTION_SERVER_URL
     response = requests.post(url, auth=(username, password), files=files)
+
+    assert_success(response)
+
     return response.content

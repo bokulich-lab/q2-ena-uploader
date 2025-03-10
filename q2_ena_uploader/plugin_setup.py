@@ -7,7 +7,7 @@
 # ----------------------------------------------------------------------------
 import importlib
 
-from qiime2.core.type import Choices
+from qiime2.core.type import Choices, Properties
 from qiime2.plugin import Plugin
 from q2_types.metadata import ImmutableMetadata
 from qiime2.plugin import Str, Bool

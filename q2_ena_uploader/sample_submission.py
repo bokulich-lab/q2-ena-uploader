@@ -6,8 +6,9 @@
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
 import os
-from xml.etree.ElementTree import Element, SubElement, tostring
+from xml.etree.ElementTree import Element, SubElement, tostring, fromstring
 from typing import Optional
+import warnings
 
 import requests
 
@@ -15,7 +16,13 @@ from q2_ena_uploader.types._types_and_formats import (
     ENAMetadataSamplesFormat,
     ENAMetadataStudyFormat,
 )
-from q2_ena_uploader.utils import ActionType, DEV_SERVER_URL, PRODUCTION_SERVER_URL
+from q2_ena_uploader.utils import (
+    ActionType,
+    DEV_SERVER_URL,
+    PRODUCTION_SERVER_URL,
+    assert_success,
+    assert_credentials,
+)
 
 
 def _create_submission_xml(action: ActionType, hold_date: str) -> str:
@@ -98,36 +105,35 @@ def submit_metadata_samples(
     username = os.getenv("ENA_USERNAME")
     password = os.getenv("ENA_PASSWORD")
 
-    if username is None or password is None:
+    if not username or not password:
         raise RuntimeError(
             "Missing username or password. Please make sure "
             "ENA_USERNAME and ENA_PASSWORD env vars are set."
         )
 
-    xml_content = _create_submission_xml(
-        ActionType.from_string(action), hold_date=submission_hold_date
-    )
-    files = {"SUBMISSION": ("submission.xml", xml_content, "text/xml")}
-
+    # Check that study or samples file is provided
     if study is None and samples is None:
         raise RuntimeError(
-            "Please ensure that either the Study file or the sample files are included for the ENA submission."
+            "Please ensure that either the Study file or the sample files are included "
+            "for the ENA submission."
         )
 
+    files = {}
     if study is not None:
-        study_xml = study.to_xml()
-        with open("study.xml", "w") as f:
-            f.write(str(study_xml))
-            files["PROJECT"] = ("project.xml", study_xml, "text/xml")
-
+        files["PROJECT"] = ("project.xml", study.to_xml(), "text/xml")
     if samples is not None:
-        samples_xml = samples.to_xml()
-        with open("samples.xml", "w") as f:
-            f.write(str(samples_xml))
-        files["SAMPLE"] = ("samples.xml", samples_xml, "text/xml")
+        files["SAMPLE"] = ("samples.xml", samples.to_xml(), "text/xml")
+
+    submission_xml = _create_submission_xml(
+        ActionType.from_string(action), hold_date=submission_hold_date
+    )
+    files["SUBMISSION"] = ("submission.xml", submission_xml, "text/xml")
 
     url = DEV_SERVER_URL if dev else PRODUCTION_SERVER_URL
     response = requests.post(url, auth=(username, password), files=files)
+
+    assert_success(response)
+
     return response.content
 
 
@@ -155,21 +161,16 @@ def _create_cancelation_xml(target_accession: str) -> str:
 
 def cancel_submission(accession_number: str, dev: bool = True) -> bytes:
     """
-    Cancel a submission to the ENA server.
-
-    This function creates a cancellation request and submits it to the ENA server.
-    Note that the cancellation will be propagated from studies to all associated
-    experiments and analyses, and from experiments to all associated runs.
+    Cancel a pending submission to the ENA server.
 
     Parameters
     ----------
     accession_number : str
-        Accession number of the submission to cancel.
-        This identifies the specific object being cancelled.
+        The accession number of the submission to cancel.
     dev : bool, optional
-        Whether to use the development server, by default True
+        Whether to use the development server, by default True.
         - True: Submit to the development server for testing
-        - False: Submit to the production server for real cancellations
+        - False: Submit to the production server for real submissions
 
     Returns
     -------
@@ -179,26 +180,34 @@ def cancel_submission(accession_number: str, dev: bool = True) -> bytes:
     Raises
     ------
     RuntimeError
-        If ENA username or password environment variables are not set
+        If ENA credentials are not set in environment variables
     """
-
-    username = os.getenv("ENA_USERNAME")
-    password = os.getenv("ENA_PASSWORD")
-
-    if username is None or password is None:
-        raise RuntimeError(
-            "Missing username or password. Please make sure "
-            "ENA_USERNAME and ENA_PASSWORD env vars are set."
-        )
+    username, password = assert_credentials()
 
     files = {
         "SUBMISSION": (
             "submission.xml",
-            _create_cancelation_xml(target_accession=accession_number),
+            _create_cancelation_xml(accession_number),
             "text/xml",
         )
     }
 
     url = DEV_SERVER_URL if dev else PRODUCTION_SERVER_URL
     response = requests.post(url, auth=(username, password), files=files)
+
+    # Check if the response indicates failure
+    try:
+        receipt = fromstring(response.content)
+        success = receipt.get("success", "").lower()
+        if success == "false":
+            warnings.warn(
+                "ENA cancellation failed. Please inspect the returned XML "
+                "(included in the output artifact) for error details."
+            )
+    except Exception:
+        # If parsing fails, we don't want to interrupt the normal flow
+        warnings.warn(
+            "Unable to parse ENA response. Please inspect the returned data manually."
+        )
+
     return response.content
