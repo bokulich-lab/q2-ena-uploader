@@ -31,6 +31,7 @@ For a more detailed description of each action, refer to the sections below.
 ### Submission workflow
 
 The submission process using q2-ena-iploader consists of several steps:
+0. Create [ENA account](https://www.ebi.ac.uk/ena/submit/webin/login) and obtain credentials - this should be done 24h before the actual submission.
 1. Import metadata into QIIME artifacts.
 2. Upload sample and study metadata to ENA.
 3. Transfer raw reads to the ENA FTP server.
@@ -39,7 +40,7 @@ The submission process using q2-ena-iploader consists of several steps:
 Steps 2-4 should be performed in the specified order. Alternatively, the `submit-all` action can be used to 
 submit metadata and raw reads in a single step.
 
-#### Import Metadata
+#### Step 1: Import metadata
 
 ##### Study
 To import the metadata of a study into the corresponding QIIME artifacts, run:
@@ -47,8 +48,8 @@ To import the metadata of a study into the corresponding QIIME artifacts, run:
 ```shell
 qiime tools import \
   --type ENAMetadataStudy \
-  --input-path study.tsv \
-  --output-path study.qza
+  --input-path study_metadata.tsv \
+  --output-path study_metadata.qza
 ```
 > [!TIP]
 > To create a valid study TSV file, two mandatory parameters are required: **alias** and **title**. All other parameters are optional.
@@ -66,8 +67,8 @@ To import the sample metadata into the corresponding QIIME artifacts, run:
 ```shell
 qiime tools import \
   --type ENAMetadataSamples \
-  --input-path samples.tsv \
-  --output-path samples.qza
+  --input-path sample_metadata.tsv \
+  --output-path sample_metadata.qza
 ```
 
 > [!TIP]
@@ -95,8 +96,8 @@ To import the experiment metadata into the corresponding QIIME artifacts, run:
 ```shell
 qiime tools import \
   --type ENAMetadataExperiment \
-  --input-path metadata.tsv \
-  --output-path metadata.qza
+  --input-path experiment_metadata.tsv \
+  --output-path experiment_metadata.qza
 ```
 
 > [!IMPORTANT]
@@ -115,82 +116,93 @@ qiime tools import \
 > - `library_layout`
 > - `library_nominal_length` (only for paired reads)
 > - `library_nominal_sdev` (only for paired reads)
+>
 > The field `library_construction_protocol` is optional.
 >
 > When constructing a valid experiment metadata TSV file, consider consulting one of the provided examples:
 > - [minimal](./templates/experiment-minimal.tsv)
 > - [extended](./templates/exmperiment-extended.tsv)
 
-### Upload Metadata
-
-1. Before uploading to ENA, you need to set two environmental variables. Run the following commands in your terminal:
+#### Step 2: Upload sample/study metadata
+1. Before uploading to ENA, you need to set two environmental variables containing your ENA credentials:
 
    ```shell
    export ENA_USERNAME=<Webin-XXXXXX>
    export ENA_PASSWORD=<password>
    ```
+   
+   > [!WARNING]
+   > Please ensure that your credentials are set at least 24 hours before your first submission to the ENA server.
 
-   **Note**: Please ensure that your credentials are set at least 24 hours before your first submission to the ENA server.
-
-2. Use the QIIME action to upload Study and Samples to ENA:
+2. Execute the following QIIME 2 action to submit study and sample metadata to perform a test submission to the ENA _dev_ server:
 
    ```shell
-   qiime ena-uploader upload-to-ena \
+   qiime ena-uploader submit-metadata-samples \
      --i-study study_metadata.qza \
-     --i-samples samples_metadata.qza \
-     --p-action_type \
-     --p-dev server_type \
-     --p-submission_hold_date \
-     --o-submission-receipt receipt.qza
-   ```
-
-   - `--i-study`: Artifact containing metadata of a study.
-   - `--i-samples`: Artifact containing metadata of the samples.
-   - `--p-action-type`: 2 action types are supported: ADD as a default and MODIFY.
-   - `--p-dev`: A boolean parameter (default: True), indicating whether the submission is a test.
-   - `--p-submission-hold-date`: The release date of the study, on which it will become public along with all submitted data. By default, this date is set to two months after the date of submission. Users can specify any date within two years of the current date. Accepted date format is `year-month-day`.
-   - `--output-path`: This is an output artifact containing the assigned ENA accession numbers for the submitted objects.
-
-   **Note**: You can submit a study and metadata either separately or together; only one of the corresponding artifacts is required for submission. However, please note that to submit raw reads later, both the study and samples must already exist on the ENA server.
-
-### Upload Raw Reads
-
-1. Before submitting the experiment, you must first transfer your files to the ENA FTP server. Ensure again that your environment variables ENA_USERNAME and ENA_PASSWORD are properly set.
-
-2. Use the QIIME action to transfer the fastq file to ENA FTP.
-
-   ```shell
-   qiime ena-uploader transfer-files-to-ena \
-     --i-demux CasavaOneEightSingleLanePerSampleDirFmt \
+     --i-samples sample_metadata.qza \
      --p-action ADD \
-     --o-metadata metadata.qza
-   ```
-
-   - `--i-demux`: The demultiplexed sequencing data, either single-end or paired-end reads.
-   - `--p-action`: Specifies the action to take. The default is ADD, but you can use DELETE to remove files from the ENA FTP server.
-   - `--metadata`: This is an output artifact containing information about the transfer or deletion status of files on the ENA FTP server.
-
-3. Use the QIIME action to upload Experiment to ENA:
-
-   ```shell
-   qiime ena-uploader upload-reads-to-ena \
-     --i-demux CasavaOneEightSingleLanePerSampleDirFmt \
-     --i-metadata experiment_metadata.qza \
-     --p-submission-hold-date \
-     --p-action-type server_type \
      --p-dev \
+     --p-submission-hold-date <hold date> \
      --o-submission-receipt receipt.qza
    ```
 
-   - `--i-demux`: The demultiplexed sequencing data, either single-end or paired-end reads.
-   - `--i-experiment`: Artifact containing experiments submission parameters.
-   - `--p-action_type`: 2 action types are supported: ADD as a default and MODIFY.
-   - `--p-dev`: A boolean parameter (default: True) indicating whether the submission is a test.
-   - `--p-submission_hold_date`: The release date for the data submission, determining when it will become public. The accepted date format is YYYY-MM-DD.
-   - `--output-path`: This is an output artifact containing the assigned ENA accession numbers for the submitted objects.
+   - `--i-study`: Artifact containing metadata of the study.
+   - `--i-samples`: Artifact containing metadata of the samples.
+   - `--p-action-type`: 2 action types are supported: ADD (default) and MODIFY.
+   - `--p-dev`: A boolean parameter indicating whether the submission is a test.
+   - `--p-submission-hold-date`: The release date of the study, on which it will become public along with all submitted data. By default, this date is set to two months after the date of submission. Users can specify any date within two years of the current date. Accepted date format is `YYYY-MM-DD`.
+   - `--o-submission-receipt`: The output artifact containing the assigned ENA accession numbers for the submitted objects.
+   
+   > [!INFO]
+   > You can submit a study and metadata either separately or together; only one of the corresponding artifacts is required for submission. However, please note that to submit raw reads later, both the study and samples must already exist on the ENA server.
+   
+   > [!IMPORTANT]
+   > To perform a test submission, set the `--p-dev` parameter to `True` (this is also the default). This will submit the data to the ENA _dev_ server 
+   > (this data will be removed automatically after 24h). To submit the data to the production server, set the parameter to `False` or use the `--p-no-dev` flag.
+
+#### Step 3: Upload raw reads
+> [!INFO]
+> Before submitting the experiment, you must first transfer your files to the ENA FTP server. 
+> Ensure again that your environment variables ENA_USERNAME and ENA_PASSWORD are properly set.
+
+Execute the following QIIME 2 action to transfer the FASTQ files to the ENA FTP server.
+
+```shell
+qiime ena-uploader transfer-files-to-ena \
+  --i-demux <your reads artifact> \
+  --p-action ADD \
+  --o-metadata metadata.qza
+```
+
+- `--i-demux`: The demultiplexed sequencing data, either single-end or paired-end.
+- `--p-action`: Specifies the action to take. The default is ADD, but you can use DELETE to remove files from the ENA FTP server.
+- `--o-metadata`: This is the output artifact containing information about the transfer or deletion status of files on the ENA FTP server.
+
+#### Step 4: Upload experiment/run metadata
+> [!IMPORTANT]
+> Make sure that your credentials are configured through the environment variables `ENA_USERNAME` and `ENA_PASSWORD`.
+
+Execute the following QIIME 2 action to submit experiment/run metadata to ENA:
+```shell
+qiime ena-uploader submit-metadata-reads \
+  --i-demux <your reads artifact> \
+  --i-experiment experiment_metadata.qza \
+  --p-submission-hold-date <hold date> \
+  --p-action ADD \
+  --p-dev \
+  --o-submission-receipt receipt.qza
+```
+
+- `--i-demux`: The demultiplexed sequencing data, either single-end or paired-end.
+- `--i-experiment`: Artifact containing experiments submission parameters.
+- `--p-action`: 2 action types are supported: ADD (default) and MODIFY.
+- `--p-dev`: A boolean parameter indicating whether the submission is a test.
+- `--p-submission-hold-date`: The release date for the data submission, determining when it will become public. The accepted date format is YYYY-MM-DD.
+- `--submission-receipt`: The output artifact containing the assigned ENA accession numbers for the submitted objects.
+
+> [!IMPORTANT]
+> To perform a test submission, set the `--p-dev` parameter to `True` (this is also the default). This will submit the data to the ENA _dev_ server 
+> (this data will be removed automatically after 24h). To submit the data to the production server, set the parameter to `False` or use the `--p-no-dev` flag.
 
 ## License
-
 q2-ena-uploader is released under a BSD-3-Clause license. See LICENSE for more details.
-
-
