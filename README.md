@@ -152,7 +152,7 @@ qiime tools import \
    - `--p-dev`: A boolean parameter indicating whether the submission is a test.
    - `--p-submission-hold-date`: The release date of the study, on which it will become public along with all submitted data. By default, this date is set to two months after the date of submission. Users can specify any date within two years of the current date. Accepted date format is `YYYY-MM-DD`.
    - `--o-submission-receipt`: The output artifact containing the assigned ENA accession numbers for the submitted objects.
-   
+
 > [!INFO]
 > You can submit a study and metadata either separately or together; only one of the corresponding artifacts is required for submission. However, please note that to submit raw reads later, both the study and samples must already exist on the ENA server.
 
