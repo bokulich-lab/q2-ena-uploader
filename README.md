@@ -30,7 +30,7 @@ For a more detailed description of each action, refer to the sections below.
 
 The submission process using q2-ena-iploader consists of several steps:
 
-0. Create [ENA account](https://www.ebi.ac.uk/ena/submit/webin/login) and obtain credentials - this should be done 24h before the actual submission.
+0. Create an [ENA account](https://www.ebi.ac.uk/ena/submit/webin/login) and obtain credentials - this should be done 24h before the actual submission.
 1. Import metadata into QIIME artifacts.
 2. Upload sample and study metadata to ENA.
 3. Transfer raw reads to the ENA FTP server.
@@ -142,7 +142,7 @@ qiime tools import \
      --p-action ADD \
      --p-dev \
      --p-submission-hold-date <hold date> \
-     --o-submission-receipt receipt.qza
+     --o-submission-receipt samples_receipt.qza
    ```
 
    - `--i-study`: Artifact containing metadata of the study.
@@ -172,7 +172,7 @@ Execute the following QIIME 2 action to transfer the FASTQ files to the ENA FTP 
 qiime ena-uploader transfer-files-to-ena \
   --i-demux <your reads artifact> \
   --p-action ADD \
-  --o-metadata metadata.qza
+  --o-metadata transfer_metadata.qza
 ```
 
 - `--i-demux`: The demultiplexed sequencing data, either single-end or paired-end.
@@ -188,6 +188,8 @@ Execute the following QIIME 2 action to submit experiment/run metadata to ENA:
 qiime ena-uploader submit-metadata-reads \
   --i-demux <your reads artifact> \
   --i-experiment experiment_metadata.qza \
+  --i-samples-submission-receipt samples_receipt.qza \
+  --i-file-transfer-metadata transfer_metadata.qza \
   --p-submission-hold-date <hold date> \
   --p-action ADD \
   --p-dev \
@@ -196,6 +198,8 @@ qiime ena-uploader submit-metadata-reads \
 
 - `--i-demux`: The demultiplexed sequencing data, either single-end or paired-end.
 - `--i-experiment`: Artifact containing experiments submission parameters.
+- `--i-samples-submission-receipt`: Artifact containing the submission receipt of the study and samples.
+- `--i-file-transfer-metadata`: Artifact containing the metadata of the file transfer to the ENA FTP server.
 - `--p-action`: 2 action types are supported: ADD (default) and MODIFY.
 - `--p-dev`: A boolean parameter indicating whether the submission is a test.
 - `--p-submission-hold-date`: The release date for the data submission, determining when it will become public. The accepted date format is YYYY-MM-DD.
