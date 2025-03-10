@@ -131,8 +131,8 @@ qiime tools import \
    export ENA_PASSWORD=<password>
    ```
    
-   > [!WARNING]
-   > Please ensure that your credentials are set at least 24 hours before your first submission to the ENA server.
+> [!WARNING]
+> Please ensure that your credentials are set at least 24 hours before your first submission to the ENA server.
 
 2. Execute the following QIIME 2 action to submit study and sample metadata to perform a test submission to the ENA _dev_ server:
 
@@ -153,14 +153,15 @@ qiime tools import \
    - `--p-submission-hold-date`: The release date of the study, on which it will become public along with all submitted data. By default, this date is set to two months after the date of submission. Users can specify any date within two years of the current date. Accepted date format is `YYYY-MM-DD`.
    - `--o-submission-receipt`: The output artifact containing the assigned ENA accession numbers for the submitted objects.
    
-   > [!INFO]
-   > You can submit a study and metadata either separately or together; only one of the corresponding artifacts is required for submission. However, please note that to submit raw reads later, both the study and samples must already exist on the ENA server.
-   
-   > [!IMPORTANT]
-   > To perform a test submission, set the `--p-dev` parameter to `True` (this is also the default). This will submit the data to the ENA _dev_ server 
-   > (this data will be removed automatically after 24h). To submit the data to the production server, set the parameter to `False` or use the `--p-no-dev` flag.
+> [!INFO]
+> You can submit a study and metadata either separately or together; only one of the corresponding artifacts is required for submission. However, please note that to submit raw reads later, both the study and samples must already exist on the ENA server.
+
+> [!IMPORTANT]
+> To perform a test submission, set the `--p-dev` parameter to `True` (this is also the default). This will submit the data to the ENA _dev_ server 
+> (this data will be removed automatically after 24h). To submit the data to the production server, set the parameter to `False` or use the `--p-no-dev` flag.
 
 #### Step 3: Upload raw reads
+
 > [!INFO]
 > Before submitting the experiment, you must first transfer your files to the ENA FTP server. 
 > Ensure again that your environment variables ENA_USERNAME and ENA_PASSWORD are properly set.
