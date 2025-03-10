@@ -18,18 +18,30 @@ To develop this plugin, we followed the [ENA documentation](https://ena-docs.rea
 
 The ena-uploader offers several actions for adding, deleting, and modifying your submission. See the list below for details:
 
-| Action                   | Description                                                   |
-|--------------------------|---------------------------------------------------------------|
-| `upload-to-ena`          | Metadata upload to the ENA repository.                        |
-| `cancel-ena-submission`  | Cancel ENA metadata submission.                               |
-| `transfer-files-to-ena`  | Raw files upload to the ENA FTP.                              |
-| `upload-reads-to-ena`    | Upload experiment and runs to ENA.                            |
+| Action                    | Description                                  |
+|---------------------------|----------------------------------------------|
+| `submit-metadata-samples` | Upload sample and/or study metadata to ENA.  |
+| `submit-metadata-reads`   | Upload experiment/runs metadata to ENA.      |
+| `transfer-files-to-ena`   | Upload raw read files to the ENA FTP server. |
+| `cancel-submission`       | Cancel ENA metadata submission.              |
+| `submit-all`              | Submit metadata and raw reads to ENA.        |
 
 For a more detailed description of each action, refer to the sections below.
 
-### Import Metadata
+### Submission workflow
 
-#### 1) Study
+The submission process using q2-ena-iploader consists of several steps:
+1. Import metadata into QIIME artifacts.
+2. Upload sample and study metadata to ENA.
+3. Transfer raw reads to the ENA FTP server.
+4. Upload experiment metadata to ENA.
+
+Steps 2-4 should be performed in the specified order. Alternatively, the `submit-all` action can be used to 
+submit metadata and raw reads in a single step.
+
+#### Import Metadata
+
+##### Study
 
 To import the metadata of an existing study into the corresponding QIIME artifacts, run:
 
@@ -39,11 +51,12 @@ qiime tools import \
   --input-path study.tsv \
   --output-path study.qza
 ```
-
-- `--input-path`: Path to the TSV file containing metadata of a study or samples.
-- `--output-path`: The output artifact.
-
-**Note**: When constructing a valid metadata TSV file, consider using one of the provided [templates](q2_ena_uploader/templates/). To create a valid study TSV file, two mandatory parameters are required: alias and title. All other parameters are optional. For fields such as URL links, both the description and the link should be combined into a single field in the TSV file, separated by a `|` symbol, as illustrated in the examples.
+> [!TIP]
+> To create a valid study TSV file, two mandatory parameters are required: alias and title. All other parameters are optional.
+> For fields such as URL links, both the description and the link should be combined into a single field in the TSV file, separated by a `|` symbol, as illustrated in the examples.
+> When constructing a valid metadata TSV file, consider consulting one of the provided examples:
+> - [minimal](./templates/study-minimal.tsv)
+> - [extended](./templates/study-extended.tsv)
 
 #### 2) Samples
 
