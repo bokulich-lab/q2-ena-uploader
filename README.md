@@ -42,8 +42,7 @@ submit metadata and raw reads in a single step.
 #### Import Metadata
 
 ##### Study
-
-To import the metadata of an existing study into the corresponding QIIME artifacts, run:
+To import the metadata of a study into the corresponding QIIME artifacts, run:
 
 ```shell
 qiime tools import \
@@ -52,13 +51,17 @@ qiime tools import \
   --output-path study.qza
 ```
 > [!TIP]
-> To create a valid study TSV file, two mandatory parameters are required: alias and title. All other parameters are optional.
-> For fields such as URL links, both the description and the link should be combined into a single field in the TSV file, separated by a `|` symbol, as illustrated in the examples.
-> When constructing a valid metadata TSV file, consider consulting one of the provided examples:
+> To create a valid study TSV file, two mandatory parameters are required: **alias** and **title**. All other parameters are optional.
+> 
+> For fields such as URL links, both the description and the link should be combined into a single field in the TSV file, separated by a `|` symbol.
+> The name of the filed should start with the **project_attribute_** prefix.
+> 
+> When constructing a valid study metadata TSV file, consider consulting one of the provided examples:
 > - [minimal](./templates/study-minimal.tsv)
 > - [extended](./templates/study-extended.tsv)
 
-#### 2) Samples
+##### Samples
+To import the sample metadata into the corresponding QIIME artifacts, run:
 
 ```shell
 qiime tools import \
@@ -67,13 +70,27 @@ qiime tools import \
   --output-path samples.qza
 ```
 
-**Note**: For sample submission, ENA provides metadata checklists detailing the minimal attributes required for different sample types. Please review the full range of checklists [here](https://www.ebi.ac.uk/ena/browser/checklists) before submitting your samples.
+> [!TIP]
+> For sample submission, ENA provides metadata checklists detailing the minimal attributes required for different sample types. 
+> Please review the full range of checklists [here](https://www.ebi.ac.uk/ena/browser/checklists) before submitting your samples.
 
-**Note**: When using the default checklist for all your samples, you don't need to specify the default code [ERC000011](https://www.ebi.ac.uk/ena/browser/view/ERC000011). However, if you apply multiple checklists for different samples, you must include all relevant codes in the metadata column checklist. For more examples, see [templates](q2_ena_uploader/templates/).
+> [!NOTE]
+> When using the default checklist for all your samples, you don't need to specify the default code [ERC000011](https://www.ebi.ac.uk/ena/browser/view/ERC000011). 
+> However, if you apply multiple checklists for different samples, you must include all relevant codes in the metadata column checklist.
 
-**Note**: Minimal study structure refers to the default data checklist. To create a valid TSV file, four mandatory parameters are needed for each sample: `alias` (QIIME sample id), `taxon_id`, `geographic location (country and/or sea)`, and `collection date`. See [templates](q2_ena_uploader/templates/).
+> [!IMPORTANT]
+> Minimal sample structure refers to the default data checklist. To create a valid TSV file, four mandatory parameters are needed for each sample: 
+> - `alias` (sample ID) 
+> - `taxon_id` 
+> - `geographic location (country and/or sea)`
+> - `collection date`
+>
+> When constructing a valid study metadata TSV file, consider consulting one of the provided examples:
+> - [minimal](./templates/sample-minimal.tsv)
+> - [extended](./templates/sample-extended.tsv)
 
-#### 3) Experiment
+##### Experiments
+To import the experiment metadata into the corresponding QIIME artifacts, run:
 
 ```shell
 qiime tools import \
@@ -82,9 +99,27 @@ qiime tools import \
   --output-path metadata.qza
 ```
 
-**Note**: For experiment submission, ENA supports controlled vocabulary in the metadata fields, which can be accessed [here](https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html).
+> [!IMPORTANT]
+> For experiment submission, ENA supports controlled vocabulary in the metadata fields, which can be accessed [here](https://ena-docs.readthedocs.io/en/latest/submit/reads/webin-cli.html).
 
-**Note**: The minimal experiment structure requires the following mandatory fields: `title`, `study_ref` (study alias or accession number), `sample_description` (QIIME sample id), `platform`, `instrument_model`, `library_strategy`, `library_source`, `library_selection`, `library_layout`, `library_nominal_length` (only for paired reads), `library_nominal_sdev` (only for paired reads). The field `library_construnction_protocol` is optional. For more details, see the [templates](q2_ena_uploader/templates/).
+> [!IMPORTANT]
+> The minimal experiment structure requires the following mandatory fields: 
+> - `title`
+> - `study_ref` (study alias or accession number - should correspond to the alias indicated in the study metadata)
+> - `sample_description` (sample id)
+> - `platform`
+> - `instrument_model`
+> - `library_strategy`
+> - `library_source`
+> - `library_selection`
+> - `library_layout`
+> - `library_nominal_length` (only for paired reads)
+> - `library_nominal_sdev` (only for paired reads)
+> The field `library_construction_protocol` is optional.
+>
+> When constructing a valid experiment metadata TSV file, consider consulting one of the provided examples:
+> - [minimal](./templates/experiment-minimal.tsv)
+> - [extended](./templates/exmperiment-extended.tsv)
 
 ### Upload Metadata
 
