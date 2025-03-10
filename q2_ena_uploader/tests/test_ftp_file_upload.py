@@ -7,10 +7,11 @@
 # ----------------------------------------------------------------------------
 import ftplib
 import unittest
+from unittest.mock import patch, MagicMock, mock_open
+
+import numpy as np
 import pandas as pd
 import qiime2
-import numpy as np
-from unittest.mock import patch, MagicMock, mock_open
 from pandas.testing import assert_frame_equal
 
 from q2_ena_uploader.ftp_file_upload import (

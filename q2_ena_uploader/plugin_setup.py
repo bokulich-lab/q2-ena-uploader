@@ -7,13 +7,21 @@
 # ----------------------------------------------------------------------------
 import importlib
 
-from qiime2.core.type import Choices, Properties
-from qiime2.plugin import Plugin
 from q2_types.metadata import ImmutableMetadata
+from q2_types.per_sample_sequences import (
+    SequencesWithQuality,
+    PairedEndSequencesWithQuality,
+)
+from q2_types.sample_data import SampleData
+from qiime2.core.type import Choices
+from qiime2.plugin import Plugin
 from qiime2.plugin import Str, Bool
 
 import q2_ena_uploader
 from q2_ena_uploader import submit_all
+from q2_ena_uploader.ftp_file_upload import transfer_files_to_ena
+from q2_ena_uploader.read_submission import submit_metadata_reads
+from q2_ena_uploader.sample_submission import submit_metadata_samples, cancel_submission
 from q2_ena_uploader.types._types_and_formats import (
     ENAMetadataSamplesFormat,
     ENAMetadataSamplesDirFmt,
@@ -28,14 +36,6 @@ from q2_ena_uploader.types._types_and_formats import (
     ENAMetadataExperiment,
     ENAMetadataExperimentDirFmt,
 )
-from q2_types.sample_data import SampleData
-from q2_types.per_sample_sequences import (
-    SequencesWithQuality,
-    PairedEndSequencesWithQuality,
-)
-from q2_ena_uploader.sample_submission import submit_metadata_samples, cancel_submission
-from q2_ena_uploader.read_submission import submit_metadata_reads
-from q2_ena_uploader.ftp_file_upload import transfer_files_to_ena
 
 plugin = Plugin(
     name="ena-uploader",

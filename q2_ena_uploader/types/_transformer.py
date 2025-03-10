@@ -6,6 +6,8 @@
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
 import pandas as pd
+import qiime2
+
 from ._types_and_formats import (
     ENAMetadataSamplesFormat,
     ENAMetadataStudyFormat,
@@ -13,7 +15,6 @@ from ._types_and_formats import (
     ENAMetadataExperimentFormat,
 )
 from ..plugin_setup import plugin
-import qiime2
 
 
 def _samples_fmt_to_metadata(ff: ENAMetadataSamplesFormat) -> qiime2.Metadata:

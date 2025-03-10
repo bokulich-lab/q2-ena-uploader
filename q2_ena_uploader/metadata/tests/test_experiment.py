@@ -5,9 +5,9 @@
 #
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
+import csv
 import unittest
 import xml.etree.ElementTree as ET
-import csv
 
 from qiime2.plugin.testing import TestPluginBase
 

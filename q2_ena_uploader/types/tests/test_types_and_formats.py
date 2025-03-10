@@ -1,9 +1,7 @@
 import unittest
-import qiime2
+
 import pandas as pd
-import xml.etree.ElementTree as ET
-
-
+import qiime2
 from qiime2.plugin import ValidationError
 from qiime2.plugin.testing import TestPluginBase
 

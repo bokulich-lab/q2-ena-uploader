@@ -5,11 +5,12 @@
 #
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
-from xml.etree import ElementTree
-from qiime2.plugin import SemanticType, model, ValidationError
-import xml.etree.ElementTree as ET
-import pandas as pd
 import csv
+import xml.etree.ElementTree as ET
+from xml.etree import ElementTree
+
+import pandas as pd
+from qiime2.plugin import SemanticType, model, ValidationError
 
 from q2_ena_uploader.metadata.experiment import ExperimentSet
 from q2_ena_uploader.metadata.sample import SampleSet

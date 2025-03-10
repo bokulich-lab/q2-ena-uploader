@@ -5,16 +5,15 @@
 #
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
-import unittest
-from unittest.mock import patch, MagicMock, mock_open, call
 import os
-import pandas as pd
-import io
-from xml.etree.ElementTree import fromstring
+import unittest
 import xml.etree.ElementTree as ET
+from unittest.mock import patch, MagicMock, mock_open, call
+from xml.etree.ElementTree import fromstring
 
-from qiime2.plugin.testing import TestPluginBase
+import pandas as pd
 import qiime2
+from qiime2.plugin.testing import TestPluginBase
 
 from q2_ena_uploader.read_submission import (
     _create_submission_xml,
@@ -22,7 +21,6 @@ from q2_ena_uploader.read_submission import (
     _process_manifest,
     submit_metadata_reads,
     _validate_sample_ids_match,
-    DEV_SERVER_URL,
     PRODUCTION_SERVER_URL,
 )
 from q2_ena_uploader.types import ENASubmissionReceiptFormat

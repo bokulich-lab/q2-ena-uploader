@@ -5,10 +5,10 @@
 #
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
+import os
 import unittest
 from unittest.mock import patch, MagicMock, mock_open
 from xml.etree.ElementTree import fromstring
-import os
 
 from qiime2.plugin.testing import TestPluginBase
 

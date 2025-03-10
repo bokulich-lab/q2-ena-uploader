@@ -11,7 +11,6 @@ import warnings
 from unittest.mock import patch, Mock
 
 import requests
-
 from qiime2.plugin.testing import TestPluginBase
 
 from q2_ena_uploader.utils import assert_credentials, assert_success, ActionType

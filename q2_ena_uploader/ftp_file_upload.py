@@ -6,11 +6,12 @@
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
 import ftplib
-import qiime2
 import os
 import time
+from typing import Tuple, Optional
+
 import pandas as pd
-from typing import Tuple, Optional, Union
+import qiime2
 from q2_types.per_sample_sequences import CasavaOneEightSingleLanePerSampleDirFmt
 
 from q2_ena_uploader.utils import FTP_HOST, assert_credentials

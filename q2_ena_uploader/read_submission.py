@@ -6,10 +6,8 @@
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
 import hashlib
-import os
-from xml.etree.ElementTree import Element, SubElement, tostring, fromstring
-from typing import Dict, List, Any, Optional
-import warnings
+from typing import Dict, List
+from xml.etree.ElementTree import Element, SubElement, tostring
 
 import pandas as pd
 import qiime2
@@ -20,7 +18,6 @@ from q2_ena_uploader.types._types_and_formats import (
     ENAMetadataExperimentFormat,
     ENASubmissionReceiptFormat,
 )
-from .metadata import _run_set_from_dict
 from q2_ena_uploader.utils import (
     ActionType,
     DEV_SERVER_URL,
@@ -28,6 +25,7 @@ from q2_ena_uploader.utils import (
     assert_success,
     assert_credentials,
 )
+from .metadata import _run_set_from_dict
 
 
 def _create_submission_xml(action: ActionType, hold_date: str) -> str:

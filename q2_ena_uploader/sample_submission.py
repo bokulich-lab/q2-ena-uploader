@@ -6,9 +6,9 @@
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
 import os
-from xml.etree.ElementTree import Element, SubElement, tostring, fromstring
-from typing import Optional
 import warnings
+from typing import Optional
+from xml.etree.ElementTree import Element, SubElement, tostring, fromstring
 
 import requests
 
