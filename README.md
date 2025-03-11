@@ -31,7 +31,7 @@ For a more detailed description of each action, refer to the sections below.
   <img src="img/workflow.png" alt="Submission workflow" width="700"/>
 </p>
 
-The submission process using _q2-ena-uploader_ consists of several steps:
+The submission process using the _q2-ena-uploader_ consists of several steps:
 
 0. Create an [ENA account](https://www.ebi.ac.uk/ena/submit/webin/login) and obtain credentials - this should be done 24h before the actual submission.
 1. Import metadata into QIIME artifacts.
@@ -40,7 +40,7 @@ The submission process using _q2-ena-uploader_ consists of several steps:
 4. Upload experiment metadata to ENA.
 
 Steps 2-4 should be performed in the specified order. Alternatively, the `submit-all` action can be used to 
-submit metadata and raw reads in a single step.
+submit metadata and raw reads in a single step. To jump to the section on simplified submission, click [here](#simplified-submission-workflow).
 
 ### Step 1: Import metadata
 
@@ -211,6 +211,27 @@ qiime ena-uploader submit-metadata-reads \
 > [!IMPORTANT]
 > To perform a test submission, set the `--p-dev` parameter to `True` (this is also the default). This will submit the data to the ENA _dev_ server 
 > (this data will be removed automatically after 24h). To submit the data to the production server, set the parameter to `False` or use the `--p-no-dev` flag.
+
+## Simplified submission workflow
+To submit all the metadata and raw reads in a single step, use the `submit-all` action. This action will perform all 
+the steps which are required for the submission in the correct order. To see details about the individual steps and 
+required inputs please have a look at respective sections above.
+
+To submit using the simplified procedure, execute the following command:
+
+```shell
+qiime ena-uploader submit-all \
+  --i-study study_metadata.qza \
+  --i-samples sample_metadata.qza \
+  --i-experiment experiment_metadata.qza \
+  --i-demux <your reads artifact> \
+  --p-submission-hold-date <hold date> \
+  --p-dev \
+  --p-action ADD \
+  --o-sample-submission-receipt samples_receipt.qza \
+  --o-read-submission-receipt reads_receipt.qza \
+  --o-file-upload-metadata upload_metadata.qza
+```
 
 ## License
 q2-ena-uploader is released under a BSD-3-Clause license. See LICENSE for more details.
