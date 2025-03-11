@@ -27,6 +27,9 @@ The ena-uploader offers several actions for adding, deleting, and modifying your
 For a more detailed description of each action, refer to the sections below.
 
 ## Submission workflow
+<p align="center">
+  <img src="img/workflow.png" alt="Submission workflow" width="700"/>
+</p>
 
 The submission process using q2-ena-iploader consists of several steps:
 
