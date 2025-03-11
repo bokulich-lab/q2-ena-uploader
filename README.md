@@ -31,7 +31,7 @@ For a more detailed description of each action, refer to the sections below.
   <img src="img/workflow.png" alt="Submission workflow" width="700"/>
 </p>
 
-The submission process using q2-ena-iploader consists of several steps:
+The submission process using _q2-ena-uploader_ consists of several steps:
 
 0. Create an [ENA account](https://www.ebi.ac.uk/ena/submit/webin/login) and obtain credentials - this should be done 24h before the actual submission.
 1. Import metadata into QIIME artifacts.
