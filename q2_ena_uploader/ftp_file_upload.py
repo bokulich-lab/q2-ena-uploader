@@ -9,6 +9,9 @@ import ftplib
 import os
 import time
 from typing import Tuple, Optional
+from urllib.parse import urlparse
+import socks
+import socket
 
 import pandas as pd
 import qiime2
@@ -141,6 +144,34 @@ def _process_files(
     return None
 
 
+def setup_proxy():
+    """
+    Set up a proxy connection using environment variables.
+
+    Returns
+    -------
+    tuple
+        A tuple containing the proxy host, proxy port, and proxy type.
+    """
+    proxy_url = os.getenv('http_proxy') or os.getenv('https_proxy')
+    proxy_host, proxy_port, proxy_type = None, None, 'HTTP'
+
+    if proxy_url:
+        parsed_url = urlparse(proxy_url)
+        proxy_host = parsed_url.hostname
+        proxy_port = parsed_url.port
+        proxy_type = 'HTTP' if parsed_url.scheme == 'http' else 'HTTPS'
+        print(f"Proxy detected: {proxy_type} proxy at {proxy_host}:{proxy_port}")
+
+    if proxy_host and proxy_port:
+        print("Setting up proxy connection...")
+        socks.set_default_proxy(socks.HTTP, proxy_host, proxy_port)
+        socket.socket = socks.socksocket
+        print("Proxy connection established.")
+
+    return proxy_host, proxy_port, proxy_type
+
+
 def transfer_files_to_ena(
     demux: CasavaOneEightSingleLanePerSampleDirFmt, action: str = "ADD"
 ) -> qiime2.Metadata:
@@ -179,6 +210,8 @@ def transfer_files_to_ena(
     """
 
     username, password = assert_credentials()
+
+    setup_proxy()
 
     df = demux.manifest
     metadata = []
