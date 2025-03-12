@@ -1,4 +1,6 @@
 # q2-ena-uploader
+![CI](https://github.com/bokulich-lab/q2-ena-uploader/actions/workflows/ci.yaml/badge.svg)
+[![codecov](https://codecov.io/gh/bokulich-lab/q2-ena-uploader/graph/badge.svg?token=PSCAYJUP01)](https://codecov.io/gh/bokulich-lab/q2-ena-uploader)
 
 The **q2-ena-uploader** is a [QIIME 2](https://qiime2.org/) plugin designed for the programmatic submission of metadata and raw sequence reads to the European Nucleotide Archive (ENA).
 
