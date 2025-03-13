@@ -24,10 +24,10 @@ test:
   - parameterized
   imports:
   - q2_ena_uploader
-  - qiime2.plugins.ena_uplaoder
+  - qiime2.plugins.ena_uploader
   commands:
   - pytest --pyargs q2_ena_uploader
 about:
-  home: https://github.com/bokulich-lab/q2-ena-uplaoder
+  home: https://github.com/bokulich-lab/q2-ena-uploader
   license: BSD-3-Clause
   license_family: BSD
