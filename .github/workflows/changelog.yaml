@@ -1,10 +1,13 @@
 name: Changelog
 on:
   release:
-    types: [created]
-  push:
-    branches: [ "main" ]
+    types:
+      - "published"
 
 jobs:
-  changelog:
+  release:
     uses: bokulich-lab/utilities/.github/workflows/generate-changelog.yaml@main
+  test:
+    uses: bokulich-lab/utilities/.github/workflows/ci.yaml@main
+    with:
+      distro: tiny

@@ -153,14 +153,14 @@ def setup_proxy():
     tuple
         A tuple containing the proxy host, proxy port, and proxy type.
     """
-    proxy_url = os.getenv('http_proxy') or os.getenv('https_proxy')
-    proxy_host, proxy_port, proxy_type = None, None, 'HTTP'
+    proxy_url = os.getenv("http_proxy") or os.getenv("https_proxy")
+    proxy_host, proxy_port, proxy_type = None, None, "HTTP"
 
     if proxy_url:
         parsed_url = urlparse(proxy_url)
         proxy_host = parsed_url.hostname
         proxy_port = parsed_url.port
-        proxy_type = 'HTTP' if parsed_url.scheme == 'http' else 'HTTPS'
+        proxy_type = "HTTP" if parsed_url.scheme == "http" else "HTTPS"
         print(f"Proxy detected: {proxy_type} proxy at {proxy_host}:{proxy_port}")
 
     if proxy_host and proxy_port:
