@@ -10,6 +10,8 @@ import xml.etree.ElementTree as ET
 from xml.etree import ElementTree
 
 import pandas as pd
+import q2_ena_uploader
+import qiime2
 from qiime2.plugin import SemanticType, model, ValidationError
 
 from q2_ena_uploader.metadata.experiment import ExperimentSet
@@ -98,11 +100,14 @@ class ENAMetadataStudyFormat(model.TextFileFormat):
             )
 
     def to_xml(self) -> bytes:
-        df_dict = (
-            pd.read_csv(str(self), header=None, index_col=0, sep="\t")
-            .squeeze("columns")
-            .to_dict()
-        )
+        df = pd.read_csv(str(self), header=None, index_col=0, sep="\t")
+        df.loc["project_attribute_uploader"] = {
+            1: f"q2-ena-uploader|{q2_ena_uploader.__version__}"
+        }
+        df.loc["project_attribute_qiime2"] = {
+            1: f"qiime2|{qiime2.__version__}"
+        }
+        df_dict = df.squeeze("columns").to_dict()
         elementTree = Study.from_dict(df_dict).to_xml_element()
         return ElementTree.tostring(elementTree.getroot(), encoding="utf8")
 
