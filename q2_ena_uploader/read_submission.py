@@ -118,6 +118,24 @@ def _process_manifest(df: pd.DataFrame) -> Dict[str, Dict[str, List[str]]]:
     return parsed_data
 
 
+def _remove_suffixes(ids: set):
+    base_ids = set()
+    ids_with_suffixes = set()
+
+    for _id in ids:
+        if _id.endswith('_f') or _id.endswith('_r'):
+            base_id = _id[:-2]
+            ids_with_suffixes.add(base_id)
+        else:
+            base_ids.add(_id)
+
+    # Check if all base IDs have both suffixes
+    for base_id in ids_with_suffixes:
+        if f"{base_id}_f" in ids and f"{base_id}_r" in ids:
+            base_ids.add(base_id)
+
+    return base_ids
+
 def _validate_sample_ids_match(
     demux_df: pd.DataFrame,
     file_transfer_metadata: qiime2.Metadata,
@@ -149,6 +167,9 @@ def _validate_sample_ids_match(
 
     # 2. Get sample IDs from file_transfer_metadata
     file_transfer_sample_ids = set(file_transfer_metadata.to_dataframe().index)
+
+    ## if reads were paired-end, sample ids will have _f and _r suffixes - remove them
+    file_transfer_sample_ids = _remove_suffixes(file_transfer_sample_ids)
 
     # 3. Get sample aliases from submission_receipt_samples XML
     receipt_sample_ids = set()
