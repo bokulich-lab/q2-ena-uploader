@@ -26,7 +26,7 @@ class TestLibrary(TestPluginBase, CustomAssertions):
             library_source="GENOMIC",
             library_selection="RANDOM",
             library_layout="SINGLE",
-            library_construnction_protocol="Standard protocol",
+            library_construction_protocol="Standard protocol",
         )
 
         # Convert to XML
@@ -71,7 +71,7 @@ class TestLibrary(TestPluginBase, CustomAssertions):
             library_layout="PAIRED",
             library_nominal_length="300",
             library_nominal_sdev="30",
-            library_construnction_protocol="Standard paired protocol",
+            library_construction_protocol="Standard paired protocol",
         )
 
         # Convert to XML
