@@ -67,7 +67,7 @@ class Experiment:
             if not self.instrument_model:
                 raise ValueError(
                     "Instrument model record must be present for "
-                    "an metadata submission."
+                    "a metadata submission."
                 )
             else:
                 platform_el = ElementTree.SubElement(root, "PLATFORM")

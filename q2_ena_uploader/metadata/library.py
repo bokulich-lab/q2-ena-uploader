@@ -64,8 +64,8 @@ class Library:
             if self.library_layout.lower() == "paired":
                 if self.nominal_length is None or self.nominal_sdev is None:
                     raise ValueError(
-                        "Paired library layout requires nominal_leght and nominal_sdev "
-                        "values present for an metadata submission."
+                        "Paired library layout requires nominal_length and nominal_sdev "
+                        "values present for a metadata submission."
                     )
                 else:
                     library_layout_el = ElementTree.SubElement(
