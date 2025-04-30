@@ -59,8 +59,8 @@ class TestUploadReadsToEna(unittest.TestCase):
         mock_run_from_dict.return_value = b"""<?xml version='1.0' encoding='utf-8'?>
         <RUN_SET><RUN alias="run_0"><EXPERIMENT_REF refname="exp_0" />
         <DATA_BLOCK><FILES>
-        <FILE filename="forward.fastq" filetype="fastq" checksum_method="MD5" checksum="1d6cb0f96a77cc7d374818ce7113e6e7" />
-        <FILE filename="reverse.fastq" filetype="fastq" checksum_method="MD5" checksum="1d6cb0f96a77cc7d374818ce7113e6e7" />
+        <FILE filename="forward.fastq" filetype="fastq" checksum_method="MD5" checksum="1d6cb0f96a77cc7d374818ce7113e6e7" /> # noqa E501
+        <FILE filename="reverse.fastq" filetype="fastq" checksum_method="MD5" checksum="1d6cb0f96a77cc7d374818ce7113e6e7" /> # noqa E501
         </FILES></DATA_BLOCK></RUN></RUN_SET>"""
         mock_getenv.side_effect = lambda key: (
             "mock_user" if key == "ENA_USERNAME" else "mock_pass"
@@ -104,7 +104,8 @@ class TestUploadReadsToEna(unittest.TestCase):
         self.assertIn("<SUBMISSION>", submission_content)
         self.assertIn("<ACTION><ADD /></ACTION>", submission_content)
 
-        # Since RUN is a byte string and can differ in format, we can still check key parts
+        # Since RUN is a byte string and can differ in format,
+        # we can still check key parts
         run_content = actual_call_args["files"]["RUN"][1]
         self.assertIn(b"<RUN_SET>", run_content)
         self.assertIn(b'<FILE filename="forward.fastq"', run_content)

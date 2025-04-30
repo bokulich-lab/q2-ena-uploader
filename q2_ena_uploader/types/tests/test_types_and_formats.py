@@ -70,8 +70,8 @@ class TestFormats(TestPluginBase):
         format = ENAMetadataSamplesFormat(meta_path, mode="r")
         with self.assertRaisesRegex(
             ValidationError,
-            "Some required sample attributes are missing from the metadata upload file: "
-            "alias,taxon_id.",
+            "Some required sample attributes are missing from "
+            "the metadata upload file: alias,taxon_id.",
         ):
             format.validate()
 
@@ -134,8 +134,8 @@ class TestFormats(TestPluginBase):
         format = ENAMetadataExperimentFormat(meta_path, mode="r")
         with self.assertRaisesRegex(
             ValidationError,
-            "Some required metadata attributes are missing from the metadata upload file: "
-            "study_ref,sample_description.",
+            "Some required metadata attributes are missing from the "
+            "metadata upload file: study_ref,sample_description.",
         ):
             format.validate()
 
@@ -144,8 +144,9 @@ class TestFormats(TestPluginBase):
         format = ENAMetadataExperimentFormat(meta_path, mode="r")
         with self.assertRaisesRegex(
             ValidationError,
-            "Some experiments are missing values in the following fields: "
-            "study_ref,sample_description,instrument_model,library_strategy,library_source.",
+            "Some experiments are missing values in the following "
+            "fields: study_ref,sample_description,instrument_model,library_strategy,"
+            "library_source.",
         ):
             format.validate()
 

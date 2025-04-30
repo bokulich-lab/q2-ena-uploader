@@ -46,7 +46,7 @@ class Experiment:
             ElementTree.SubElement(root, "TITLE").text = str(self.title)
 
         if self.study_ref:
-            study_element = ElementTree.SubElement(
+            _ = ElementTree.SubElement(
                 root, "STUDY_REF", {"refname": self.study_ref}
             )
         else:
@@ -55,18 +55,19 @@ class Experiment:
             )
 
         design_element = ElementTree.SubElement(root, "DESIGN")
-        design_description_element = ElementTree.SubElement(
+        _ = ElementTree.SubElement(
             design_element, "DESIGN_DESCRIPTION"
         )
 
-        sample_description = ElementTree.SubElement(
+        _ = ElementTree.SubElement(
             design_element, "SAMPLE_DESCRIPTOR", {"refname": self.sample_description}
         )
 
         if self.platform:
             if not self.instrument_model:
                 raise ValueError(
-                    "Instrument model record must be present for an metadata submission."
+                    "Instrument model record must be present for "
+                    "an metadata submission."
                 )
             else:
                 platform_el = ElementTree.SubElement(root, "PLATFORM")
@@ -87,7 +88,8 @@ class Experiment:
             )
         elif all([not v for k, v in self.library_attributes.items()]):
             raise ValueError(
-                "Some of the library descriptors are empty. Please provide values for all library descriptors."
+                "Some of the library descriptors are empty. "
+                "Please provide values for all library descriptors."
             )
         else:
             library_tree = Library(**self.library_attributes)

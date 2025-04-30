@@ -69,7 +69,9 @@ class TestAssertCredentials(TestPluginBase):
 
     @patch.dict(os.environ, {}, clear=True)
     def test_assert_credentials_missing_both(self):
-        """Test that assert_credentials raises an error when both credentials are missing."""
+        """Test that assert_credentials raises an error
+        when both credentials are missing.
+        """
         with self.assertRaisesRegex(RuntimeError, "Missing username or password"):
             assert_credentials()
 
@@ -80,7 +82,9 @@ class TestAssertSuccess(TestPluginBase):
     package = "q2_ena_uploader.tests"
 
     def test_assert_success_with_successful_response(self):
-        """Test that assert_success doesn't issue a warning for a successful response."""
+        """Test that assert_success doesn't issue a warning for
+        a successful response.
+        """
         # Create a mock response with success="true"
         mock_response = Mock(spec=requests.Response)
         mock_response.content = b'<RECEIPT success="true"></RECEIPT>'
@@ -91,7 +95,9 @@ class TestAssertSuccess(TestPluginBase):
             self.assertEqual(len(w), 0)
 
     def test_assert_success_with_unsuccessful_response(self):
-        """Test that assert_success issues a warning for an unsuccessful response."""
+        """Test that assert_success issues a warning for
+        an unsuccessful response.
+        """
         # Create a mock response with success="false" and an error message
         mock_response = Mock(spec=requests.Response)
         mock_response.content = (

@@ -25,7 +25,7 @@ from q2_ena_uploader.utils import (
     assert_success,
     assert_credentials,
 )
-from .metadata import _run_set_from_dict
+from .metadata.run import _run_set_from_dict
 
 
 def _create_submission_xml(action: ActionType, hold_date: str) -> str:
@@ -123,7 +123,7 @@ def _remove_suffixes(ids: set):
     ids_with_suffixes = set()
 
     for _id in ids:
-        if _id.endswith('_f') or _id.endswith('_r'):
+        if _id.endswith("_f") or _id.endswith("_r"):
             base_id = _id[:-2]
             ids_with_suffixes.add(base_id)
         else:
@@ -135,6 +135,7 @@ def _remove_suffixes(ids: set):
             base_ids.add(base_id)
 
     return base_ids
+
 
 def _validate_sample_ids_match(
     demux_df: pd.DataFrame,
@@ -168,7 +169,7 @@ def _validate_sample_ids_match(
     # 2. Get sample IDs from file_transfer_metadata
     file_transfer_sample_ids = set(file_transfer_metadata.to_dataframe().index)
 
-    ## if reads were paired-end, sample ids will have _f and _r suffixes - remove them
+    # if reads were paired-end, sample ids will have _f and _r suffixes - remove them
     file_transfer_sample_ids = _remove_suffixes(file_transfer_sample_ids)
 
     # 3. Get sample aliases from submission_receipt_samples XML
@@ -215,7 +216,8 @@ def _validate_sample_ids_match(
         if "file_transfer" in mismatches:
             if mismatches["file_transfer"]["missing"]:
                 error_msg += (
-                    f"- Samples in demux artifact but missing in file_transfer_metadata: "
+                    f"- Samples in demux artifact but missing in "
+                    f"file_transfer_metadata: "
                     f"{', '.join(mismatches['file_transfer']['missing'])}\n"
                 )
             if mismatches["file_transfer"]["extra"]:
@@ -227,12 +229,14 @@ def _validate_sample_ids_match(
         if "receipt" in mismatches:
             if mismatches["receipt"]["missing"]:
                 error_msg += (
-                    f"- Samples in demux artifact but missing in submission_receipt_samples: "
+                    f"- Samples in demux artifact but missing "
+                    f"in submission_receipt_samples: "
                     f"{', '.join(mismatches['receipt']['missing'])}\n"
                 )
             if mismatches["receipt"]["extra"]:
                 error_msg += (
-                    f"- Extra samples in submission_receipt_samples not in demux artifact: "
+                    f"- Extra samples in submission_receipt_samples "
+                    f"not in demux artifact: "
                     f"{', '.join(mismatches['receipt']['extra'])}\n"
                 )
 
