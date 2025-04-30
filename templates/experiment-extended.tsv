@@ -1,4 +1,4 @@
-title	study_ref	sample_description	platform	instrument_model	library_strategy	library_source	library_selection	library_layout	library_nominal_length	library_nominal_sdev	library_construnction_protocol	exp_attribute_1
+title	study_ref	sample_description	platform	instrument_model	library_strategy	library_source	library_selection	library_layout	library_nominal_length	library_nominal_sdev	library_construction_protocol	exp_attribute_1
 title1	very_unique_study	sample_name1	ILLUMINA	GENIUS	WGS	GENOMIC	RANDOM	SINGLE				someAttributeName|value1
 title2	very_unique_study	sample_name2	ILLUMINA	GENIUS	WGS	GENOMIC	RANDOM	SINGLE				someAttributeName|value2
 title3	very_unique_study	sample_name3	ILLUMINA	GENIUS	WGS	GENOMIC	RANDOM	SINGLE				someAttributeName|value1

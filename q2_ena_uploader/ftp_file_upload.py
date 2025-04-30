@@ -230,7 +230,6 @@ def transfer_files_to_ena(
                     file_metadata = _process_files(ftp, filepath, sample_id, action)
                     metadata.append(file_metadata)
                 else:
-
                     sampleid_forward = f"{sample_id}_f"
                     sampleid_reverse = f"{sample_id}_r"
                     filepath_forward = row.forward

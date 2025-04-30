@@ -138,7 +138,7 @@ class TestSubmitMetadataSamples(TestPluginBase):
                 "PROJECT": ("project.xml", "<PROJECT>test-study</PROJECT>", "text/xml"),
             },
         )
-        mock_study.to_xml.assert_called_once_with()
+        mock_study.to_xml.assert_called_once()
 
     @patch.dict(os.environ, {"ENA_USERNAME": "test_user", "ENA_PASSWORD": "test_pass"})
     @patch("q2_ena_uploader.sample_submission._create_submission_xml")
@@ -316,7 +316,8 @@ class TestCancelSubmission(TestPluginBase):
     @patch.dict(os.environ, {}, clear=True)  # This completely clears os.environ
     def test_cancel_missing_credentials(self):
         """Test error raised when credentials are missing for cancellation."""
-        # The actual error message includes more text than just "Missing username or password"
+        # The actual error message includes more text than just
+        # "Missing username or password"
         expected_msg = "Missing username or password"
         with self.assertRaisesRegex(RuntimeError, expected_msg):
             cancel_submission("ERP123456")

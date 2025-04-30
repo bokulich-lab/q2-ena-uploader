@@ -69,10 +69,12 @@ plugin.methods.register_function(
         "submission_hold_date": "Release date when the study and associated data "
         "will become publicly available (format: YYYY-MM-DD).",
         "dev": "Set to True to submit to the ENA development server for testing.",
-        "action": "Submission action type (ADD for new data, MODIFY for updating existing data).",
+        "action": "Submission action type (ADD for new data, MODIFY "
+                  "for updating existing data).",
     },
     output_descriptions={
-        "submission_receipt": "Receipt containing submission details and accession numbers."
+        "submission_receipt": "Receipt containing submission details "
+                              "and accession numbers."
     },
     name="Submit sample and/or study metadata to ENA.",
     description="Submit study and sample metadata to the European Nucleotide Archive.",
@@ -120,16 +122,23 @@ plugin.methods.register_function(
         "file_transfer_metadata": "Metadata from the file transfer operation.",
     },
     parameter_descriptions={
-        "submission_hold_date": "Release date when the data will become publicly available "
+        "submission_hold_date": "Release date when the data will become "
+                                "publicly available "
         "(format: YYYY-MM-DD).",
-        "action": "Submission action type (ADD for new data, MODIFY for updating existing data).",
+        "action": "Submission action type (ADD for new data, MODIFY "
+                  "for updating existing data).",
         "dev": "Set to True to use the ENA development server for testing.",
     },
     output_descriptions={
-        "submission_receipt": "Receipt containing submission details and assigned ENA accession numbers."
+        "submission_receipt": (
+            "Receipt containing submission details and assigned ENA accession numbers."
+        )
     },
     name="Submit raw reads metadata to ENA.",
-    description="Submit experiment metadata and raw reads information to the European Nucleotide Archive.",
+    description=(
+        "Submit experiment metadata and raw reads information to "
+        "the European Nucleotide Archive."
+    ),
     citations=[],
 )
 
@@ -149,7 +158,9 @@ plugin.methods.register_function(
         "metadata": "Status report of the file transfer or deletion operation."
     },
     name="Transfer raw reads files to the ENA FTP server.",
-    description="Upload sequence files to or delete sequence files from the ENA FTP server.",
+    description=(
+        "Upload sequence files to or delete sequence files from the ENA FTP server."
+    ),
     citations=[],
 )
 
@@ -181,15 +192,21 @@ plugin.pipelines.register_function(
         "submission_hold_date": "Release date when the study and associated data "
         "will become publicly available (format: YYYY-MM-DD).",
         "dev": "Set to True to submit to the ENA development server for testing.",
-        "action": "Submission action type (ADD for new data, MODIFY for updating existing data).",
+        "action": "Submission action type (ADD for new data, MODIFY for "
+                  "updating existing data).",
     },
     output_descriptions={
-        "sample_submission_receipt": "Receipt containing sample/study submission details and assigned ENA accession numbers.",
-        "read_submission_receipt": "Receipt containing read metadata submission details and accession numbers.",
+        "sample_submission_receipt": "Receipt containing sample/study submission "
+                                     "details and assigned ENA accession numbers.",
+        "read_submission_receipt": "Receipt containing read metadata submission "
+                                   "details and accession numbers.",
         "file_upload_metadata": "Status report of the file transfer operation.",
     },
     name="Submit sample/study metadata and raw reads to ENA.",
-    description="Submit study and sample metadata together with raw reads to the European Nucleotide Archive.",
+    description=(
+        "Submit study and sample metadata together with raw reads to "
+        "the European Nucleotide Archive."
+    ),
     citations=[],
 )
 

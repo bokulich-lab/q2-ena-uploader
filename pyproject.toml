@@ -47,4 +47,4 @@ where = ["."]
 include = ["q2_ena_uploader*"]
 
 [tool.setuptools.package-data]
-q2_annotate = ["**/*"]
+q2_ena_uploader = ["**/*"]

@@ -10,6 +10,8 @@ import xml.etree.ElementTree as ET
 from xml.etree import ElementTree
 
 import pandas as pd
+import q2_ena_uploader
+import qiime2
 from qiime2.plugin import SemanticType, model, ValidationError
 
 from q2_ena_uploader.metadata.experiment import ExperimentSet
@@ -36,8 +38,8 @@ class ENAMetadataSamplesFormat(model.TextFileFormat):
         missing_cols = [x for x in self.REQUIRED_ATTRIBUTES if x not in df.columns]
         if missing_cols:
             raise ValidationError(
-                "Some required sample attributes are missing from the metadata upload file: "
-                f'{",".join(missing_cols)}.'
+                "Some required sample attributes are missing from the "
+                f"metadata upload file: {','.join(missing_cols)}."
             )
 
         nans = (df.isnull() | (df == "")).sum(axis=0)[self.REQUIRED_ATTRIBUTES]
@@ -85,8 +87,8 @@ class ENAMetadataStudyFormat(model.TextFileFormat):
         missing_keys = [x for x in self.REQUIRED_ATTRIBUTES if x not in df_dict.keys()]
         if missing_keys:
             raise ValidationError(
-                "Some required study attributes are missing from the metadata upload file: "
-                f'{",".join(missing_keys)}.'
+                "Some required study attributes are missing from the "
+                f"metadata upload file: {','.join(missing_keys)}."
             )
         missing_values = [
             y for y in self.REQUIRED_ATTRIBUTES if not is_valid_value(df_dict[y])
@@ -98,11 +100,12 @@ class ENAMetadataStudyFormat(model.TextFileFormat):
             )
 
     def to_xml(self) -> bytes:
-        df_dict = (
-            pd.read_csv(str(self), header=None, index_col=0, sep="\t")
-            .squeeze("columns")
-            .to_dict()
-        )
+        df = pd.read_csv(str(self), header=None, index_col=0, sep="\t")
+        df.loc["project_attribute_uploader"] = {
+            1: f"q2-ena-uploader|{q2_ena_uploader.__version__}"
+        }
+        df.loc["project_attribute_qiime2"] = {1: f"qiime2|{qiime2.__version__}"}
+        df_dict = df.squeeze("columns").to_dict()
         elementTree = Study.from_dict(df_dict).to_xml_element()
         return ElementTree.tostring(elementTree.getroot(), encoding="utf8")
 
@@ -157,8 +160,9 @@ ENASubmissionReceiptDirFmt = model.SingleFileDirectoryFormat(
 class ENAMetadataExperimentFormat(model.TextFileFormat):
     """
     This format is utilized to store ENA Experiment submission metadata,
-    including compulsory attributes such as alias, study and sample ids, platform and library description,
-    along with various other optional attributes for the metadata submission.
+    including compulsory attributes such as alias, study and sample ids,
+    platform and library description, along with various other optional
+    attributes for the metadata submission.
     """
 
     REQUIRED_ATTRIBUTES = [
@@ -177,8 +181,8 @@ class ENAMetadataExperimentFormat(model.TextFileFormat):
         missing_cols = [x for x in self.REQUIRED_ATTRIBUTES if x not in df.columns]
         if missing_cols:
             raise ValidationError(
-                "Some required metadata attributes are missing from the metadata upload file: "
-                f'{",".join(missing_cols)}.'
+                "Some required metadata attributes are missing from the "
+                f"metadata upload file: {','.join(missing_cols)}."
             )
 
         nans = (df.isnull() | (df == "")).sum(axis=0)[self.REQUIRED_ATTRIBUTES]

@@ -17,7 +17,7 @@ class Library:
         library_layout=None,
         library_nominal_length=None,
         library_nominal_sdev=None,
-        library_construnction_protocol=None,
+        library_construction_protocol=None,
     ):
         self.library_strategy = library_strategy
         self.library_source = library_source
@@ -25,7 +25,7 @@ class Library:
         self.library_layout = library_layout
         self.nominal_length = library_nominal_length
         self.nominal_sdev = library_nominal_sdev
-        self.library_construnction_protocol = library_construnction_protocol
+        self.library_construction_protocol = library_construction_protocol
 
     def to_xml_element(self):
         if self.library_strategy is None:
@@ -64,10 +64,13 @@ class Library:
             if self.library_layout.lower() == "paired":
                 if self.nominal_length is None or self.nominal_sdev is None:
                     raise ValueError(
-                        "Paired library layout requires nominal_leght and nominal_sdev values present for an metadata submission."
+                        "Paired library layout requires nominal_length and "
+                        "nominal_sdev values present for a metadata submission."
                     )
                 else:
-                    library_layout_el = ElementTree.SubElement(root, "LIBRARY_LAYOUT")
+                    library_layout_el = ElementTree.SubElement(
+                        root, "LIBRARY_LAYOUT"
+                    )
                     ElementTree.SubElement(
                         library_layout_el,
                         "PAIRED",
@@ -80,9 +83,9 @@ class Library:
                 library_layout_el = ElementTree.SubElement(root, "LIBRARY_LAYOUT")
                 ElementTree.SubElement(library_layout_el, "SINGLE")
 
-        if self.library_construnction_protocol is not None:
+        if self.library_construction_protocol is not None:
             ElementTree.SubElement(root, "LIBRARY_CONSTRUCTION_PROTOCOL").text = str(
-                self.library_construnction_protocol
+                self.library_construction_protocol
             )
 
         return root
