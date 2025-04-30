@@ -56,11 +56,8 @@ class TestStudy(TestPluginBase, CustomAssertions):
         self.expected_xml_3 = ET.parse(self.get_data_path("study/study3.xml"))
         self.expected_xml_4 = ET.parse(self.get_data_path("study/study4.xml"))
 
-    @parameterized.expand(get_test_cases())
-    def test_xml_structure(self, name, index):
-        """Test XML structure with parameterized test cases."""
-        inputs = [self.INPUT0, self.INPUT1, self.INPUT2, self.INPUT3, self.INPUT4]
-        expected_xmls = [
+        self.inputs = [self.INPUT0, self.INPUT1, self.INPUT2, self.INPUT3, self.INPUT4]
+        self.expected_xmls = [
             self.expected_xml_0,
             self.expected_xml_1,
             self.expected_xml_2,
@@ -68,9 +65,12 @@ class TestStudy(TestPluginBase, CustomAssertions):
             self.expected_xml_4,
         ]
 
-        study = Study.from_dict(inputs[index])
+    @parameterized.expand(get_test_cases())
+    def test_xml_structure(self, name, index):
+        """Test XML structure with parameterized test cases."""
+        study = Study.from_dict(self.inputs[index])
         xml = study.to_xml_element()
-        self.assert_xml_equal(xml, expected_xmls[index])
+        self.assert_xml_equal(xml, self.expected_xmls[index])
 
 
 if __name__ == "__main__":

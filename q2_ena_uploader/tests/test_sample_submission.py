@@ -138,7 +138,7 @@ class TestSubmitMetadataSamples(TestPluginBase):
                 "PROJECT": ("project.xml", "<PROJECT>test-study</PROJECT>", "text/xml"),
             },
         )
-        mock_study.to_xml.assert_called_once_with()
+        mock_study.to_xml.assert_called_once()
 
     @patch.dict(os.environ, {"ENA_USERNAME": "test_user", "ENA_PASSWORD": "test_pass"})
     @patch("q2_ena_uploader.sample_submission._create_submission_xml")

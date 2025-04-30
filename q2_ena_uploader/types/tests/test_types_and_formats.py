@@ -1,4 +1,5 @@
 import unittest
+import xml.etree.ElementTree as ET
 
 import pandas as pd
 import qiime2
@@ -89,6 +90,17 @@ class TestFormats(TestPluginBase):
         meta_path = self.get_data_path("ena_metadata_study.tsv")
         format = ENAMetadataStudyFormat(meta_path, mode="r")
         format.validate()
+
+    def test_ena_metadata_study_fmt_to_xml(self):
+        meta_path = self.get_data_path("ena_metadata_study.tsv")
+        format = ENAMetadataStudyFormat(meta_path, mode="r")
+        attributes = (ET.fromstring(format.to_xml())
+                      .find("PROJECT")
+                      .find("PROJECT_ATTRIBUTES")
+                      .findall("PROJECT_ATTRIBUTE"))
+
+        tags = [x.find("TAG").text for x in attributes]
+        self.assertEqual(tags, ["q2-ena-uploader", "qiime2"])
 
     def test_ena_study_missing_attributes(self):
         meta_path = self.get_data_path("ena_study_missing_att.tsv")
