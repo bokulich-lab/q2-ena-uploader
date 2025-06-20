@@ -34,7 +34,7 @@ qiime ena-uploader --help
 Alternatively, you can also create a dedicated environment by executing:
 
 ```shell
-conda env create -n uploader-env --file  https://raw.githubusercontent.com/bokulich-lab/q2-ena-uploader/main/environments/q2-ena-uploader-qiime2-tiny-2025.4.yml
+conda env create -n uploader-env --file  https://raw.githubusercontent.com/bokulich-lab/q2-ena-uploader/main/environment-files/q2-ena-uploader-qiime2-tiny-2025.4.yml
 ```
 
 ## Available actions
