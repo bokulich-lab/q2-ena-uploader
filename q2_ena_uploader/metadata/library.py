@@ -68,9 +68,7 @@ class Library:
                         "nominal_sdev values present for a metadata submission."
                     )
                 else:
-                    library_layout_el = ElementTree.SubElement(
-                        root, "LIBRARY_LAYOUT"
-                    )
+                    library_layout_el = ElementTree.SubElement(root, "LIBRARY_LAYOUT")
                     ElementTree.SubElement(
                         library_layout_el,
                         "PAIRED",

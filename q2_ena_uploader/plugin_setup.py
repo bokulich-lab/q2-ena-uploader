@@ -70,11 +70,11 @@ plugin.methods.register_function(
         "will become publicly available (format: YYYY-MM-DD).",
         "dev": "Set to True to submit to the ENA development server for testing.",
         "action": "Submission action type (ADD for new data, MODIFY "
-                  "for updating existing data).",
+        "for updating existing data).",
     },
     output_descriptions={
         "submission_receipt": "Receipt containing submission details "
-                              "and accession numbers."
+        "and accession numbers."
     },
     name="Submit sample and/or study metadata to ENA.",
     description="Submit study and sample metadata to the European Nucleotide Archive.",
@@ -123,10 +123,10 @@ plugin.methods.register_function(
     },
     parameter_descriptions={
         "submission_hold_date": "Release date when the data will become "
-                                "publicly available "
+        "publicly available "
         "(format: YYYY-MM-DD).",
         "action": "Submission action type (ADD for new data, MODIFY "
-                  "for updating existing data).",
+        "for updating existing data).",
         "dev": "Set to True to use the ENA development server for testing.",
     },
     output_descriptions={
@@ -193,13 +193,13 @@ plugin.pipelines.register_function(
         "will become publicly available (format: YYYY-MM-DD).",
         "dev": "Set to True to submit to the ENA development server for testing.",
         "action": "Submission action type (ADD for new data, MODIFY for "
-                  "updating existing data).",
+        "updating existing data).",
     },
     output_descriptions={
         "sample_submission_receipt": "Receipt containing sample/study submission "
-                                     "details and assigned ENA accession numbers.",
+        "details and assigned ENA accession numbers.",
         "read_submission_receipt": "Receipt containing read metadata submission "
-                                   "details and accession numbers.",
+        "details and accession numbers.",
         "file_upload_metadata": "Status report of the file transfer operation.",
     },
     name="Submit sample/study metadata and raw reads to ENA.",
