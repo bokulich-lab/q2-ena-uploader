@@ -57,6 +57,8 @@ jobs:
               echo "ref=$(jq -r '.ref' build-metadata.json)" >> $GITHUB_OUTPUT
               echo "event-name=$(jq -r '.event_name' build-metadata.json)" >> $GITHUB_OUTPUT
               echo "pr-number=$(jq -r '.pr_number' build-metadata.json)" >> $GITHUB_OUTPUT
+              echo "tag-name=$(jq -r '.tag_name' build-metadata.json)" >> $GITHUB_OUTPUT
+              echo "is-tag-push=$(jq -r '.is_tag_push' build-metadata.json)" >> $GITHUB_OUTPUT
               echo "build-pr-image=$(jq -r '.build_pr_image' build-metadata.json)" >> $GITHUB_OUTPUT
               echo "is-main-push=$(jq -r '.is_main_push' build-metadata.json)" >> $GITHUB_OUTPUT
               echo "has-metadata=true" >> $GITHUB_OUTPUT
@@ -130,8 +132,15 @@ jobs:
             # Load the image
             docker load < prod-image.tar
           
-            # Tag and push production image
-            TAG="quay.io/bokulichlab/${{ steps.metadata.outputs.repository }}:${{ steps.metadata.outputs.epoch }}-${{ steps.metadata.outputs.short-sha }}"
+            # Determine the tag based on whether this is a tag push or main branch push
+            if [ "${{ steps.metadata.outputs.is-tag-push }}" = "true" ]; then
+              # For tag pushes, use just the tag name (no hash suffix)
+              TAG="quay.io/bokulichlab/${{ steps.metadata.outputs.repository }}:${{ steps.metadata.outputs.tag-name }}"
+            else
+              # For main branch pushes, use epoch + hash
+              TAG="quay.io/bokulichlab/${{ steps.metadata.outputs.repository }}:${{ steps.metadata.outputs.epoch }}-${{ steps.metadata.outputs.short-sha }}"
+            fi
+          
             docker tag temp-prod-image "$TAG"
             docker push "$TAG"
             echo "Pushed production image: $TAG"
