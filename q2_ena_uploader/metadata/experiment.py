@@ -46,18 +46,14 @@ class Experiment:
             ElementTree.SubElement(root, "TITLE").text = str(self.title)
 
         if self.study_ref:
-            _ = ElementTree.SubElement(
-                root, "STUDY_REF", {"refname": self.study_ref}
-            )
+            _ = ElementTree.SubElement(root, "STUDY_REF", {"refname": self.study_ref})
         else:
             raise ValueError(
                 "Study reference must be present for an metadata submission."
             )
 
         design_element = ElementTree.SubElement(root, "DESIGN")
-        _ = ElementTree.SubElement(
-            design_element, "DESIGN_DESCRIPTION"
-        )
+        _ = ElementTree.SubElement(design_element, "DESIGN_DESCRIPTION")
 
         _ = ElementTree.SubElement(
             design_element, "SAMPLE_DESCRIPTOR", {"refname": self.sample_description}
