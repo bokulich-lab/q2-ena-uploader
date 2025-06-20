@@ -12,6 +12,7 @@ The **q2-ena-uploader** is a [QIIME 2](https://qiime2.org/) plugin designed for 
 To develop this plugin, we followed the [ENA documentation](https://ena-docs.readthedocs.io/en/latest/index.html). The submission process is depicted in the image above.
 
 ## Installation
+### Existing QIIME 2 environment
 The _q2-ena-uploader_ plugin can be installed into any QIIME 2 conda environment (see [here](https://docs.qiime2.org) for 
 more specific installation instructions). To install the plugin, run the following commands:
 
@@ -29,8 +30,14 @@ qiime dev refresh-cache
 qiime ena-uploader --help
 ```
 
-## Available Actions
+### New QIIME 2 environment
+Alternatively, you can also create a dedicated environment by executing:
 
+```shell
+conda env create -n uploader-env --file  https://raw.githubusercontent.com/bokulich-lab/q2-ena-uploader/main/environments/q2-ena-uploader-qiime2-tiny-2025.4.yml
+```
+
+## Available Action
 The ena-uploader offers several actions for adding, deleting, and modifying your submission. See the list below for details:
 
 | Action                    | Description                                  |
