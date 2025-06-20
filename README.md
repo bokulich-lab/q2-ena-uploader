@@ -37,7 +37,7 @@ Alternatively, you can also create a dedicated environment by executing:
 conda env create -n uploader-env --file  https://raw.githubusercontent.com/bokulich-lab/q2-ena-uploader/main/environments/q2-ena-uploader-qiime2-tiny-2025.4.yml
 ```
 
-## Available Action
+## Available Actions
 The ena-uploader offers several actions for adding, deleting, and modifying your submission. See the list below for details:
 
 | Action                    | Description                                  |
