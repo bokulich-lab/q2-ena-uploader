@@ -3,6 +3,7 @@ FROM continuumio/miniconda3:latest AS base
 ARG ENVIRONMENT
 ARG PLUGIN_NAME
 
+ENV PLUGIN_NAME=$PLUGIN_NAME
 ENV PATH=/opt/conda/envs/${PLUGIN_NAME}/bin:$PATH \
     LC_ALL=C.UTF-8 LANG=C.UTF-8 \
     MPLBACKEND=agg \
