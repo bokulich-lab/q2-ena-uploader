@@ -25,8 +25,8 @@ jobs:
         
         for exc in xtract rchive transmute
         do 
-          wget -O $exc.tar.gz "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/$exc.Linux.gz"
-          gunzip -f $exc.tar.gz
+          wget -O $exc.gz "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/$exc.Linux.gz"
+          gunzip -f $exc.gz
           mv $exc edirect/
           chmod +x edirect/$exc
         done
