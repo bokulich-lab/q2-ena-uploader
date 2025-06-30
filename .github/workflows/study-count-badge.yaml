@@ -19,10 +19,18 @@ jobs:
     - name: Install EDirect tools
       run: |
         # Install EDirect tools for esearch/efetch/xtract
+        cd $HOME
         wget -O edirect.tar.gz "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/edirect.tar.gz"
         tar -xzf edirect.tar.gz
-        sudo mv edirect /opt/
-        echo "/opt/edirect" >> $GITHUB_PATH
+        ls -la edirect/  # Debug: show what's in the directory
+        
+        # Add to PATH for current and future steps
+        echo "$HOME/edirect" >> $GITHUB_PATH
+        export PATH="$HOME/edirect:$PATH"
+        
+        # Verify installation
+        which esearch || echo "esearch not found in PATH"
+        ls -la $HOME/edirect/esearch || echo "esearch binary not found"
     
     - name: Get study count and IDs
       id: count
