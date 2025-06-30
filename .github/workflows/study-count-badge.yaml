@@ -1,4 +1,4 @@
-name: Update Study Count Badge
+name: Update study count badge
 
 on:
   schedule:
@@ -35,6 +35,7 @@ jobs:
     - name: Get study count and IDs
       id: count
       run: |
+        which esearch || echo "esearch not found in PATH"
         # Run the esearch command to get unique study IDs
         STUDY_IDS=$(esearch -db sra -query '"q2-ena-uploader"[All Fields]' | \
           efetch -format xml | \
