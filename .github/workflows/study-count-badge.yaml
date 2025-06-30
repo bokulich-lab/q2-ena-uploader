@@ -1,0 +1,95 @@
+name: Update Study Count Badge
+
+on:
+  schedule:
+    # Run every Sunday at 00:00 UTC
+    - cron: '0 0 * * 0'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  update-study-count:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Install EDirect tools
+      run: |
+        # Install EDirect tools for esearch/efetch/xtract
+        wget -O edirect.tar.gz "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/edirect.tar.gz"
+        tar -xzf edirect.tar.gz
+        sudo mv edirect /opt/
+        echo "/opt/edirect" >> $GITHUB_PATH
+    
+    - name: Get study count and IDs
+      id: count
+      run: |
+        # Run the esearch command to get unique study IDs
+        STUDY_IDS=$(esearch -db sra -query '"q2-ena-uploader"[All Fields]' | \
+          efetch -format xml | \
+          xtract -pattern "STUDY_REF/*" -block IDENTIFIERS -element PRIMARY_ID | \
+          sort | \
+          uniq)
+        
+        STUDY_COUNT=$(echo "$STUDY_IDS" | wc -l)
+        
+        echo "Study count: $STUDY_COUNT"
+        echo "Found study IDs:"
+        echo "$STUDY_IDS"
+        
+        # Save outputs for later steps
+        echo "count=$STUDY_COUNT" >> $GITHUB_OUTPUT
+        echo "ids<<EOF" >> $GITHUB_OUTPUT
+        echo "$STUDY_IDS" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+    
+    - name: Update CSV tracking file
+      run: |
+        # Current study count and date
+        STUDY_COUNT="${{ steps.count.outputs.count }}"
+        CURRENT_DATE=$(date '+%Y-%m-%d')
+        
+        # Create CSV file if it doesn't exist
+        if [ ! -f "study-count-history.csv" ]; then
+          echo "date,count" > study-count-history.csv
+        fi
+        
+        # Add new entry to CSV
+        echo "${CURRENT_DATE},${STUDY_COUNT}" >> study-count-history.csv
+    
+    - name: Update README badge
+      run: |
+        # Current study count
+        STUDY_COUNT="${{ steps.count.outputs.count }}"
+        
+        # Create badge URL
+        BADGE_URL="https://img.shields.io/badge/ENA%20Studies-${STUDY_COUNT}-blue"
+        BADGE_MARKDOWN="![ENA Studies](${BADGE_URL})"
+        
+        # Check if badge already exists in README
+        if grep -q "!\[ENA Studies\]" README.md; then
+          # Update existing badge
+          sed -i "s|!\[ENA Studies\]([^)]*)|${BADGE_MARKDOWN}|g" README.md
+        else
+          # Add new badge after the existing badges
+          sed -i '/!\[Code style: black\]/a\'"${BADGE_MARKDOWN}" README.md
+        fi
+    
+    - name: Commit and push changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+        # Add both files to git
+        git add README.md study-count-history.csv
+        
+        # Check if there are any changes to commit
+        if git diff --cached --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "Update ENA studies count to ${{ steps.count.outputs.count }} and add historical data"
+          git push
+        fi
