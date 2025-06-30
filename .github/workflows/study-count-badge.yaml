@@ -22,6 +22,15 @@ jobs:
         cd $HOME
         wget -O edirect.tar.gz "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/edirect.tar.gz"
         tar -xzf edirect.tar.gz
+        
+        for exc in xtract rchive transmute
+        do 
+          wget -O $exc.tar.gz "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/$exc.Linux.gz"
+          gunzip -f $exc.tar.gz
+          mv $exc edirect/
+          chmod +x edirect/$exc
+        done
+          
         ls -la edirect/  # Debug: show what's in the directory
         
         # Add to PATH for current and future steps
