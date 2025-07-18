@@ -84,6 +84,8 @@ jobs:
       run: |
         git config --local user.email "bokulich-lab@ethz.ch"
         git config --local user.name "BOTulich"
+
+        git remote set-url origin https://${{ env.GH_TOKEN }}@github.com/bokulich-lab/q2-ena-uploader.git
         
         # Add both files to git
         git add README.md study-count-history.csv
