@@ -7,10 +7,10 @@
 The **q2-ena-uploader** is a [QIIME 2](https://qiime2.org/) plugin designed for the programmatic submission of metadata and raw sequence reads to the European Nucleotide Archive (ENA).
 
 <p align="center">
-  <img src="img/ena_submission.webp" alt="ENA Submission" width="700"/>
+  <img src="https://raw.githubusercontent.com/bokulich-lab/q2-ena-uploader/main/img/ena_submission.webp" alt="ENA Submission" width="700"/>
 </p>
 
-To develop this plugin, we followed the [ENA documentation](https://ena-docs.readthedocs.io/en/latest/index.html). The submission process is depicted in the image above.
+To develop this plugin, we followed the [ENA documentation](https://ena-docs.readthedocs.io/en/latest/index.html). The submission process is depicted in the image above (courtesy of the ENA).
 
 ## Installation
 ### Existing QIIME 2 environment
@@ -35,7 +35,7 @@ qiime ena-uploader --help
 Alternatively, you can also create a dedicated environment by executing:
 
 ```shell
-conda env create -n uploader-env --file  https://raw.githubusercontent.com/bokulich-lab/q2-ena-uploader/main/environment-files/q2-ena-uploader-qiime2-tiny-2025.4.yml
+conda env create -n uploader-env --file https://raw.githubusercontent.com/bokulich-lab/q2-ena-uploader/main/environment-files/q2-ena-uploader-qiime2-tiny-2025.4.yml
 ```
 
 ## Available actions
@@ -85,8 +85,8 @@ qiime tools import \
 > The name of the filed should start with the **project_attribute_** prefix.
 > 
 > When constructing a valid study metadata TSV file, consider consulting one of the provided examples:
-> - [minimal](./templates/study-minimal.tsv)
-> - [extended](./templates/study-extended.tsv)
+> - [minimal](https://raw.githubusercontent.com/bokulich-lab/q2-ena-uploader/main/templates/study-minimal.tsv)
+> - [extended](https://raw.githubusercontent.com/bokulich-lab/q2-ena-uploader/main/templates/study-extended.tsv)
 
 #### Samples
 To import the sample metadata into the corresponding QIIME artifacts, run:
@@ -114,8 +114,8 @@ qiime tools import \
 > - `collection date`
 >
 > When constructing a valid study metadata TSV file, consider consulting one of the provided examples:
-> - [minimal](./templates/sample-minimal.tsv)
-> - [extended](./templates/sample-extended.tsv)
+> - [minimal](https://raw.githubusercontent.com/bokulich-lab/q2-ena-uploader/main/templates/sample-minimal.tsv)
+> - [extended](https://raw.githubusercontent.com/bokulich-lab/q2-ena-uploader/main/templates/sample-extended.tsv)
 
 #### Experiments
 To import the experiment metadata into the corresponding QIIME artifacts, run:
@@ -147,8 +147,8 @@ qiime tools import \
 > The field `library_construction_protocol` is optional.
 >
 > When constructing a valid experiment metadata TSV file, consider consulting one of the provided examples:
-> - [minimal](./templates/experiment-minimal.tsv)
-> - [extended](./templates/experiment-extended.tsv)
+> - [minimal](https://raw.githubusercontent.com/bokulich-lab/q2-ena-uploader/main/templates/experiment-minimal.tsv)
+> - [extended](https://raw.githubusercontent.com/bokulich-lab/q2-ena-uploader/main/templates/experiment-extended.tsv)
 
 ### Step 2: Upload sample/study metadata
 1. Before uploading to ENA, you need to set two environmental variables containing your ENA credentials:
