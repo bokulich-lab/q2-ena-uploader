@@ -100,18 +100,22 @@ jobs:
       run: |
         # Current study count
         STUDY_COUNT="${{ steps.count.outputs.study-count }}"
+        SAMPLE_COUNT="${{ steps.count.outputs.sample-count }}"
         
-        # Create badge URL
-        BADGE_URL="https://img.shields.io/badge/ENA%20Studies-${STUDY_COUNT}-blue"
-        BADGE_MARKDOWN="![ENA Studies](${BADGE_URL})"
+        # Create badge URLs
+        STUDY_BADGE_URL="https://img.shields.io/badge/ENA%20Studies-${STUDY_COUNT}-blue"
+        STUDY_BADGE_MARKDOWN="![ENA Studies](${STUDY_BADGE_URL})"
+        SAMPLE_BADGE_URL="https://img.shields.io/badge/ENA%20Samples-${SAMPLE_COUNT}-blue"
+        SAMPLE_BADGE_MARKDOWN="![ENA Samples](${SAMPLE_BADGE_URL})"
         
-        # Check if badge already exists in README
+        # Check if badges already exist in README
         if grep -q "!\[ENA Studies\]" README.md; then
-          # Update existing badge
-          sed -i "s|!\[ENA Studies\]([^)]*)|${BADGE_MARKDOWN}|g" README.md
+          # Update existing badges
+          sed -i "s|!\[ENA Studies\]([^)]*)|${STUDY_BADGE_MARKDOWN}|g" README.md
+          sed -i "s|!\[ENA Samples\]([^)]*)|${SAMPLE_BADGE_MARKDOWN}|g" README.md
         else
           # Add new badge after the existing badges
-          sed -i '/!\[Code style: black\]/a\'"${BADGE_MARKDOWN}" README.md
+          sed -i '/!\[Code style: black\]/a\'"${STUDY_BADGE_MARKDOWN}\n${SAMPLE_BADGE_MARKDOWN}" README.md
         fi
 
     - name: Commit and push changes
