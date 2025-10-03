@@ -9,8 +9,6 @@ on:
 jobs:
   update-study-count:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     
     steps:
     - name: Checkout repository
@@ -18,27 +16,28 @@ jobs:
     
     - name: Install EDirect tools
       run: |
-        # Install EDirect tools for esearch/efetch/xtract
+        # Install EDirect tools for esearch/efetch/xtract/transmute
         wget -O edirect.tar.gz "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/edirect.tar.gz"
         tar -xzf edirect.tar.gz
-        sudo mv edirect /opt/
-        echo "/opt/edirect" >> $GITHUB_PATH
+        mv edirect $HOME/
 
         wget -O xtract.gz "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/xtract.Linux.gz"
         gunzip -f xtract.gz
         chmod +x xtract
-        sudo mv xtract /opt/edirect
+        mv xtract $HOME/edirect
         
         wget -O transmute.gz "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/transmute.Linux.gz"
         gunzip -f transmute.gz
         chmod +x transmute
-        sudo mv transmute /opt/edirect
+        mv transmute $HOME/edirect
+        
+        echo "$HOME/edirect" >> $GITHUB_PATH
 
     - name: Verify EDirect commands are available
       run: |
         set -euo pipefail
         echo "PATH: $PATH"
-        for cmd in esearch efetch xtract; do
+        for cmd in esearch efetch xtract transmute; do
           printf "Checking %s... " "$cmd"
           if ! command -v "$cmd" >/dev/null 2>&1; then
             echo "NOT FOUND" >&2
