@@ -24,9 +24,24 @@ jobs:
         sudo mv edirect /opt/
         echo "/opt/edirect" >> $GITHUB_PATH
     
+    - name: Verify EDirect commands are available
+      run: |
+        set -euo pipefail
+        echo "PATH: $PATH"
+        for cmd in esearch efetch xtract; do
+          printf "Checking %s... " "$cmd"
+          if ! command -v "$cmd" >/dev/null 2>&1; then
+            echo "NOT FOUND" >&2
+            echo "Error: $cmd not found on PATH after installation." >&2
+            exit 1
+          fi
+          echo "OK ($(command -v "$cmd"))"
+        done
+
     - name: Get study count and IDs
       id: count
       run: |
+        set -euo pipefail
         # Run the esearch command to get unique study IDs
         STUDY_IDS=$(esearch -db sra -query '"q2-ena-uploader"[All Fields]' | \
           efetch -format xml | \
@@ -34,11 +49,18 @@ jobs:
           sort | \
           uniq)
         
-        STUDY_COUNT=$(echo "$STUDY_IDS" | wc -l)
+        # Count only non-empty lines to avoid counting a blank line as 1; use awk to avoid non-zero exit when empty
+        STUDY_COUNT=$(printf "%s\n" "$STUDY_IDS" | awk 'NF{c++} END{print c+0}')
         
         echo "Study count: $STUDY_COUNT"
         echo "Found study IDs:"
         echo "$STUDY_IDS"
+        
+        # Fail the workflow if the study count is empty or zero
+        if [ -z "${STUDY_COUNT:-}" ] || [ "$STUDY_COUNT" -eq 0 ]; then
+          echo "Error: No ENA studies found for query 'q2-ena-uploader'." 1>&2
+          exit 1
+        fi
         
         # Save outputs for later steps
         echo "count=$STUDY_COUNT" >> $GITHUB_OUTPUT
