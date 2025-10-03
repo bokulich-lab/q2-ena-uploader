@@ -24,12 +24,15 @@ jobs:
         sudo mv edirect /opt/
         echo "/opt/edirect" >> $GITHUB_PATH
 
-    - name: Install xtract
-      run: |
         wget -O xtract.gz "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/xtract.Linux.gz"
         gunzip -f xtract.gz
         chmod +x xtract
         sudo mv xtract /opt/edirect
+        
+        wget -O transmute.gz "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/transmute.Linux.gz"
+        gunzip -f transmute.gz
+        chmod +x transmute
+        sudo mv transmute /opt/edirect
 
     - name: Verify EDirect commands are available
       run: |
@@ -45,14 +48,14 @@ jobs:
           echo "OK ($(command -v "$cmd"))"
         done
 
-    - name: Test ESearch commands
-      run: |
-        esearch -db sra -query '"q2-ena-uploader"[All Fields]'
-
-    - name: Test EFetch commands
-      run: |
-        esearch -db sra -query '"q2-ena-uploader"[All Fields]' | \
-          efetch -format xml
+#    - name: Test ESearch commands
+#      run: |
+#        esearch -db sra -query '"q2-ena-uploader"[All Fields]'
+#
+#    - name: Test EFetch commands
+#      run: |
+#        esearch -db sra -query '"q2-ena-uploader"[All Fields]' | \
+#          efetch -format xml
 
     - name: Get study count and IDs
       id: count
