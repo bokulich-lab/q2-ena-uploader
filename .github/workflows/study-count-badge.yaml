@@ -23,7 +23,10 @@ jobs:
         tar -xzf edirect.tar.gz
         sudo mv edirect /opt/
         echo "/opt/edirect" >> $GITHUB_PATH
-        /opt/edirect/nquire -dwn ftp.ncbi.nlm.nih.gov entrez/entrezdirect xtract.Linux.gz
+
+    - name: Install xtract
+      run: |
+        nquire -dwn ftp.ncbi.nlm.nih.gov entrez/entrezdirect xtract.Linux.gz
         gunzip -f xtract.Linux.gz
         chmod +x xtract.Linux
         sudo mv xtract.Linux /opt/edirect
