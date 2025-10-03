@@ -48,15 +48,6 @@ jobs:
           echo "OK ($(command -v "$cmd"))"
         done
 
-#    - name: Test ESearch commands
-#      run: |
-#        esearch -db sra -query '"q2-ena-uploader"[All Fields]'
-#
-#    - name: Test EFetch commands
-#      run: |
-#        esearch -db sra -query '"q2-ena-uploader"[All Fields]' | \
-#          efetch -format xml
-
     - name: Get study count and IDs
       id: count
       run: |
@@ -64,14 +55,16 @@ jobs:
         # Run the esearch command to get unique study IDs
         STUDY_IDS=$(esearch -db sra -query '"q2-ena-uploader"[All Fields]' | \
           efetch -format xml | \
-          xtract -pattern "STUDY_REF/*" -block IDENTIFIERS -element PRIMARY_ID | \
-          sort | \
-          uniq)
+          xtract -pattern "STUDY_REF/*" -block IDENTIFIERS -element PRIMARY_ID)
+        
+        SAMPLE_COUNT=$(printf "%s\n" "$STUDY_IDS" | wc -l)
+        STUDY_IDS=$(printf "%s\n" "$STUDY_IDS" | sort -u)
         
         # Count only non-empty lines to avoid counting a blank line as 1; use awk to avoid non-zero exit when empty
         STUDY_COUNT=$(printf "%s\n" "$STUDY_IDS" | awk 'NF{c++} END{print c+0}')
         
         echo "Study count: $STUDY_COUNT"
+        echo "Sample count: $SAMPLE_COUNT"
         echo "Found study IDs:"
         echo "$STUDY_IDS"
         
@@ -82,7 +75,8 @@ jobs:
         fi
         
         # Save outputs for later steps
-        echo "count=$STUDY_COUNT" >> $GITHUB_OUTPUT
+        echo "study-count=$STUDY_COUNT" >> $GITHUB_OUTPUT
+        echo "sample-count=$SAMPLE_COUNT" >> $GITHUB_OUTPUT
         echo "ids<<EOF" >> $GITHUB_OUTPUT
         echo "$STUDY_IDS" >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
@@ -90,21 +84,22 @@ jobs:
     - name: Update CSV tracking file
       run: |
         # Current study count and date
-        STUDY_COUNT="${{ steps.count.outputs.count }}"
+        STUDY_COUNT="${{ steps.count.outputs.study-count }}"
+        SAMPLE_COUNT="${{ steps.count.outputs.sample-count }}"
         CURRENT_DATE=$(date '+%Y-%m-%d')
         
         # Create CSV file if it doesn't exist
         if [ ! -f "study-count-history.csv" ]; then
-          echo "date,count" > study-count-history.csv
+          echo "date,study-count,sample-count" > study-count-history.csv
         fi
         
         # Add new entry to CSV
-        echo "${CURRENT_DATE},${STUDY_COUNT}" >> study-count-history.csv
+        echo "${CURRENT_DATE},${STUDY_COUNT},${SAMPLE_COUNT}" >> study-count-history.csv
 
     - name: Update README badge
       run: |
         # Current study count
-        STUDY_COUNT="${{ steps.count.outputs.count }}"
+        STUDY_COUNT="${{ steps.count.outputs.study-count }}"
         
         # Create badge URL
         BADGE_URL="https://img.shields.io/badge/ENA%20Studies-${STUDY_COUNT}-blue"
