@@ -45,6 +45,15 @@ jobs:
           echo "OK ($(command -v "$cmd"))"
         done
 
+    - name: Test ESearch commands
+      run: |
+        esearch -db sra -query '"q2-ena-uploader"[All Fields]'
+
+    - name: Test EFetch commands
+      run: |
+        esearch -db sra -query '"q2-ena-uploader"[All Fields]' | \
+          efetch -format xml
+
     - name: Get study count and IDs
       id: count
       run: |
