@@ -26,10 +26,10 @@ jobs:
 
     - name: Install xtract
       run: |
-        nquire -dwn ftp.ncbi.nlm.nih.gov entrez/entrezdirect xtract.Linux.gz
-        gunzip -f xtract.Linux.gz
-        chmod +x xtract.Linux
-        sudo mv xtract.Linux /opt/edirect
+        wget -O xtract.gz "ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/xtract.Linux.gz"
+        gunzip -f xtract.gz
+        chmod +x xtract
+        sudo mv xtract /opt/edirect
 
     - name: Verify EDirect commands are available
       run: |
