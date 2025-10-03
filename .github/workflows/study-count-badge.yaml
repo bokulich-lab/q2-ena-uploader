@@ -23,7 +23,11 @@ jobs:
         tar -xzf edirect.tar.gz
         sudo mv edirect /opt/
         echo "/opt/edirect" >> $GITHUB_PATH
-    
+        nquire -dwn ftp.ncbi.nlm.nih.gov entrez/entrezdirect xtract.Linux.gz
+        gunzip -f xtract.Linux.gz
+        chmod +x xtract.Linux
+        sudo mv xtract.Linux /opt/edirect
+
     - name: Verify EDirect commands are available
       run: |
         set -euo pipefail
@@ -67,7 +71,7 @@ jobs:
         echo "ids<<EOF" >> $GITHUB_OUTPUT
         echo "$STUDY_IDS" >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
-    
+
     - name: Update CSV tracking file
       run: |
         # Current study count and date
@@ -81,7 +85,7 @@ jobs:
         
         # Add new entry to CSV
         echo "${CURRENT_DATE},${STUDY_COUNT}" >> study-count-history.csv
-    
+
     - name: Update README badge
       run: |
         # Current study count
@@ -99,7 +103,7 @@ jobs:
           # Add new badge after the existing badges
           sed -i '/!\[Code style: black\]/a\'"${BADGE_MARKDOWN}" README.md
         fi
-    
+
     - name: Commit and push changes
       env:
         GH_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
