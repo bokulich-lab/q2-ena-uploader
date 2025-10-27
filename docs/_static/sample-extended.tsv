@@ -1,0 +1,5 @@
+alias	geographic location (country and/or sea) 	collection date	sex	subject	taxon_id
+sample_name1	Switzerland	2024-10-11	male	subject-1	12
+sample_name2	Switzerland	2024-10-11	female	subject-1	12
+sample_name3	Switzerland	2024-10-11	male	subject-1	12
+sample_name4	Switzerland	2024-10-11	female	subject-1	12
