@@ -94,11 +94,11 @@ qiime tools import \
 ##### Checklists
 
 1. For sample submission, ENA provides metadata checklists detailing the minimal attributes required for different sample types. 
-Please review the full range of [ENA checklists](https://www.ebi.ac.uk/ena/browser/checklists) before submitting your samples.
+Please review the full range of ENA [sample checklists](https://www.ebi.ac.uk/ena/browser/checklists) before submitting your samples.
 
 
 2. When using the ENA default sample checklist for all your samples, you do not need to specify the default code [ERC000011](https://www.ebi.ac.uk/ena/browser/view/ERC000011). 
- However, if you apply multiple checklists for different samples, you must include all relevant [ENA checklists](https://www.ebi.ac.uk/ena/browser/checklists) codes in the metadata column checklist. In this case, create a single metadata TSV file that combines all columns from these checklists and fill in values only where applicable.
+ However, if you apply multiple checklists for different samples, you must include all relevant ENA [sample checklists](https://www.ebi.ac.uk/ena/browser/checklists) codes in the metadata column checklist. In this case, create a single metadata TSV file that combines all columns from these checklists and fill in values only where applicable.
  
 
 :::{aside}

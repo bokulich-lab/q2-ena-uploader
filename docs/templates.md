@@ -53,7 +53,7 @@ Download the example file <a href="_static/sample-extended.tsv" download>📥 he
 
 ### Minimal experiment structure
 
-The minimal number of mandatory columns for an experiment is 11. The columns study_ref and sample_description (sample ID) link each experiment to its corresponding study and sample.
+The minimal number of mandatory columns for an experiment is 11. The columns `study_ref` and `sample_description` (sample ID) link each experiment to its corresponding study and sample.
 
 Download the example file <a href="_static/experiment-minimal.tsv" download>📥 here</a>.
 
