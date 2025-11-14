@@ -11,6 +11,4 @@ Experiment
 Run
 : A run is part of an experiment and refers to data files containing sequence reads.
 
-Submission
-: A submission contains submission actions to be performed by the archive. A submission can add more objects to the archive, update already submitted objects or make objects publicly available.
 :::

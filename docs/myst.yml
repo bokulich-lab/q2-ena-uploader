@@ -6,18 +6,10 @@ project:
   github: https://github.com/bokulich-lab/q2-ena-uploader
   toc:
     - file: index.md
-    - title: Installation
-      children:
-        - file: installation.md 
-    - title: Available actions
-      children: 
-        - file: actions.md 
-    - title: Glossary
-      children:
-        - file: glossary.md
-    - title: Templates
-      children:
-        - file: templates.md
+    - file: installation.md 
+    - file: actions.md 
+    - file: glossary.md
+    - file: templates.md
 
 site:
   template: book-theme

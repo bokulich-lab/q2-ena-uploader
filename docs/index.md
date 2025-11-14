@@ -33,7 +33,7 @@ To develop this plugin, we followed the [ENA documentation](https://ena-docs.rea
 
 :::{aside}
 ```{note}
-To run the submission or transfer actions, QIIME requires  <span style="color:#60a285;">input artifacts</span>.
+To run the submission, QIIME requires  <span style="color:#60a285;">input artifacts</span>.
 You can create these artifacts by following [Step 1](#step-1-import-metadata-into-qiime-artifacts).
 
 
@@ -47,9 +47,13 @@ Once both initial actions,
 The final submission status will again be provided as a QIIME output artifact - <span style="color: #93669d;"> submission receipt</span>.
 :::
 
-The submission process using the _q2-ena-uploader_ consists of several steps:
+After completing the [installation](./installation.md) and creating an [ENA account](https://www.ebi.ac.uk/ena/submit/webin/login), the submission process using the _q2-ena-uploader_ consists of several steps:
 
-0. Create an [ENA account](https://www.ebi.ac.uk/ena/submit/webin/login) and obtain credentials - this should be done 24h before the actual submission.
+:::{aside}
+```{tip}
+It is recommended to create an ENA account and obtain credentials at least 24 hours prior to submission.
+:::
+
 1. Import metadata into QIIME artifacts.
 2. Upload sample and study metadata to ENA.
 3. Transfer raw reads to the ENA FTP server.
@@ -94,7 +98,7 @@ Please review the full range of [ENA checklists](https://www.ebi.ac.uk/ena/brows
 
 
 2. When using the ENA default sample checklist for all your samples, you do not need to specify the default code [ERC000011](https://www.ebi.ac.uk/ena/browser/view/ERC000011). 
- However, if you apply multiple checklists for different samples, you must include all relevant [ENA checklist](https://www.ebi.ac.uk/ena/browser/view/ERC000011) codes in the metadata column checklist. In this case, create a single metadata TSV file that combines all columns from these checklists and fill in values only where applicable.
+ However, if you apply multiple checklists for different samples, you must include all relevant [ENA checklists](https://www.ebi.ac.uk/ena/browser/checklists) codes in the metadata column checklist. In this case, create a single metadata TSV file that combines all columns from these checklists and fill in values only where applicable.
  
 
 :::{aside}
