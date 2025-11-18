@@ -1,8 +1,9 @@
 name: Deploy Docs
 on:
   push:
-    # Runs on pushes targeting the default branch
-    branches: [docs]
+    branches: [main]
+    paths:
+      - 'docs/**'
 env:
   BASE_URL: /${{ github.event.repository.name }}
 
