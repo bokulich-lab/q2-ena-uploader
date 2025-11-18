@@ -6,7 +6,6 @@
 ![ENA Studies](https://img.shields.io/badge/ENA%20Studies-9-blue)
 ![ENA Samples](https://img.shields.io/badge/ENA%20Samples-5638-blue)
 
-The **q2-ena-uploader** is a [QIIME 2](https://qiime2.org/) plugin designed for the programmatic submission of metadata and raw sequence reads to the European Nucleotide Archive (ENA). 
+The **q2-ena-uploader** is a [QIIME 2](https://qiime2.org/) plugin designed for the programmatic submission of metadata and raw sequence reads to the European Nucleotide Archive (ENA).
 
-
-
+The documentation and tutorials are available at https://bokulich-lab.github.io/q2-ena-uploader/.
