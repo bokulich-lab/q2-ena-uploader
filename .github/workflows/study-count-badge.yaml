@@ -146,16 +146,10 @@ jobs:
         STUDY_BADGE_MARKDOWN="![ENA Studies](${STUDY_BADGE_URL})"
         SAMPLE_BADGE_URL="https://img.shields.io/badge/ENA%20Samples-${SAMPLE_COUNT}-blue"
         SAMPLE_BADGE_MARKDOWN="![ENA Samples](${SAMPLE_BADGE_URL})"
-        
-        # Check if badges already exist in README
-        if grep -q "!\[ENA Studies\]" README.md; then
-          # Update existing badges
-          sed -i "s|!\[ENA Studies\]([^)]*)|${STUDY_BADGE_MARKDOWN}|g" README.md
-          sed -i "s|!\[ENA Samples\]([^)]*)|${SAMPLE_BADGE_MARKDOWN}|g" README.md
-        else
-          # Add new badge after the existing badges
-          sed -i '/!\[Code style: black\]/a\'"${STUDY_BADGE_MARKDOWN}\n${SAMPLE_BADGE_MARKDOWN}" README.md
-        fi
+
+        # Update existing badges
+        sed -i "s|!\[ENA Studies\]([^)]*)|${STUDY_BADGE_MARKDOWN}|g" README.md
+        sed -i "s|!\[ENA Samples\]([^)]*)|${SAMPLE_BADGE_MARKDOWN}|g" README.md
 
     - name: Commit and push changes
       if: steps.diff.outputs.changed == 'true'
