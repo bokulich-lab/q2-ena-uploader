@@ -1,0 +1,26 @@
+version: 1
+project:
+  id: 6674d5b7-3a4d-4f00-a37b-56cdc62dbc0e
+  title: q2-ena-uploader
+  description: Documentation for the QIIME 2 plugin that uploads raw reads and sample metadata to ENA.
+  github: https://github.com/bokulich-lab/q2-ena-uploader
+  toc:
+    - file: index.md
+    - file: installation.md
+    - file: submission-full.md
+      children:
+        - file: submission-simple.md
+    - file: actions.md
+    - file: references.md
+      children:
+        - file: templates.md
+        - file: glossary.md
+        - file: license.md
+
+site:
+  template: book-theme
+  options:
+    sidebar:
+      style: full
+      position: left
+
