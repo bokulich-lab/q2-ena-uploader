@@ -183,7 +183,7 @@ Please ensure that your credentials were created at least 24 hours before your f
    - `--i-samples`: Artifact containing metadata of the samples.
    - `--p-action-type`: 2 action types are supported: ADD (default) and MODIFY.
    - `--p-dev`: A boolean parameter indicating whether the submission is a test.
-   - `--p-submission-hold-date`: The release date of the study, on which it will become public along with all submitted data. By default, this date is set to two months after the date of submission. Users can specify any date within two years of the current date. Accepted date format is `YYYY-MM-DD`.
+   - `--p-submission-hold-date`: The release date of the study, on which it will become public along with all submitted data. By default, this date is set to two years after the date of submission. Users can specify any date within two years of the current date. Accepted date format is `YYYY-MM-DD`.
    - `--o-submission-receipt`: The output artifact containing the assigned ENA accession numbers for the submitted objects.
 
 
