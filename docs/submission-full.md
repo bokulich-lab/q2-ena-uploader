@@ -27,7 +27,7 @@ It is recommended to create an ENA account and obtain credentials at least 24 ho
 ```
 :::
 
-1. Import metadata into QIIME 2 artifacts.
+1. Import data into QIIME 2 artifacts.
 2. Upload sample and study metadata to ENA.
 3. Transfer raw reads to the ENA FTP server.
 4. Upload experiment metadata to ENA.
@@ -37,9 +37,32 @@ Steps 2-4 should be performed in the specified order. Alternatively, the `submit
 submit metadata and raw reads in a single step. To jump to the section on simplified submission, click [here](submission-simple.md).
 ```
 
-### Step 1: Import metadata into QIIME 2 artifacts
+### Step 1: Import data into QIIME 2 artifacts
 
-#### {term}`Study`
+Data imported into QIIME 2 are organized as data [artifacts](https://amplicon-docs.qiime2.org/en/latest/explanations/archives.html). Each artifact is assigned a Semantic Type, which determines its corresponding Artifact Class within the QIIME 2 framework.
+
+Within our ENA submission workflow:
+
+- Raw reads can be imported into QIIME 2 using several different artifact classes, depending on the specific data format. An overview of these supported formats and import choices is available in the official [QIIME 2](https://amplicon-docs.qiime2.org/en/latest/how-to-guides/how-to-import.html) documentation.
+
+- Metadata—including studies, samples, and experiments—are imported as QIIME 2 artifacts with the Semantic Types `ENAMetadataStudy`, `ENAMetadataSamples`, and `ENAMetadataExperiment`, respectively.
+
+These artifacts represent all required inputs for the ENA submission workflow. Once imported, they are stored as .qza files within the QIIME 2 environment.
+Proceed to the next sections to import all necessary input data into QIIME 2.
+
+#### Raw reads
+Example illustrating the import of FASTQ sequencing data into QIIME 2 artifacts. More import options are described [here](https://amplicon-docs.qiime2.org/en/latest/how-to-guides/how-to-import.html) .
+
+```shell
+qiime tools import \
+  --type 'SampleData[PairedEndSequencesWithQuality]' \
+  --input-path my-sequence-data/ \
+  --input-format CasavaOneEightSingleLanePerSampleDirFmt \
+  --output-path demux.qza
+```
+The  sections bellow describe all types of metadata imports.
+
+#### {term}`Study` 
 To import the metadata of a study into the corresponding QIIME 2 artifacts, run:
 
 ```shell
@@ -93,7 +116,7 @@ Minimal sample structure refers to the ENA default sample checklist data structu
 When constructing a valid study metadata TSV file, consider consulting one of the provided examples in the [Templates](./templates.md) section.
 ```
 
-#### {term}`Experiment`
+#### {term}`Experiment` 
 To import the experiment metadata into the corresponding QIIME 2 artifacts, run:
 
 ```shell
