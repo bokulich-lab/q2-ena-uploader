@@ -51,7 +51,7 @@ These artifacts represent all required inputs for the ENA submission workflow. O
 Proceed to the next sections to import all necessary input data into QIIME 2.
 
 #### Raw reads
-Example illustrating the import of FASTQ sequencing data into QIIME 2 artifacts. More import options are described [here](https://amplicon-docs.qiime2.org/en/latest/how-to-guides/how-to-import.html) .
+This is a simple example illustrating the import of FASTQ sequencing data into QIIME 2 artifacts. More import options are described [here](https://amplicon-docs.qiime2.org/en/latest/how-to-guides/how-to-import.html) .
 
 ```shell
 qiime tools import \
