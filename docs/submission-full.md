@@ -45,7 +45,7 @@ Within our ENA submission workflow:
 
 - Raw reads can be imported into QIIME 2 using several different artifact classes, depending on the specific data format. An overview of these supported formats and import choices is available in the official [QIIME 2](https://amplicon-docs.qiime2.org/en/latest/how-to-guides/how-to-import.html) documentation.
 
-- Metadata—including studies, samples, and experiments—are imported as QIIME 2 artifacts with the Semantic Types `ENAMetadataStudy`, `ENAMetadataSamples`, and `ENAMetadataExperiment`, respectively.
+- Metadata — including studies, samples, and experiments — are imported as QIIME 2 artifacts with the Semantic Types `ENAMetadataStudy`, `ENAMetadataSamples`, and `ENAMetadataExperiment`, respectively.
 
 These artifacts represent all required inputs for the ENA submission workflow. Once imported, they are stored as .qza files within the QIIME 2 environment.
 Proceed to the next sections to import all necessary input data into QIIME 2.
