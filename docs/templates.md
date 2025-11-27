@@ -61,5 +61,7 @@ Download the example file <a href="_static/experiment-minimal.tsv" download>📥
 :::
 
 :::{dropdown} Extended structure
-Download the example file <a href="_static/experiment-extended.tsv" download>📥 here</a>.
+Download the example files:
+1. Single reads <a href="_static/experiment-extended-single-reads.tsv" download>📥 here</a>, 
+2. Paired reads <a href="_static/experiment-extended-paired-reads.tsv" download>📥 here</a>.
 :::
