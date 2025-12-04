@@ -1,10 +1,10 @@
 # Submission
 
-```{image} ena-uploader-workflow-01.png
-:alt: Submission workflow
-:width: 700
-:align: center
-```
+
+<center>
+  <img src="ena-uploader-workflow-01.png" alt="Submission workflow" width="700"/>
+</center>
+
 :::{aside}
 ```{note}
 To run the submission, QIIME 2 requires <span style="color:#60a285;">input artifacts</span>.
