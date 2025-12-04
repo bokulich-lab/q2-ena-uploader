@@ -95,16 +95,20 @@ Please review the full range of ENA [sample checklists](https://www.ebi.ac.uk/en
 
 2. When using the ENA default sample checklist for all your samples, you do not need to specify the default code [ERC000011](https://www.ebi.ac.uk/ena/browser/view/ERC000011). 
  However, if you apply multiple checklists for different samples, you must include all relevant ENA [sample checklists](https://www.ebi.ac.uk/ena/browser/checklists) codes in the metadata column checklist. In this case, create a single metadata TSV file that combines all columns from these checklists and fill in values only where applicable.
- 
+
 
 :::{aside}
-```{tip}
+```{note}
 Using multiple checklists within the same sample set can be useful when samples originate from different environments, such as gut microbiomes and soil. Conversely, allowing [missing values](https://www.insdc.org/technical-specifications/missing-value-reporting/) (e.g., for control samples) is appropriate for special cases within a single checklist.
 ```
 :::
+```{tip}
+Sample checklist templates are available in this GitHub [repository](https://github.com/ELIXIR-Belgium/ENA-metadata-templates)
+. Each folder contains a sample.tsv file ready for submission. Remember to add an ENA checklist column to indicate which checklist is used. You can also combine columns from multiple checklists in a single submission.
 
-
-
+Alternatively, you can download a similar TSV directly from the ENA web [portal](https://www.ebi.ac.uk/ena/submit/webin/login)
+ after logging in and selecting “Register Samples.” Just make sure to add the ENA checklist column and remove the first line of the downloaded file.
+```
 ```{attention} Minimal sample structure
 :class: dropdown
 Minimal sample structure refers to the ENA default sample checklist data structure. To create a valid TSV file, four mandatory parameters are needed for each sample: 
