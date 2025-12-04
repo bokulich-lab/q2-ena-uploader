@@ -80,7 +80,7 @@ Using multiple checklists within the same sample set can be useful when samples 
 ```
 :::
 ```{tip}
-Sample checklist templates are available on this GitHub [repository](https://github.com/ELIXIR-Belgium/ENA-metadata-templates)
+Sample checklist templates are available in this GitHub [repository](https://github.com/ELIXIR-Belgium/ENA-metadata-templates)
 . Each folder contains a sample.tsv file ready for submission. Remember to add an ENA checklist column to indicate which checklist is used. You can also combine columns from multiple checklists in a single submission.
 
 Alternatively, you can download a similar TSV directly from the ENA web [portal](https://www.ebi.ac.uk/ena/submit/webin/login)
