@@ -1,0 +1,4 @@
+title	study_ref	sample_description	platform	instrument_model	library_strategy	library_source	library_selection	library_layout
+title1	very_unique_study	sample_name123	ILLUMINA	GENIUS	WGS	GENOMIC	RANDOM	SINGLE
+title2	very_unique_study	sample_name124	ILLUMINA	GENIUS	WGS	GENOMIC	RANDOM	SINGLE
+title3	very_unique_study	sample_name125	ILLUMINA	GENIUS	WGS	GENOMIC	RANDOM	SINGLE

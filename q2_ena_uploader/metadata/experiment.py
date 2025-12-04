@@ -22,7 +22,6 @@ class Experiment:
         platform=None,
         instrument_model=None,
         library_attributes=None,
-        attributes=None,
     ):
         self.title = title
         self.study_ref = study_ref
@@ -30,7 +29,6 @@ class Experiment:
         self.platform = platform
         self.instrument_model = instrument_model
         self.library_attributes = library_attributes if library_attributes else {}
-        self.attributes = attributes if attributes else []
 
     def to_xml_element(self):
         if self.sample_description:
@@ -92,16 +90,6 @@ class Experiment:
             library_tree_element = library_tree.to_xml_element()
             design_element.append(library_tree_element)
 
-        if len(self.attributes) > 0:
-            attributes_element = ElementTree.SubElement(root, "EXPERIMENT_ATTRIBUTES")
-            for el in self.attributes:
-                tag, value = el.split("|")
-                attribute_element = ElementTree.SubElement(
-                    attributes_element, "EXPERIMENT_ATTRIBUTE"
-                )
-                ElementTree.SubElement(attribute_element, "TAG").text = tag
-                ElementTree.SubElement(attribute_element, "VALUE").text = value
-
         return root
 
     @classmethod
@@ -121,11 +109,7 @@ class Experiment:
         kwargs["library_attributes"] = {
             k: v for k, v in row_dict.items() if k.startswith("library")
         }
-        kwargs["attributes"] = [
-            v
-            for k, v in row_dict.items()
-            if k not in special_attributes and k.startswith("exp_attribute")
-        ]
+
         return cls(**kwargs)
 
 
