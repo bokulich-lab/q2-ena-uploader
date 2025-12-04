@@ -1,8 +1,12 @@
 # Submission
 
-<center>
-  <img src="ena-uploader-workflow-01.png" alt="Submission workflow" width="700"/>
-</center>
+```{image} ena-uploader-workflow-01.png
+:alt: Submission workflow
+:width: 700
+:align: center
+```
+
+ENA Submission
 
 :::{aside}
 ```{note}
