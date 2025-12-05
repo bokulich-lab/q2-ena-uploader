@@ -5,9 +5,6 @@
 :width: 700
 :align: center
 ```
-
-ENA Submission
-
 :::{aside}
 ```{note}
 To run the submission, QIIME 2 requires <span style="color:#60a285;">input artifacts</span>.
@@ -22,6 +19,8 @@ Once both initial actions,
 The final submission status will again be provided as a QIIME 2 output artifact - <span style="color: #93669d;"> submission receipt</span>.
 ```
 :::
+
+ENA Submission
 
 After completing the [installation](./installation.md) and creating an [ENA account](https://www.ebi.ac.uk/ena/submit/webin/login), the submission process using the _q2-ena-uploader_ consists of several steps:
 
