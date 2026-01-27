@@ -5,7 +5,6 @@
 #
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
-import warnings
 from xml.etree import ElementTree
 
 
@@ -63,10 +62,9 @@ class Library:
             )
         else:
             if self.nominal_sdev is not None and self.nominal_length is None:
-                warnings.warn(
+                raise ValueError(
                     "Nominal_sdev can only be provided when nominal_length "
-                    "is also present. The nominal_sdev will be ignored.",
-                    UserWarning,
+                    "is also present."
                 )
 
             library_layout_el = ElementTree.SubElement(root, "LIBRARY_LAYOUT")

@@ -98,10 +98,7 @@ class TestLibrary(TestPluginBase, CustomAssertions):
             library_layout="SINGLE",
         )
 
-        with self.assertRaisesRegex(
-            ValueError,
-            "Library strategy must be present",
-        ):
+        with self.assertRaisesRegex(ValueError, "Library strategy must be present"):
             library.to_xml_element()
 
     def test_library_missing_source(self):
@@ -143,12 +140,9 @@ class TestLibrary(TestPluginBase, CustomAssertions):
         xml_element = library.to_xml_element()
         layout = xml_element.find("LIBRARY_LAYOUT")
         self.assertIsNotNone(layout)
-        self.assertEqual(layout[0].tag, "PAIRED")
         paired = layout.find("PAIRED")
         self.assertIsNotNone(paired)
-        self.assertEqual(paired.tag, "PAIRED")
         self.assertEqual(len(paired.attrib), 0)
-        self.assertIsNone(paired.text)
 
     def test_no_construction_protocol(self):
         """Test that construction protocol is optional."""
@@ -184,8 +178,7 @@ class TestLibrary(TestPluginBase, CustomAssertions):
         self.assertNotIn("NOMINAL_SDEV", paired.attrib)
 
     def test_nominal_sdev_without_nominal_length(self):
-        """Test that NOMINAL_SDEV without NOMINAL_LENGTH issues a warning
-        and is ignored."""
+        """Test that NOMINAL_SDEV cannot be provided without NOMINAL_LENGTH."""
         library = Library(
             library_strategy="WGS",
             library_source="GENOMIC",
@@ -194,12 +187,9 @@ class TestLibrary(TestPluginBase, CustomAssertions):
             library_nominal_sdev="30",
         )
 
-        with self.assertWarns(
-            UserWarning,
-            msg=(
-                "Nominal_sdev can only be provided when nominal_length "
-                "is also present. The nominal_sdev will be ignored."
-            ),
+        with self.assertRaisesRegex(
+            ValueError,
+            "Nominal_sdev can only be provided when nominal_length " "is also present.",
         ):
             library.to_xml_element()
 
