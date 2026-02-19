@@ -9,6 +9,7 @@ import unittest
 from unittest.mock import patch, mock_open, MagicMock
 
 import pandas as pd
+import qiime2
 
 from q2_ena_uploader import submit_metadata_reads
 
@@ -34,7 +35,7 @@ class TestUploadReadsToEna(unittest.TestCase):
         demux = MagicMock()
         experiment = MagicMock()
         submission_receipt_samples = MagicMock()
-        file_transfer_metadata = MagicMock()
+        file_transfer_metadata = MagicMock(spec=qiime2.Metadata)
 
         df = pd.DataFrame(
             {
