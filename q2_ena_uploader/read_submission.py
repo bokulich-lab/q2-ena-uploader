@@ -321,8 +321,17 @@ def submit_metadata_reads(
     )
 
     parsed_data = _process_manifest(df)
+    
+    # Extract raw_reads_set_id mapping for each sample from experiment metadata
+    raw_reads_set_id_map = {}
+    experiment_df = experiment.view(pd.DataFrame)
+    if "raw_reads_set_id" in experiment_df.columns:
+        for idx in experiment_df.index:
+            raw_reads_set_id = experiment_df.loc[idx, "raw_reads_set_id"]
+            if pd.notna(raw_reads_set_id) and str(raw_reads_set_id).strip():
+                raw_reads_set_id_map[idx] = str(raw_reads_set_id).strip()
 
-    run_xml = _run_set_from_dict(parsed_data)
+    run_xml = _run_set_from_dict(parsed_data, raw_reads_set_id_map)
     submission_xml = _create_submission_xml(
         ActionType.from_string(action), submission_hold_date
     )

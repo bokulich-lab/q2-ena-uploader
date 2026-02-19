@@ -22,6 +22,7 @@ class Experiment:
         platform=None,
         instrument_model=None,
         library_attributes=None,
+        raw_reads_set_id=None,
     ):
         self.title = title
         self.study_ref = study_ref
@@ -29,16 +30,19 @@ class Experiment:
         self.platform = platform
         self.instrument_model = instrument_model
         self.library_attributes = library_attributes if library_attributes else {}
+        self.raw_reads_set_id = raw_reads_set_id
 
     def to_xml_element(self):
-        if self.sample_description:
-            root = ElementTree.Element(
-                "EXPERIMENT", {"alias": "exp_" + str(self.sample_description)}
-            )
-        else:
+        if not self.sample_description:
             raise ValueError(
                 "Sample reference id must be present for an metadata submission."
             )
+        
+        # Use raw_reads_set_id if provided, otherwise default to "1"
+        dataset_id = str(self.raw_reads_set_id) if self.raw_reads_set_id else "1"
+        alias = f"exp_{dataset_id}_{str(self.sample_description)}"
+        
+        root = ElementTree.Element("EXPERIMENT", {"alias": alias})
 
         if self.title:
             ElementTree.SubElement(root, "TITLE").text = str(self.title)
@@ -100,6 +104,7 @@ class Experiment:
             "sample_description",
             "platform",
             "instrument_model",
+            "raw_reads_set_id",
         }
         kwargs = {
             k.strip(): v.strip()

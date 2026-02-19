@@ -36,14 +36,26 @@ class Run:
         return run_element
 
 
-def _run_set_from_dict(row_dict) -> bytes:
+def _run_set_from_dict(row_dict, raw_reads_set_id_map=None) -> bytes:
     run_set_root = ElementTree.Element("RUN_SET")
-    kwargs = {}
     xml_bytes = None
+    
+    if raw_reads_set_id_map is None:
+        raw_reads_set_id_map = {}
+    
     for alias in row_dict:
-        kwargs["alias"] = "run_" + alias
-        kwargs["refname"] = "exp_" + alias
-        kwargs["files"] = row_dict[alias]
+        # Determine the dataset_id (raw_reads_set_id) for this sample
+        dataset_id = raw_reads_set_id_map.get(alias, "1")
+        
+        # Build aliases with dataset_id
+        run_alias = f"run_{dataset_id}_{alias}"
+        exp_refname = f"exp_{dataset_id}_{alias}"
+        
+        kwargs = {
+            "alias": run_alias,
+            "refname": exp_refname,
+            "files": row_dict[alias]
+        }
         run_element = Run(**kwargs)
         run_set_root.append(run_element.to_xml_element())
         xml_bytes = ElementTree.tostring(

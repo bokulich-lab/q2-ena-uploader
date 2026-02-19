@@ -255,9 +255,15 @@ class TestSubmitMetadataReads(TestPluginBase):
             mock_experiment,
         )
         mock_process.assert_called_once_with(mock_demux.manifest)
-        mock_run_set.assert_called_once_with(
+        # _run_set_from_dict is now called with parsed_data and experiment_df
+        mock_run_set.assert_called_once()
+        call_args = mock_run_set.call_args
+        # Verify it was called with parsed_data and experiment_df parameters
+        self.assertEqual(
+            call_args[0][0], 
             {"sample1": {"filename": ["file1.fastq"], "checksum": ["md5"]}}
         )
+        self.assertIsNotNone(call_args[0][1])  # experiment_df should be provided
         mock_create_xml.assert_called_once_with(ActionType.MODIFY, "2023-12-31")
         mock_experiment.to_xml.assert_called_once_with()
 

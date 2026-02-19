@@ -57,6 +57,8 @@ Download the example file <a href="_static/sample-extended.tsv" download>📥 he
 :open: true
 The minimal number of mandatory columns for an experiment is 11. The columns `study_ref` and `sample_description` (sample ID) link each experiment to its corresponding study and sample.
 
+The optional column `raw_reads_set_id` allows you to submit multiple sequencing datasets (e.g., 16S and ITS) for the same set of samples. This column is used to create unique experiment and run aliases for each dataset. If not provided, it defaults to "1".
+
 Download the example file <a href="_static/experiment-minimal.tsv" download>📥 here</a>.
 :::
 
