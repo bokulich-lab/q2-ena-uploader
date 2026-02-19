@@ -37,11 +37,11 @@ class Experiment:
             raise ValueError(
                 "Sample reference id must be present for an metadata submission."
             )
-        
+
         # Use raw_reads_set_id if provided, otherwise default to "1"
         dataset_id = str(self.raw_reads_set_id) if self.raw_reads_set_id else "1"
         alias = f"exp_{dataset_id}_{str(self.sample_description)}"
-        
+
         root = ElementTree.Element("EXPERIMENT", {"alias": alias})
 
         if self.title:

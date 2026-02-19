@@ -321,7 +321,7 @@ def submit_metadata_reads(
     )
 
     parsed_data = _process_manifest(df)
-    
+
     # Extract raw_reads_set_id mapping for each sample from experiment metadata
     raw_reads_set_id_map = {}
     experiment_df = experiment.view(pd.DataFrame)

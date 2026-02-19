@@ -260,8 +260,8 @@ class TestSubmitMetadataReads(TestPluginBase):
         call_args = mock_run_set.call_args
         # Verify it was called with parsed_data and experiment_df parameters
         self.assertEqual(
-            call_args[0][0], 
-            {"sample1": {"filename": ["file1.fastq"], "checksum": ["md5"]}}
+            call_args[0][0],
+            {"sample1": {"filename": ["file1.fastq"], "checksum": ["md5"]}},
         )
         self.assertIsNotNone(call_args[0][1])  # experiment_df should be provided
         mock_create_xml.assert_called_once_with(ActionType.MODIFY, "2023-12-31")

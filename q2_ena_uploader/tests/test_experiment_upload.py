@@ -44,7 +44,7 @@ class TestUploadReadsToEna(unittest.TestCase):
             index=["sample1"],
         )
         demux.manifest = df
-        
+
         # Mock experiment DataFrame with raw_reads_set_id
         experiment_df = pd.DataFrame(
             {
@@ -118,10 +118,10 @@ class TestUploadReadsToEna(unittest.TestCase):
         self.assertIn(b"<RUN_SET>", run_content)
         self.assertIn(b'<FILE filename="forward.fastq"', run_content)
         self.assertIn(b'<FILE filename="reverse.fastq"', run_content)
-        
+
         # Check if response was successful
         self.assertEqual(result, b"<RECEIPT>Success</RECEIPT>")
 
-    
+
 if __name__ == "__main__":
     unittest.main()
