@@ -98,7 +98,10 @@ class TestLibrary(TestPluginBase, CustomAssertions):
             library_layout="SINGLE",
         )
 
-        with self.assertRaisesRegex(ValueError, "Library strategy must be present"):
+        with self.assertRaisesRegex(
+            ValueError,
+            "Library strategy must be present",
+        ):
             library.to_xml_element()
 
     def test_library_missing_source(self):
@@ -128,8 +131,8 @@ class TestLibrary(TestPluginBase, CustomAssertions):
         with self.assertRaisesRegex(ValueError, "Library layout must be present"):
             library.to_xml_element()
 
-    def test_paired_missing_nominal_values(self):
-        """Test that ValueError is raised for paired layout without nominal values."""
+    def test_paired_without_nominal_values(self):
+        """Test that paired layout works without nominal values ."""
         library = Library(
             library_strategy="WGS",
             library_source="GENOMIC",
@@ -137,8 +140,15 @@ class TestLibrary(TestPluginBase, CustomAssertions):
             library_layout="PAIRED",
         )
 
-        with self.assertRaisesRegex(ValueError, "Paired library layout requires"):
-            library.to_xml_element()
+        xml_element = library.to_xml_element()
+        layout = xml_element.find("LIBRARY_LAYOUT")
+        self.assertIsNotNone(layout)
+        self.assertEqual(layout[0].tag, "PAIRED")
+        paired = layout.find("PAIRED")
+        self.assertIsNotNone(paired)
+        self.assertEqual(paired.tag, "PAIRED")
+        self.assertEqual(len(paired.attrib), 0)
+        self.assertIsNone(paired.text)
 
     def test_no_construction_protocol(self):
         """Test that construction protocol is optional."""
@@ -149,16 +159,49 @@ class TestLibrary(TestPluginBase, CustomAssertions):
             library_layout="SINGLE",
         )
 
-        # Set values to avoid ValueError for missing required fields
-        library.library_strategy = "WGS"
-        library.library_source = "GENOMIC"
-        library.library_selection = "RANDOM"
-
         xml_element = library.to_xml_element()
         protocol = xml_element.find("LIBRARY_CONSTRUCTION_PROTOCOL")
 
         # Protocol node should not exist if not provided
         self.assertIsNone(protocol)
+
+    def test_paired_with_only_nominal_length(self):
+        """Test paired layout with only NOMINAL_LENGTH (NOMINAL_SDEV optional)."""
+        library = Library(
+            library_strategy="WGS",
+            library_source="GENOMIC",
+            library_selection="RANDOM",
+            library_layout="PAIRED",
+            library_nominal_length="300",
+        )
+
+        xml_element = library.to_xml_element()
+        layout = xml_element.find("LIBRARY_LAYOUT")
+        paired = layout.find("PAIRED")
+
+        # Should have NOMINAL_LENGTH but not NOMINAL_SDEV
+        self.assertEqual(paired.attrib["NOMINAL_LENGTH"], "300")
+        self.assertNotIn("NOMINAL_SDEV", paired.attrib)
+
+    def test_nominal_sdev_without_nominal_length(self):
+        """Test that NOMINAL_SDEV without NOMINAL_LENGTH issues a warning
+        and is ignored."""
+        library = Library(
+            library_strategy="WGS",
+            library_source="GENOMIC",
+            library_selection="RANDOM",
+            library_layout="PAIRED",
+            library_nominal_sdev="30",
+        )
+
+        with self.assertWarns(
+            UserWarning,
+            msg=(
+                "Nominal_sdev can only be provided when nominal_length "
+                "is also present. The nominal_sdev will be ignored."
+            ),
+        ):
+            library.to_xml_element()
 
 
 if __name__ == "__main__":

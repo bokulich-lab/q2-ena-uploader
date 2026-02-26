@@ -5,6 +5,7 @@
 #
 # The full license is in the file LICENSE, distributed with this software.
 # ----------------------------------------------------------------------------
+import warnings
 from xml.etree import ElementTree
 
 
@@ -61,24 +62,25 @@ class Library:
                 "Library layout must be present for an metadata submission."
             )
         else:
+            if self.nominal_sdev is not None and self.nominal_length is None:
+                warnings.warn(
+                    "Nominal_sdev can only be provided when nominal_length "
+                    "is also present. The nominal_sdev will be ignored.",
+                    UserWarning,
+                )
+
+            library_layout_el = ElementTree.SubElement(root, "LIBRARY_LAYOUT")
+
             if self.library_layout.lower() == "paired":
-                if self.nominal_length is None or self.nominal_sdev is None:
-                    raise ValueError(
-                        "Paired library layout requires nominal_length and "
-                        "nominal_sdev values present for a metadata submission."
-                    )
-                else:
-                    library_layout_el = ElementTree.SubElement(root, "LIBRARY_LAYOUT")
-                    ElementTree.SubElement(
-                        library_layout_el,
-                        "PAIRED",
-                        {
-                            "NOMINAL_LENGTH": self.nominal_length,
-                            "NOMINAL_SDEV": self.nominal_sdev,
-                        },
-                    )
+                # Build attributes dict with optional nominal_length and nominal_sdev
+                paired_attrs = {}
+                if self.nominal_length is not None:
+                    paired_attrs["NOMINAL_LENGTH"] = str(self.nominal_length)
+                if self.nominal_sdev is not None:
+                    paired_attrs["NOMINAL_SDEV"] = str(self.nominal_sdev)
+
+                ElementTree.SubElement(library_layout_el, "PAIRED", paired_attrs)
             else:
-                library_layout_el = ElementTree.SubElement(root, "LIBRARY_LAYOUT")
                 ElementTree.SubElement(library_layout_el, "SINGLE")
 
         if self.library_construction_protocol is not None:
