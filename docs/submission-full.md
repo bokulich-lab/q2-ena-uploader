@@ -151,10 +151,12 @@ The minimal experiment structure requires the following mandatory fields:
 - `library_source`
 - `library_selection`
 - `library_layout`
+Moreover, you can consider including these optional fields:
 - `library_nominal_length` (only for paired reads)
 - `library_nominal_sdev` (only for paired reads)
+- `library_construction_protocol` 
 
-The field `library_construction_protocol` is optional.
+Use an optional field `raw_reads_set_id` when submitting multiple sequencing datasets (e.g., 16S and ITS) for the same sample set. This creates unique experiment and run aliases for each dataset. If not provided, defaults to "1".
 
 When constructing a valid experiment metadata TSV file, consider consulting one of the provided examples, see more in [Templates](./templates.md) section.
 ```
