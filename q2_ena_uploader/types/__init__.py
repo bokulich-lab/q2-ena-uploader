@@ -20,7 +20,6 @@ from ._types_and_formats import (
     ENASubmissionReceipt,
 )
 
-
 __all__ = [
     ENAMetadataSamplesFormat,
     ENAMetadataSamplesDirFmt,
