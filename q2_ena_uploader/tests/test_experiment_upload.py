@@ -46,6 +46,15 @@ class TestUploadReadsToEna(unittest.TestCase):
         )
         demux.manifest = df
 
+        # Mock experiment DataFrame with raw_reads_set_id
+        experiment_df = pd.DataFrame(
+            {
+                "raw_reads_set_id": ["1"],
+            },
+            index=["sample1"],
+        )
+        experiment.view.return_value = experiment_df
+
         # Mock return values
         mock_process_manifest.return_value = {
             "sample1": {
@@ -57,7 +66,7 @@ class TestUploadReadsToEna(unittest.TestCase):
             }
         }
         mock_run_from_dict.return_value = b"""<?xml version='1.0' encoding='utf-8'?>
-        <RUN_SET><RUN alias="run_0"><EXPERIMENT_REF refname="exp_0" />
+        <RUN_SET><RUN alias="run_1_sample1"><EXPERIMENT_REF refname="exp_1_sample1" />
         <DATA_BLOCK><FILES>
         <FILE filename="forward.fastq" filetype="fastq" checksum_method="MD5" checksum="1d6cb0f96a77cc7d374818ce7113e6e7" /> # noqa E501
         <FILE filename="reverse.fastq" filetype="fastq" checksum_method="MD5" checksum="1d6cb0f96a77cc7d374818ce7113e6e7" /> # noqa E501
