@@ -1,0 +1,11 @@
+channels:
+- https://packages.qiime2.org/qiime2/2026.7/moshpit/released
+- conda-forge
+- bioconda
+dependencies:
+  - rachis-moshpit
+  - pandas
+  - pip
+  - pip:
+    - q2-ena-uploader@git+https://github.com/bokulich-lab/q2-ena-uploader.git@2026.7.0
+    
