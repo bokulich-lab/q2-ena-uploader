@@ -233,7 +233,7 @@ class TestSubmitMetadataSamples(TestPluginBase):
         mock_study.to_xml.assert_called_once_with()
         mock_samples.to_xml.assert_called_once_with()
 
-    @patch.dict(os.environ, {})
+    @patch.dict(os.environ, {}, clear=True)
     def test_missing_credentials(self):
         """Test that error is raised when credentials are missing."""
         with self.assertRaisesRegex(RuntimeError, "Missing username or password"):

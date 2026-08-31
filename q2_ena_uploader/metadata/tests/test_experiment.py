@@ -63,7 +63,7 @@ class TestExperiment(TestPluginBase, CustomAssertions):
 
         # Check basic structure of XML element
         self.assertEqual(xml_element.tag, "EXPERIMENT")
-        self.assertEqual(xml_element.attrib["alias"], "exp_sample_description1")
+        self.assertEqual(xml_element.attrib["alias"], "exp_1_sample_description1")
 
         # Check title
         title_elem = xml_element.find("TITLE")
